@@ -1,0 +1,75 @@
+:root{
+    --width: 1280px;
+    --height: 720px
+}
+
+
+html,
+body{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin:0;
+    padding:0;
+    background-color: darkgray;
+}
+
+.container{
+    display:flex;
+    flex-direction:row;
+    align-items: center;
+    justify-content: center;
+    height: var(--height);
+    width: 100%;
+}
+
+.button{
+    transition: 0.25s ease-out;
+    cursor: pointer;
+    margin:50px;
+    width: 100px;
+    height: 100px;
+    background-color: darkcyan;
+    border-radius: 20px;
+}
+
+.button:hover{
+    background-color: hsl(180, 100%, 23%);
+}
+
+#prev{
+
+}
+#next{
+
+}
+
+.gallery{
+    display: flex;
+    position: relative;
+    margin: 0;
+    padding: 0;
+    border-radius: 15px;
+    width: var(--width);
+    height: var(--height);
+    background-color: crimson;
+}
+
+.photos{
+    border-radius: inherit;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+}
+
+.photos > div{
+    transition: 0.45s ease-out;
+    min-width: var(--width);
+    min-height: var(--height);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48pt;
+    color:azure;
+}
