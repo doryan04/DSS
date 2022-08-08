@@ -58,7 +58,6 @@ body{
 
 .photos{
     transform: translateX(calc(var(--width) - (2 * var(--width))));
-    transition: 0.45s ease-out;
     width: max-content;
     border-radius: inherit;
     display: flex;
