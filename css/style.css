@@ -53,17 +53,19 @@ body{
     width: var(--width);
     height: var(--height);
     background-color: crimson;
-}
-
-.photos{
-    border-radius: inherit;
-    display: flex;
-    flex-direction: row;
     overflow: hidden;
 }
 
-.photos > div{
+.photos{
+    transform: translateX(calc(var(--width) - (2 * var(--width))));
     transition: 0.45s ease-out;
+    width: max-content;
+    border-radius: inherit;
+    display: flex;
+    flex-direction: row;
+}
+
+.photos > div{
     min-width: var(--width);
     min-height: var(--height);
     position: relative;
