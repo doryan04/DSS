@@ -6,6 +6,7 @@ let NumberItem = 1;
 
 const prewButton = document.getElementById("prew");
 const nextButton = document.getElementById("next");
+const buttons = document.getElementsByClassName("button");
 const galleryItems = document.querySelectorAll(".photos > div");
 const slidesTrack = document.getElementsByClassName("photos")[0];
 const time = 0.45;
@@ -25,7 +26,6 @@ function preparingGallery(){
     slidesTrack.append(firstElem);
 
     function classIndent(){
-
 
         const galleryItems = document.querySelectorAll(".photos > div");
         let countItems = galleryItems.length;
@@ -66,36 +66,49 @@ function rainbowItems(){
 function startGallery(){
 
     preparingGallery();
-    rainbowItems();
+    //rainbowItems();
 
     const slide = document.getElementsByClassName("slide")[0].clientWidth;
+    const countSlides = document.getElementsByClassName("slide").length - 1;
+
+    let items = document.getElementsByClassName("slide");
+
+    items[NumberItem].classList.add("active");
 
     prewButton.addEventListener('click', function(){
 
         prewButton.disabled = true;
+
         setTimeout(function(){
+
             prewButton.disabled = false;
-        }, time * 1000);
 
-        next();
-
-    });
-
-    nextButton.addEventListener('click', function(){
-
-        nextButton.disabled = true;
-        setTimeout(function(){
-            nextButton.disabled = false;
         }, time * 1000);
 
         prew();
 
     });
 
-    function next(){
+    nextButton.addEventListener('click', function(){
+
+        nextButton.disabled = true;
+        
+        setTimeout(function(){
+
+            nextButton.disabled = false;
+
+        }, time * 1000);
+
+        next();
+
+    });
+
+    function prew(){
 
         if (NumberItem > 0){
-        
+            
+            items[NumberItem].classList.remove("active");
+
             slidesTrack.style.transition = time + "s ease-out";
 
             NumberItem--;
@@ -105,16 +118,34 @@ function startGallery(){
             setTimeout(function(){
 
                 slidesTrack.style.transition = null;
+
+                if (NumberItem == 0){
+
+                    items[NumberItem].classList.remove("active");
+            
+                    NumberItem = countSlides - 1;
+            
+                    slidesTrack.style.transform = "translateX(-"+ ((slide) * (NumberItem)) +"px)";
+            
+                    items[NumberItem].classList.add("active");
+            
+                }
     
             }, time * 1000);
+
+            items[NumberItem].classList.add("active");
+
+            console.log(NumberItem);
 
         }
 
     }
 
-    function prew(){
+    function next(){
 
-        if (NumberItem < 9){
+        if (NumberItem < countSlides){
+
+            items[NumberItem].classList.remove("active");
 
             slidesTrack.style.transition = time + "s ease-out";
 
@@ -125,8 +156,24 @@ function startGallery(){
             setTimeout(function(){
 
                 slidesTrack.style.transition = null;
+
+                if (NumberItem == countSlides){
+
+                    items[NumberItem].classList.remove("active");
+            
+                    NumberItem = 1;
+            
+                    slidesTrack.style.transform = "translateX(-"+ ((slide) * (NumberItem)) +"px)";
+            
+                    items[NumberItem].classList.add("active");
+            
+                }
     
             }, time * 1000);
+
+            items[NumberItem].classList.add("active");
+
+            console.log(NumberItem);
 
         }
 
