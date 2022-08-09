@@ -4,12 +4,12 @@
 
 let NumberItem = 1;
 
-const prewButton = document.getElementById("prew");
-const nextButton = document.getElementById("next");
-const buttons = document.getElementsByClassName("button");
+const sliderContainer = document.getElementsByClassName("slider"); 
 const galleryItems = document.querySelectorAll(".photos > div");
-const slidesTrack = document.getElementsByClassName("photos")[0];
-const time = 0.45;
+const gallery = document.getElementsByClassName("gallery");
+const slidesTrack = document.getElementsByClassName("photos");
+
+const time = 0.5;
 
 // ============================================================================================================= //
 // Функция, отвечающая за подготовку галереи к работе и инициализация объектов путём присвайвания класса "slide" //
@@ -17,28 +17,65 @@ const time = 0.45;
 
 function preparingGallery(){
 
-    let lastElem = document.createElement("div");
-    lastElem.textContent = galleryItems.length;
-    slidesTrack.prepend(lastElem); 
+    slidesTrack[0].prepend(galleryItems[galleryItems.length - 1].cloneNode(true));
 
-    let firstElem = document.createElement("div");
-    firstElem.textContent = 1;
-    slidesTrack.append(firstElem);
-
+    slidesTrack[0].append(galleryItems[0].cloneNode(true));
+    
     function classIndent(){
-
+        
         const galleryItems = document.querySelectorAll(".photos > div");
-        let countItems = galleryItems.length;
-    
-        for (let i = 0; i < countItems; i++){
-    
-            galleryItems[i].classList = "slide";
-            galleryItems[i].setAttribute("indexItem", i);
-    
+        
+        for (let j = 0; j < galleryItems.length; j++){
+        
+            galleryItems[j].classList = "slide";
+            galleryItems[j].setAttribute("indexItem", j - 1);
+        
         }
+        
+    }
+
+    function preparingButtons(){
+
+        let arrowRight = document.createElement("button");
+        let arrowLeft = document.createElement("button");
+    
+        arrowRight.classList = "button"; arrowRight.id = "next";
+        sliderContainer[0].append(arrowRight);
+    
+        arrowLeft.classList = "button"; arrowLeft.id = "prev";
+        sliderContainer[0].prepend(arrowLeft);
     
     }
+
+    function preparingDotsBar(){
+
+        let dotsBar = document.createElement("div");
+
+        dotsBar.classList = "dots-bar";
+        sliderContainer[0].append(dotsBar);
+
+        function dotsGenerator(){
+
+            let dotsBarContainer = document.getElementsByClassName("dots-bar");
+
+            for (let i = 0; i < galleryItems.length; i++){
+
+                let dot = document.createElement("div");
     
+                dot.classList = "dot"; dot.id = i + 1;
+
+                dotsBarContainer[0].append(dot);
+    
+            }
+
+        }
+
+        dotsGenerator();
+
+    }
+
+    preparingDotsBar();
+    preparingButtons();
     classIndent();
 
 }
@@ -59,33 +96,84 @@ function rainbowItems(){
 
 }
 
-// =========================== //
-// Функция для запуска скрипта //
-// =========================== //
+// ===================================================================================================================== //
+//   //
+// ===================================================================================================================== //
 
-function startGallery(){
+function dotsAnimation(prevButton, nextButton, items){
+    
+    let dots = document.getElementsByClassName("dot");
 
-    preparingGallery();
-    //rainbowItems();
+    let indexDot = 0;
 
-    const slide = document.getElementsByClassName("slide")[0].clientWidth;
-    const countSlides = document.getElementsByClassName("slide").length - 1;
+    dots[indexDot].classList.add("dot-active");
 
-    let items = document.getElementsByClassName("slide");
+    prevButton.addEventListener('click', function(){
 
-    items[NumberItem].classList.add("active");
+        if(indexDot != 0){
 
-    prewButton.addEventListener('click', function(){
+            dots[indexDot].classList.remove("dot-active");
 
-        prewButton.disabled = true;
+            indexDot--;
+
+            dots[indexDot].classList.add("dot-active");
+
+        } else {
+
+            dots[indexDot].classList.remove("dot-active");
+
+            indexDot = dots.length - 1;
+
+            dots[indexDot].classList.add("dot-active");
+
+        }
+
+    });
+
+    nextButton.addEventListener('click', function(){
+
+        if (indexDot != items.length - 3){
+
+            dots[indexDot].classList.remove("dot-active");
+
+            indexDot++;
+
+            dots[indexDot].classList.add("dot-active");
+
+        } else {
+
+            dots[indexDot].classList.remove("dot-active");
+
+            indexDot = 0;
+
+            dots[indexDot].classList.add("dot-active");
+
+        }
+
+    });
+
+}
+
+// ============================ //
+// Функция для работы стрелочек //
+// ============================ //
+
+function arrows(prevButton, nextButton, items){
+
+    const slide = items[0].clientWidth;
+    const countSlides = items.length - 1;
+
+    prevButton.addEventListener('click', function(){
+
+        prevButton.disabled = true;
 
         setTimeout(function(){
 
-            prewButton.disabled = false;
+            prevButton.disabled = false;
 
         }, time * 1000);
 
-        prew();
+        prev();
 
     });
 
@@ -103,21 +191,21 @@ function startGallery(){
 
     });
 
-    function prew(){
+    function prev(){
 
         if (NumberItem > 0){
             
             items[NumberItem].classList.remove("active");
 
-            slidesTrack.style.transition = time + "s ease-out";
+            slidesTrack[0].style.transition = time + "s ease-out";
 
             NumberItem--;
 
-            slidesTrack.style.transform = "translateX(-"+ ((slide) * (NumberItem)) +"px)";
+            slidesTrack[0].style.transform = "translateX(-"+ ((slide) * (NumberItem)) +"px)";
 
             setTimeout(function(){
 
-                slidesTrack.style.transition = null;
+                slidesTrack[0].style.transition = null;
 
                 if (NumberItem == 0){
 
@@ -125,7 +213,7 @@ function startGallery(){
             
                     NumberItem = countSlides - 1;
             
-                    slidesTrack.style.transform = "translateX(-"+ ((slide) * (NumberItem)) +"px)";
+                    slidesTrack[0].style.transform = "translateX(-"+ ((slide) * (NumberItem)) +"px)";
             
                     items[NumberItem].classList.add("active");
             
@@ -133,9 +221,11 @@ function startGallery(){
     
             }, time * 1000);
 
-            items[NumberItem].classList.add("active");
+            if (NumberItem != 0){
 
-            console.log(NumberItem);
+                items[NumberItem].classList.add("active");
+
+            }
 
         }
 
@@ -147,15 +237,15 @@ function startGallery(){
 
             items[NumberItem].classList.remove("active");
 
-            slidesTrack.style.transition = time + "s ease-out";
+            slidesTrack[0].style.transition = time + "s ease-out";
 
             NumberItem++;
 
-            slidesTrack.style.transform = "translateX(-"+ ((slide) * NumberItem) +"px)";
+            slidesTrack[0].style.transform = "translateX(-"+ ((slide) * NumberItem) +"px)";
 
             setTimeout(function(){
 
-                slidesTrack.style.transition = null;
+                slidesTrack[0].style.transition = null;
 
                 if (NumberItem == countSlides){
 
@@ -163,20 +253,37 @@ function startGallery(){
             
                     NumberItem = 1;
             
-                    slidesTrack.style.transform = "translateX(-"+ ((slide) * (NumberItem)) +"px)";
+                    slidesTrack[0].style.transform = "translateX(-"+ ((slide) * (NumberItem)) +"px)";
             
                     items[NumberItem].classList.add("active");
             
                 }
     
-            }, time * 1000);
+            }, time * 1000)
 
-            items[NumberItem].classList.add("active");
-
-            console.log(NumberItem);
+                items[NumberItem].classList.add("active");
 
         }
 
     }
 
 }
+
+// =========================== //
+// Функция для запуска скрипта //
+// =========================== //
+
+function startGallery(){
+
+    preparingGallery();
+
+    let items = document.getElementsByClassName("slide");
+
+    items[NumberItem].classList.add("active");
+
+    arrows(document.getElementById("prev"), document.getElementById("next"), items);
+    dotsAnimation(document.getElementById("prev"), document.getElementById("next"), items);
+
+}
+
+startGallery();
