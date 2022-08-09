@@ -1,52 +1,41 @@
+/* ================= */
+/* Настройка галереи */
+/* ================= */
+
 :root{
     --width: 640px;
-    --height: 300px
+    --height: 400px;
+    --dots-size: 15px;
 }
 
+/* ============== */
+/* Для красоты :3 */
+/* ============== */
 
 html,
 body{
-    display: flex;
-    align-items: center;
-    justify-content: center;
     margin:0;
     padding:0;
     background-color: darkgray;
 }
 
-.container{
+.presentation{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ============================= */
+/* Классы для просмотра картинок */
+/* ============================= */
+
+.slider{
     display:flex;
     flex-direction:row;
     align-items: center;
     justify-content: center;
     height: var(--height);
     width: 100%;
-}
-
-.button{
-    transition: 0.25s ease-out;
-    cursor: pointer;
-    margin:50px;
-    width: 100px;
-    height: 100px;
-    background-color: darkcyan;
-    border-radius: 20px;
-}
-
-button { 
-    border: none; 
-    outline: none; 
-}
-
-.button:hover{
-    background-color: hsl(180, 100%, 23%);
-}
-
-#prev{
-
-}
-#next{
-
 }
 
 .gallery{
@@ -78,4 +67,62 @@ button {
     justify-content: center;
     font-size: 48pt;
     color:azure;
+}
+
+/* ====== */
+/* Кнопки */
+/* ====== */
+
+.button{
+    transition: 0.25s ease-out;
+    cursor: pointer;
+    margin:50px;
+    width: 100px;
+    height: 100px;
+    background-color: hsl(180, 100%, 27%);
+    border-radius: 20px;
+}
+
+button { 
+    border: none; 
+    outline: none; 
+}
+
+button:hover{
+    transform: scale(1.1);
+    background-color: hsl(180, 100%, 25%);
+}
+
+button:active{
+    transform: scale(0.9);
+    background-color: hsl(180, 100%, 23%);
+}
+
+/* ========= */
+/* Индикатор */
+/* ========= */
+
+.dots-bar{
+    align-self: flex-end;
+    display: flex;
+    position: absolute;
+    padding: 0px 5px 5px 5px;
+    margin-bottom: 5px;
+    min-width: var(--dots-size);
+    min-height: var(--dots-size);
+}
+
+.dot{
+    background-color: white;
+    border-radius: var(--dots-size);
+    height: var(--dots-size);
+    margin: 0px 5px 5px 5px;
+    opacity: 60%;
+    transition: 0.5s ease-in-out;
+    width: var(--dots-size);
+}
+
+.dot-active{
+    width: calc(var(--dots-size) * 3);
+    opacity: 100%;
 }
