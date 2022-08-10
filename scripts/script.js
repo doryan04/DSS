@@ -309,5 +309,4 @@ function startGallery(){
     dotsAnimation(document.getElementById("prev"), document.getElementById("next"), items);
 
 }
-
 startGallery();
