@@ -102,7 +102,7 @@ function rainbowItems(){
 // ======================================== //
 
 function dotsAnimation(prevButton, nextButton, items){
-    
+
     let dots = document.getElementsByClassName("dot");
 
     let indexDot = document.querySelectorAll("div.slide.active")[0].getAttribute("indexitem");
@@ -115,7 +115,7 @@ function dotsAnimation(prevButton, nextButton, items){
 
             dots[indexDot].classList.remove("dot-active");
 
-            indexDot--;
+            indexDot = document.querySelectorAll("div.slide.active")[0].getAttribute("indexitem");
 
             dots[indexDot].classList.add("dot-active");
 
@@ -137,7 +137,7 @@ function dotsAnimation(prevButton, nextButton, items){
 
             dots[indexDot].classList.remove("dot-active");
 
-            indexDot++;
+            indexDot = document.querySelectorAll("div.slide.active")[0].getAttribute("indexitem");
 
             dots[indexDot].classList.add("dot-active");
 
@@ -158,15 +158,22 @@ function dotsAnimation(prevButton, nextButton, items){
 // ============================ //
 // Функция для работы стрелочек //
 // ============================ //
-
-function arrows(prevButton, nextButton, items, idActiveSlide){
+function arrows(prevButton, nextButton, items){
 
     const slide = items[0].clientWidth;
-    const countSlides = items.length - 1;
+    const countSlides = items.length - 1; 
+
+    let itemsActive = document.getElementsByClassName("slide");
+    
+    itemsActive = Array.from(items).slice(1, countSlides);
+
+    itemsActive[0].classList.add("active");
 
     prevButton.addEventListener('click', function(){
 
         this.disabled = true;
+
+        prevActiveSlide();
 
         prev();
 
@@ -177,6 +184,8 @@ function arrows(prevButton, nextButton, items, idActiveSlide){
     nextButton.addEventListener('click', function(){
 
         this.disabled = true;
+
+        nextActiveSlide();
 
         next();
         
@@ -212,6 +221,28 @@ function arrows(prevButton, nextButton, items, idActiveSlide){
 
     }
 
+    function prevActiveSlide(){
+
+        if (idActiveSlide > 0){
+
+            itemsActive[idActiveSlide].classList.remove("active");
+
+            idActiveSlide--;
+
+            itemsActive[idActiveSlide].classList.add("active");
+
+        } else {
+
+            itemsActive[idActiveSlide].classList.remove("active");
+
+            idActiveSlide = countSlides - 2;
+
+            itemsActive[idActiveSlide].classList.add("active");
+
+        }
+
+    }
+
     function next(){
 
         if (NumberItem < countSlides){
@@ -240,63 +271,25 @@ function arrows(prevButton, nextButton, items, idActiveSlide){
 
     }
 
-}
+    function nextActiveSlide(){
 
-function activeSliderDetector(prev, next, idActiveSlide){
+        if (idActiveSlide < 7){
 
-    let items = document.getElementsByClassName("slide");
+            itemsActive[idActiveSlide].classList.remove("active");
 
-    let countSlides = items.length - 1;
-    
-    items = Array.from(items).slice(1, countSlides);
+            idActiveSlide++;
 
-    items[0].classList.add("active");
+            itemsActive[idActiveSlide].classList.add("active");
 
-    let detector = new function(){
-    
-        prev.addEventListener('click', () => {
+        } else {
 
-            if (idActiveSlide > 0){
+            itemsActive[idActiveSlide].classList.remove("active");
 
-                items[idActiveSlide].classList.remove("active");
+            idActiveSlide = 0;
 
-                idActiveSlide--;
+            itemsActive[idActiveSlide].classList.add("active");
 
-                items[idActiveSlide].classList.add("active");
-
-            } else {
-
-                items[idActiveSlide].classList.remove("active");
-
-                idActiveSlide = countSlides - 2;
-
-                items[idActiveSlide].classList.add("active");
-
-            }
-            
-        });
-
-        next.addEventListener('click', () => {
-
-            if (idActiveSlide < 7){
-
-                items[idActiveSlide].classList.remove("active");
-
-                idActiveSlide++;
-
-                items[idActiveSlide].classList.add("active");
-
-            } else {
-
-                items[idActiveSlide].classList.remove("active");
-
-                idActiveSlide = 1;
-
-                items[idActiveSlide].classList.add("active");
-
-            }
-
-        });
+        }
 
     }
 
@@ -312,7 +305,6 @@ function startGallery(){
 
     let items = document.getElementsByClassName("slide");
 
-    activeSliderDetector(document.getElementById("prev"), document.getElementById("next"), idActiveSlide);
     arrows(document.getElementById("prev"), document.getElementById("next"), items);
     dotsAnimation(document.getElementById("prev"), document.getElementById("next"), items);
 
