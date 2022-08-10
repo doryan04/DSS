@@ -3,6 +3,7 @@
 // ========== //
 
 let NumberItem = 1;
+let idActiveSlide = 0;
 
 const sliderContainer = document.getElementsByClassName("slider"); 
 const galleryItems = document.querySelectorAll(".photos > div");
@@ -96,15 +97,15 @@ function rainbowItems(){
 
 }
 
-// ===================================================================================================================== //
-//   //
-// ===================================================================================================================== //
+// ======================================== //
+// Функция, отвечающая за индикацию слайдов //
+// ======================================== //
 
 function dotsAnimation(prevButton, nextButton, items){
     
     let dots = document.getElementsByClassName("dot");
 
-    let indexDot = 0;
+    let indexDot = document.querySelectorAll("div.slide.active")[0].getAttribute("indexitem");
 
     dots[indexDot].classList.add("dot-active");
 
@@ -158,44 +159,34 @@ function dotsAnimation(prevButton, nextButton, items){
 // Функция для работы стрелочек //
 // ============================ //
 
-function arrows(prevButton, nextButton, items){
+function arrows(prevButton, nextButton, items, idActiveSlide){
 
     const slide = items[0].clientWidth;
     const countSlides = items.length - 1;
 
     prevButton.addEventListener('click', function(){
 
-        prevButton.disabled = true;
-
-        setTimeout(function(){
-
-            prevButton.disabled = false;
-
-        }, time * 1000);
+        this.disabled = true;
 
         prev();
+
+        setTimeout(() => prevButton.disabled = false, time * 1000);
 
     });
 
     nextButton.addEventListener('click', function(){
 
-        nextButton.disabled = true;
-        
-        setTimeout(function(){
-
-            nextButton.disabled = false;
-
-        }, time * 1000);
+        this.disabled = true;
 
         next();
+        
+        setTimeout(() => nextButton.disabled = false, time * 1000);
 
     });
 
     function prev(){
 
         if (NumberItem > 0){
-            
-            items[NumberItem].classList.remove("active");
 
             slidesTrack[0].style.transition = time + "s ease-out";
 
@@ -208,24 +199,14 @@ function arrows(prevButton, nextButton, items){
                 slidesTrack[0].style.transition = null;
 
                 if (NumberItem == 0){
-
-                    items[NumberItem].classList.remove("active");
             
                     NumberItem = countSlides - 1;
             
                     slidesTrack[0].style.transform = "translateX(-"+ ((slide) * (NumberItem)) +"px)";
             
-                    items[NumberItem].classList.add("active");
-            
                 }
     
             }, time * 1000);
-
-            if (NumberItem != 0){
-
-                items[NumberItem].classList.add("active");
-
-            }
 
         }
 
@@ -234,8 +215,6 @@ function arrows(prevButton, nextButton, items){
     function next(){
 
         if (NumberItem < countSlides){
-
-            items[NumberItem].classList.remove("active");
 
             slidesTrack[0].style.transition = time + "s ease-out";
 
@@ -249,21 +228,75 @@ function arrows(prevButton, nextButton, items){
 
                 if (NumberItem == countSlides){
 
-                    items[NumberItem].classList.remove("active");
-            
                     NumberItem = 1;
             
                     slidesTrack[0].style.transform = "translateX(-"+ ((slide) * (NumberItem)) +"px)";
-            
-                    items[NumberItem].classList.add("active");
             
                 }
     
             }, time * 1000)
 
-                items[NumberItem].classList.add("active");
-
         }
+
+    }
+
+}
+
+function activeSliderDetector(prev, next, idActiveSlide){
+
+    let items = document.getElementsByClassName("slide");
+
+    let countSlides = items.length - 1;
+    
+    items = Array.from(items).slice(1, countSlides);
+
+    items[0].classList.add("active");
+
+    let detector = new function(){
+    
+        prev.addEventListener('click', () => {
+
+            if (idActiveSlide > 0){
+
+                items[idActiveSlide].classList.remove("active");
+
+                idActiveSlide--;
+
+                items[idActiveSlide].classList.add("active");
+
+            } else {
+
+                items[idActiveSlide].classList.remove("active");
+
+                idActiveSlide = countSlides - 2;
+
+                items[idActiveSlide].classList.add("active");
+
+            }
+            
+        });
+
+        next.addEventListener('click', () => {
+
+            if (idActiveSlide < 7){
+
+                items[idActiveSlide].classList.remove("active");
+
+                idActiveSlide++;
+
+                items[idActiveSlide].classList.add("active");
+
+            } else {
+
+                items[idActiveSlide].classList.remove("active");
+
+                idActiveSlide = 1;
+
+                items[idActiveSlide].classList.add("active");
+
+            }
+
+        });
 
     }
 
@@ -279,8 +312,7 @@ function startGallery(){
 
     let items = document.getElementsByClassName("slide");
 
-    items[NumberItem].classList.add("active");
-
+    activeSliderDetector(document.getElementById("prev"), document.getElementById("next"), idActiveSlide);
     arrows(document.getElementById("prev"), document.getElementById("next"), items);
     dotsAnimation(document.getElementById("prev"), document.getElementById("next"), items);
 
