@@ -101,70 +101,65 @@ function rainbowItems(){
 // Функция, отвечающая за индикацию слайдов //
 // ======================================== //
 
-function dotsAnimation(prevButton, nextButton, items){
+function dotsAnimation(prevButton, nextButton, items, toggle){
 
-    let dots = document.getElementsByClassName("dot");
+    switch(toggle){
 
-    let indexDot = document.querySelectorAll("div.slide.active")[0].getAttribute("indexitem");
+        case true:
 
-    dots[indexDot].classList.add("dot-active");
+            let dots = document.getElementsByClassName("dot");
 
-    prevButton.addEventListener('click', function(){
-
-        if(indexDot != 0){
-
-            dots[indexDot].classList.remove("dot-active");
-
-            indexDot = document.querySelectorAll("div.slide.active")[0].getAttribute("indexitem");
+            let indexDot = document.querySelectorAll("div.slide.active")[0].getAttribute("indexitem");
 
             dots[indexDot].classList.add("dot-active");
 
-        } else {
+            prevButton.addEventListener('click', function(){
 
-            dots[indexDot].classList.remove("dot-active");
+                dots[indexDot].classList.remove("dot-active");
 
-            indexDot = dots.length - 1;
+                if(indexDot != 0){ indexDot = document.querySelectorAll("div.slide.active")[0].getAttribute("indexitem"); } 
+                
+                else { indexDot = dots.length - 1; }
 
-            dots[indexDot].classList.add("dot-active");
+                dots[indexDot].classList.add("dot-active");
 
-        }
+            });
 
-    });
+            nextButton.addEventListener('click', function(){
+                
+                dots[indexDot].classList.remove("dot-active");
 
-    nextButton.addEventListener('click', function(){
+                if (indexDot != items.length - 3){ indexDot = document.querySelectorAll("div.slide.active")[0].getAttribute("indexitem");} 
+                
+                else { indexDot = 0; }
 
-        if (indexDot != items.length - 3){
+                dots[indexDot].classList.add("dot-active");
 
-            dots[indexDot].classList.remove("dot-active");
+            });
 
-            indexDot = document.querySelectorAll("div.slide.active")[0].getAttribute("indexitem");
+            break;
+        
+        case false:
+    
+            sliderContainer[0].removeChild(document.getElementsByClassName("dots-bar")[0]);
 
-            dots[indexDot].classList.add("dot-active");
+            break;
 
-        } else {
-
-            dots[indexDot].classList.remove("dot-active");
-
-            indexDot = 0;
-
-            dots[indexDot].classList.add("dot-active");
-
-        }
-
-    });
+    }
 
 }
 
 // ============================ //
 // Функция для работы стрелочек //
 // ============================ //
-function arrows(prevButton, nextButton, items){
+
+function arrows(prevButton, nextButton, items, transition){
 
     const slide = items[0].clientWidth;
-    const countSlides = items.length - 1; 
+    const countSlides = items.length - 1;
 
     let itemsActive = document.getElementsByClassName("slide");
-    
+
     itemsActive = Array.from(items).slice(1, countSlides);
 
     itemsActive[0].classList.add("active");
@@ -173,9 +168,9 @@ function arrows(prevButton, nextButton, items){
 
         this.disabled = true;
 
-        prevActiveSlide();
+        prev(transition);
 
-        prev();
+        ActiveSlide(itemsActive, countSlides, "prev");
 
         setTimeout(() => prevButton.disabled = false, time * 1000);
 
@@ -185,19 +180,20 @@ function arrows(prevButton, nextButton, items){
 
         this.disabled = true;
 
-        nextActiveSlide();
+        next(transition);
 
-        next();
+        ActiveSlide(itemsActive, countSlides, "next");
         
         setTimeout(() => nextButton.disabled = false, time * 1000);
 
     });
 
-    function prev(){
+    function prev(transitionType){
+
 
         if (NumberItem > 0){
 
-            slidesTrack[0].style.transition = time + "s ease-out";
+            slidesTrack[0].style.transition = time + "s " + transitionType;
 
             NumberItem--;
 
@@ -221,33 +217,11 @@ function arrows(prevButton, nextButton, items){
 
     }
 
-    function prevActiveSlide(){
-
-        if (idActiveSlide > 0){
-
-            itemsActive[idActiveSlide].classList.remove("active");
-
-            idActiveSlide--;
-
-            itemsActive[idActiveSlide].classList.add("active");
-
-        } else {
-
-            itemsActive[idActiveSlide].classList.remove("active");
-
-            idActiveSlide = countSlides - 2;
-
-            itemsActive[idActiveSlide].classList.add("active");
-
-        }
-
-    }
-
-    function next(){
+    function next(transitionType){
 
         if (NumberItem < countSlides){
 
-            slidesTrack[0].style.transition = time + "s ease-out";
+            slidesTrack[0].style.transition = time + "s " + transitionType;
 
             NumberItem++;
 
@@ -271,27 +245,33 @@ function arrows(prevButton, nextButton, items){
 
     }
 
-    function nextActiveSlide(){
+}
 
-        if (idActiveSlide < 7){
+function ActiveSlide(item, count, direction){
 
-            itemsActive[idActiveSlide].classList.remove("active");
+    item[idActiveSlide].classList.remove("active");
 
-            idActiveSlide++;
+    switch(direction){
 
-            itemsActive[idActiveSlide].classList.add("active");
+        case "prev":
+    
+            if (idActiveSlide > 0) { idActiveSlide--; }
 
-        } else {
+            else { idActiveSlide = count - 2; }
 
-            itemsActive[idActiveSlide].classList.remove("active");
+            break;
 
-            idActiveSlide = 0;
+        case "next":
+    
+            if (idActiveSlide < count - 2) { idActiveSlide++; }
+            
+            else { idActiveSlide = 0; }
 
-            itemsActive[idActiveSlide].classList.add("active");
-
-        }
-
+            break;
+    
     }
+
+    item[idActiveSlide].classList.add("active");
 
 }
 
@@ -305,8 +285,9 @@ function startGallery(){
 
     let items = document.getElementsByClassName("slide");
 
-    arrows(document.getElementById("prev"), document.getElementById("next"), items);
-    dotsAnimation(document.getElementById("prev"), document.getElementById("next"), items);
+    arrows(document.getElementById("prev"), document.getElementById("next"), items, "ease-in-out");
+    dotsAnimation(document.getElementById("prev"), document.getElementById("next"), items, true);
 
 }
+
 startGallery();
