@@ -3,7 +3,7 @@
 // ========== //
 
 let NumberItem = 1;
-let idActiveSlide = 0;
+let idActiveSlide = 1;
 
 const sliderContainer = document.getElementsByClassName("slider"); 
 const galleryItems = document.querySelectorAll(".photos > div");
@@ -12,15 +12,57 @@ const slidesTrack = document.getElementsByClassName("photos");
 
 const time = 0.5;
 
+function throttle(func, ms) {
+
+    let isThrottled = false,
+        savedArgs,
+        savedThis;
+  
+    return function wrapper() {
+  
+        if (isThrottled) {
+
+            savedArgs = arguments;
+
+            savedThis = this;
+
+            return;
+
+        }
+  
+        func.apply(this, arguments);
+  
+        isThrottled = true;
+  
+        setTimeout(function() {
+
+            isThrottled = false;
+
+            if (savedArgs) {
+
+                wrapper.apply(savedThis, savedArgs);
+
+                savedArgs = savedThis = null;
+
+            }
+
+        }, ms);
+
+    }
+
+}
+
 // ============================================================================================================= //
 // Функция, отвечающая за подготовку галереи к работе и инициализация объектов путём присвайвания класса "slide" //
 // ============================================================================================================= //
 
-function preparingGallery(){
+function preparingGallery(toggle){
 
     slidesTrack[0].prepend(galleryItems[galleryItems.length - 1].cloneNode(true));
 
     slidesTrack[0].append(galleryItems[0].cloneNode(true));
+
+    // Подготовка слайдов //
     
     function classIndent(){
         
@@ -32,8 +74,12 @@ function preparingGallery(){
             galleryItems[j].setAttribute("indexItem", j - 1);
         
         }
+
+        document.getElementsByClassName("slide")[1].classList.add("active");
         
     }
+
+    // Подготовка стрелочек к работе //
 
     function preparingButtons(){
 
@@ -48,34 +94,53 @@ function preparingGallery(){
     
     }
 
-    function preparingDotsBar(){
+    // Подготовка индикации слайдера //
 
-        let dotsBar = document.createElement("div");
+    switch(toggle){
 
-        dotsBar.classList = "dots-bar";
-        sliderContainer[0].append(dotsBar);
+        case true:
 
-        function dotsGenerator(){
+            function preparingDotsBar(){
 
-            let dotsBarContainer = document.getElementsByClassName("dots-bar");
-
-            for (let i = 0; i < galleryItems.length; i++){
-
-                let dot = document.createElement("div");
-    
-                dot.classList = "dot"; dot.id = i + 1;
-
-                dotsBarContainer[0].append(dot);
-    
+                let dotsBar = document.createElement("div");
+        
+                dotsBar.classList = "dots-bar";
+                sliderContainer[0].append(dotsBar);
+        
+                // Генератор точек //
+        
+                function dotsGenerator(){
+        
+                    let dotsBarContainer = document.getElementsByClassName("dots-bar");
+        
+                    for (let i = 0; i < galleryItems.length; i++){
+        
+                        let dot = document.createElement("div");
+            
+                        dot.classList = "dot"; dot.id = i;
+        
+                        dotsBarContainer[0].append(dot);
+            
+                    }
+        
+                }
+        
+                dotsGenerator();
+        
             }
+        
+            preparingDotsBar();
+        
+            document.getElementsByClassName("dot")[0].classList.add("dot-active");
 
-        }
+            break;
 
-        dotsGenerator();
+        case false:
+
+            break;
 
     }
 
-    preparingDotsBar();
     preparingButtons();
     classIndent();
 
@@ -97,103 +162,67 @@ function rainbowItems(){
 
 }
 
-// ======================================== //
-// Функция, отвечающая за индикацию слайдов //
-// ======================================== //
+// ============================================ //
+// Функция, отвечающая за навигацию по слайдеру //
+// ============================================ //
 
-function dotsAnimation(prevButton, nextButton, items, toggle){
+function sliderNavigation(prevButton, nextButton, items, transition, toggle){
 
-    switch(toggle){
+    const countSlides = items.length - 1;
 
-        case true:
+    // Левая стрелочка //
 
-            let dots = document.getElementsByClassName("dot");
+    prevButton.addEventListener("click", throttle(function(){
 
-            let indexDot = document.querySelectorAll("div.slide.active")[0].getAttribute("indexitem");
+        slideScroll("left", countSlides, transition, items, toggle);
 
-            dots[indexDot].classList.add("dot-active");
+        ActiveSlide(items, countSlides, "prev", toggle);
 
-            prevButton.addEventListener('click', function(){
+    }, time * 1000));
 
-                dots[indexDot].classList.remove("dot-active");
+    // Правая стрелочка //
 
-                if(indexDot != 0){ indexDot = document.querySelectorAll("div.slide.active")[0].getAttribute("indexitem"); } 
-                
-                else { indexDot = dots.length - 1; }
+    nextButton.addEventListener("click", throttle(function(){
 
-                dots[indexDot].classList.add("dot-active");
+        slideScroll("right", countSlides, transition, items);
 
-            });
+        ActiveSlide(items, countSlides, "next", toggle);
 
-            nextButton.addEventListener('click', function(){
-                
-                dots[indexDot].classList.remove("dot-active");
+    }, time * 1000));
 
-                if (indexDot != items.length - 3){ indexDot = document.querySelectorAll("div.slide.active")[0].getAttribute("indexitem");} 
-                
-                else { indexDot = 0; }
+}
 
-                dots[indexDot].classList.add("dot-active");
+// ====================================== //
+// Запуск анимации пролистывания слайдера //
+// ====================================== //
 
-            });
+function slideScroll(direction, countSlides, transition, items, toggle){
 
-            break;
-        
-        case false:
-    
-            sliderContainer[0].removeChild(document.getElementsByClassName("dots-bar")[0]);
+    if (direction == "left" && NumberItem > 0){
 
-            break;
+        animationSlide(direction, countSlides, time, transition, items, toggle);
+
+    } else if (direction == "right" && NumberItem < countSlides){
+
+        animationSlide(direction, countSlides, time, transition, items,);
 
     }
 
 }
 
-// ============================ //
-// Функция для работы стрелочек //
-// ============================ //
+// =============================== //
+// Анимация пролистывания слайдера //
+// =============================== //
 
-function arrows(prevButton, nextButton, items, transition){
+function animationSlide(direction, countSlides, ms, transitionType, items){
 
     const slide = items[0].clientWidth;
-    const countSlides = items.length - 1;
 
-    let itemsActive = document.getElementsByClassName("slide");
+    slidesTrack[0].style.transition = ms + "s " + transitionType;
 
-    itemsActive = Array.from(items).slice(1, countSlides);
+    switch(direction){
 
-    itemsActive[0].classList.add("active");
-
-    prevButton.addEventListener('click', function(){
-
-        this.disabled = true;
-
-        prev(transition);
-
-        ActiveSlide(itemsActive, countSlides, "prev");
-
-        setTimeout(() => prevButton.disabled = false, time * 1000);
-
-    });
-
-    nextButton.addEventListener('click', function(){
-
-        this.disabled = true;
-
-        next(transition);
-
-        ActiveSlide(itemsActive, countSlides, "next");
-        
-        setTimeout(() => nextButton.disabled = false, time * 1000);
-
-    });
-
-    function prev(transitionType){
-
-
-        if (NumberItem > 0){
-
-            slidesTrack[0].style.transition = time + "s " + transitionType;
+        case "left":
 
             NumberItem--;
 
@@ -204,24 +233,19 @@ function arrows(prevButton, nextButton, items, transition){
                 slidesTrack[0].style.transition = null;
 
                 if (NumberItem == 0){
-            
+                
                     NumberItem = countSlides - 1;
-            
+
                     slidesTrack[0].style.transform = "translateX(-"+ ((slide) * (NumberItem)) +"px)";
-            
+
+                
                 }
-    
-            }, time * 1000);
+        
+            }, ms * 1000);
+        
+            break;
 
-        }
-
-    }
-
-    function next(transitionType){
-
-        if (NumberItem < countSlides){
-
-            slidesTrack[0].style.transition = time + "s " + transitionType;
+        case "right":
 
             NumberItem++;
 
@@ -239,15 +263,23 @@ function arrows(prevButton, nextButton, items, transition){
             
                 }
     
-            }, time * 1000)
+            }, ms * 1000)
 
-        }
+            break;
 
     }
 
 }
 
-function ActiveSlide(item, count, direction){
+// =============================== //
+// Индентификация активного слайда //
+// =============================== //
+
+function ActiveSlide(item, count, direction, toggle){
+
+    let i = document.querySelectorAll("div.slide.active")[0].getAttribute("indexitem");
+
+    let dots = document.getElementsByClassName("dot");
 
     item[idActiveSlide].classList.remove("active");
 
@@ -255,23 +287,47 @@ function ActiveSlide(item, count, direction){
 
         case "prev":
     
-            if (idActiveSlide > 0) { idActiveSlide--; }
+            if (idActiveSlide > 1) { idActiveSlide--; }
 
-            else { idActiveSlide = count - 2; }
+            else { idActiveSlide = count - 1; }
 
             break;
 
         case "next":
     
-            if (idActiveSlide < count - 2) { idActiveSlide++; }
+            if (idActiveSlide < count - 1) { idActiveSlide++; }
             
-            else { idActiveSlide = 0; }
+            else { idActiveSlide = 1; }
 
             break;
     
     }
 
     item[idActiveSlide].classList.add("active");
+
+    switch(toggle){
+
+        case true:
+
+            dotsAnimation(dots, i);
+
+        case false:
+            
+            return 0;
+
+    }
+
+}
+
+// =========================== //
+// Анимация индикации слайдера //
+// =========================== //
+
+function dotsAnimation(dots, indexDot){
+
+    dots[indexDot].classList.remove("dot-active");
+            
+    dots[document.querySelectorAll("div.slide.active")[0].getAttribute("indexitem")].classList.add("dot-active");
 
 }
 
@@ -281,12 +337,13 @@ function ActiveSlide(item, count, direction){
 
 function startGallery(){
 
-    preparingGallery();
+    dotsToggle = true;
+
+    preparingGallery(dotsToggle);
 
     let items = document.getElementsByClassName("slide");
 
-    arrows(document.getElementById("prev"), document.getElementById("next"), items, "ease-in-out");
-    dotsAnimation(document.getElementById("prev"), document.getElementById("next"), items, true);
+    sliderNavigation(document.getElementById("prev"), document.getElementById("next"), items, "ease-in-out", dotsToggle);
 
 }
 
