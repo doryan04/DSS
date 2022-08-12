@@ -59,6 +59,6 @@ const settings = {
 2. Dots navigation
 3. Swipes on smartphones
 
-## Did you find the bug? Make sure to [leave an issue](https://github.com/ItzAdel/Angel-Wings/issues/new) in case of any problems.
+## Did you find the bug? Make sure to [leave an issue](https://github.com/doryan04/DSS/issues/new) in case of any problems.
 
 ### Check out @tfk004 on Telegram. https://t.me/tfk004
