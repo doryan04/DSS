@@ -1,4 +1,4 @@
-# MSS
-My Simple Slider
+# DSS
+Doryan Simple Slider
 
 ### Work in progress.
