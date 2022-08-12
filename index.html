@@ -1,8 +1,69 @@
 <html>
     <head>
         <link rel="stylesheet" type="text/css" href="css/style.css"></style>
+        <title>DSS</title>
+        <style>
+
+            /* ============== */
+            /* Для красоты :3 */
+            /* ============== */
+
+            html,
+            body{
+                margin:0;
+                padding:0;
+                background-color: #383838;
+            }
+
+            .logo{
+                top: 5%;
+                position:absolute;
+                width: 387.23px;
+                height: 157.12px;
+                background-image: url(png/dss.png);
+                transform: scale(0.8);
+
+            }
+
+            .presentation{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .text{
+                display: flex;
+                position: absolute;
+                top: 23.5%;
+                font-family: 'Arial', sans-serif;
+                font-style: normal;
+                font-weight: 300;
+                font-size: 14pt;
+                line-height: 17pt;
+                /* identical to box height */
+
+                letter-spacing: 2em;
+                text-transform: uppercase;
+
+            }
+            #light{
+
+                color: #FFFFFF;
+
+            }
+            #blueGradient{
+
+                color: transparent;    
+	            -webkit-background-clip: text;
+
+                background-clip: text;
+	            background-image: linear-gradient(to right, #60A7E3, #9CFBFF);
+
+            }
+        </style>
     </head>
     <body class="presentation">
+        <div class="logo"></div>
+        <div class="text"> <div id="light">doryan&thinsp;</div><div id="blueGradient">simple slider</div></div>
         <div class="slider">
             <div class="gallery">
                 <div class="photos">
@@ -10,14 +71,6 @@
                     <div>2</div>
                     <div>3</div>
                     <div>4</div>
-                    <div>5</div>
-                    <div>6</div>
-                    <div>7</div>
-                    <div>8</div>
-                    <div>9</div>
-                    <div>10</div>
-                    <div>11</div>
-                    <div>12</div>
                 </div>
             </div>
         </div>
