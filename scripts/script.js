@@ -10,9 +10,19 @@ const galleryItems = document.querySelectorAll(".photos > div");
 const gallery = document.getElementsByClassName("gallery");
 const slidesTrack = document.getElementsByClassName("photos");
 
-const time = 0.5;
+// Настройки слайдера //
 
-function throttle(func, ms) {
+const settings = {
+    transition: "ease-in-out",
+    dots: "on",
+    speedAnimation: 500,
+}
+
+// ======================= //
+// Вспомогательные функции //
+// ======================= //
+
+function throttle(func, delay) {
 
     let isThrottled = false,
         savedArgs,
@@ -46,7 +56,7 @@ function throttle(func, ms) {
 
             }
 
-        }, ms);
+        }, delay);
 
     }
 
@@ -56,7 +66,7 @@ function throttle(func, ms) {
 // Функция, отвечающая за подготовку галереи к работе и инициализация объектов путём присвайвания класса "slide" //
 // ============================================================================================================= //
 
-function preparingGallery(toggle){
+function preparingGallery(){
 
     slidesTrack[0].prepend(galleryItems[galleryItems.length - 1].cloneNode(true));
 
@@ -71,7 +81,7 @@ function preparingGallery(toggle){
         for (let j = 0; j < galleryItems.length; j++){
         
             galleryItems[j].classList = "slide";
-            galleryItems[j].setAttribute("indexItem", j - 1);
+            galleryItems[j].setAttribute("indexItem", j - 1)
         
         }
 
@@ -86,19 +96,19 @@ function preparingGallery(toggle){
         let arrowRight = document.createElement("button");
         let arrowLeft = document.createElement("button");
     
-        arrowRight.classList = "button"; arrowRight.id = "next";
+        arrowRight.classList = "button"; arrowRight.id = "right";
+        arrowLeft.classList = "button"; arrowLeft.id = "left";
+
         sliderContainer[0].append(arrowRight);
-    
-        arrowLeft.classList = "button"; arrowLeft.id = "prev";
         sliderContainer[0].prepend(arrowLeft);
     
     }
 
     // Подготовка индикации слайдера //
 
-    switch(toggle){
+    switch(settings.dots){
 
-        case true:
+        case "on":
 
             function preparingDotsBar(){
 
@@ -135,7 +145,7 @@ function preparingGallery(toggle){
 
             break;
 
-        case false:
+        case "off":
 
             break;
 
@@ -146,49 +156,46 @@ function preparingGallery(toggle){
 
 }
 
-// ===================================================================================================================== //
-// Функция, отвечающая за покраску слайдов в цвета радуги, если не имеются картинок для слайдера (можно не использовать) //
-// ===================================================================================================================== //
-
-function rainbowItems(){
-
-    let items = document.getElementsByClassName("slide");
-
-    for (let j = 0; j < items.length; j++){
-
-        items[j].style.backgroundColor = "hsl(" + (50 * (j+1)) +", 100%, 23%)";
-
-    }
-
-}
-
 // ============================================ //
 // Функция, отвечающая за навигацию по слайдеру //
 // ============================================ //
 
-function sliderNavigation(prevButton, nextButton, items, transition, toggle){
+function sliderNavigation(){
 
-    const countSlides = items.length - 1;
+    let left = document.getElementById("left");
+    let right = document.getElementById("right");
 
-    // Левая стрелочка //
+    let items = document.getElementsByClassName("slide");
 
-    prevButton.addEventListener("click", throttle(function(){
+    const countSlides = items.length - 1; 
 
-        slideScroll("left", countSlides, transition, items, toggle);
+    function leftArrow(){
 
-        ActiveSlide(items, countSlides, "prev", toggle);
+        right.onclick = null;
 
-    }, time * 1000));
+        slideScroll(left.id, countSlides, items);
+                    
+        ActiveSlide(items, countSlides, left.id);
 
-    // Правая стрелочка //
+        setTimeout(() => {right.onclick = throttle(rightArrow, settings.speedAnimation);}, settings.speedAnimation);
 
-    nextButton.addEventListener("click", throttle(function(){
+    }
 
-        slideScroll("right", countSlides, transition, items);
+    function rightArrow(){
 
-        ActiveSlide(items, countSlides, "next", toggle);
+        left.onclick = null;
 
-    }, time * 1000));
+        slideScroll(right.id, countSlides, items);
+                    
+        ActiveSlide(items, countSlides, right.id);
+
+        setTimeout(() => {left.onclick = throttle(leftArrow, settings.speedAnimation);}, settings.speedAnimation);
+
+    }
+
+    left.onclick = throttle(leftArrow, settings.speedAnimation);
+
+    right.onclick = throttle(rightArrow, settings.speedAnimation);
 
 }
 
@@ -196,15 +203,15 @@ function sliderNavigation(prevButton, nextButton, items, transition, toggle){
 // Запуск анимации пролистывания слайдера //
 // ====================================== //
 
-function slideScroll(direction, countSlides, transition, items, toggle){
+function slideScroll(direction, countSlides, items){
 
     if (direction == "left" && NumberItem > 0){
 
-        animationSlide(direction, countSlides, time, transition, items, toggle);
+        animationSlide(direction, countSlides, items);
 
     } else if (direction == "right" && NumberItem < countSlides){
 
-        animationSlide(direction, countSlides, time, transition, items,);
+        animationSlide(direction, countSlides, items);
 
     }
 
@@ -214,11 +221,11 @@ function slideScroll(direction, countSlides, transition, items, toggle){
 // Анимация пролистывания слайдера //
 // =============================== //
 
-function animationSlide(direction, countSlides, ms, transitionType, items){
+function animationSlide(direction, countSlides, items){
 
     const slide = items[0].clientWidth;
 
-    slidesTrack[0].style.transition = ms + "s " + transitionType;
+    slidesTrack[0].style.transition = settings.speedAnimation + "ms " + settings.transition;
 
     switch(direction){
 
@@ -241,7 +248,7 @@ function animationSlide(direction, countSlides, ms, transitionType, items){
                 
                 }
         
-            }, ms * 1000);
+            }, settings.speedAnimation);
         
             break;
 
@@ -263,7 +270,7 @@ function animationSlide(direction, countSlides, ms, transitionType, items){
             
                 }
     
-            }, ms * 1000)
+            }, settings.speedAnimation)
 
             break;
 
@@ -275,7 +282,7 @@ function animationSlide(direction, countSlides, ms, transitionType, items){
 // Индентификация активного слайда //
 // =============================== //
 
-function ActiveSlide(item, count, direction, toggle){
+function ActiveSlide(item, count, direction){
 
     let i = document.querySelectorAll("div.slide.active")[0].getAttribute("indexitem");
 
@@ -285,7 +292,7 @@ function ActiveSlide(item, count, direction, toggle){
 
     switch(direction){
 
-        case "prev":
+        case "left":
     
             if (idActiveSlide > 1) { idActiveSlide--; }
 
@@ -293,7 +300,7 @@ function ActiveSlide(item, count, direction, toggle){
 
             break;
 
-        case "next":
+        case "right":
     
             if (idActiveSlide < count - 1) { idActiveSlide++; }
             
@@ -305,15 +312,13 @@ function ActiveSlide(item, count, direction, toggle){
 
     item[idActiveSlide].classList.add("active");
 
-    switch(toggle){
+    try {
 
-        case true:
+        dotsAnimation(dots, i);
 
-            dotsAnimation(dots, i);
+    } catch {
 
-        case false:
-            
-            return 0;
+        return;
 
     }
 
@@ -337,13 +342,9 @@ function dotsAnimation(dots, indexDot){
 
 function startGallery(){
 
-    dotsToggle = true;
+    preparingGallery();
 
-    preparingGallery(dotsToggle);
-
-    let items = document.getElementsByClassName("slide");
-
-    sliderNavigation(document.getElementById("prev"), document.getElementById("next"), items, "ease-in-out", dotsToggle);
+    sliderNavigation();
 
 }
 
