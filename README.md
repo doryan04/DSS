@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-# DSS
-Doryan Simple Slider
-=======
 # DSS (Doryan Simple Slider)
->>>>>>> f91ddd9 (Update README.md)
 
 ![photo](pic/DSS.png)
 
