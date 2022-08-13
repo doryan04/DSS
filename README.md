@@ -53,11 +53,13 @@ const settings = {
 ```
 5. All ready to go
 
-## What doesn't works?
+## What on stady "work in progress"?
 
-1. Support two or more sliders
-2. Dots navigation
-3. Swipes on smartphones
+- [ ] Support two or more sliders
+- [ ] Dots navigation
+- [ ] Arrow toggle
+- [ ] Endless slider toggle
+- [ ] Swipes on smartphones
 
 ## Did you find the bug? Make sure to [leave an issue](https://github.com/doryan04/DSS/issues/new) in case of any problems.
 
