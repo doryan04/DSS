@@ -3,8 +3,8 @@
 /* ================= */
 
 :root{
-    --width: 640px;
-    --height: 400px;
+    --width: 480px;
+    --height: 240px;
     --dots-size: 15px;
 }
 
@@ -13,6 +13,7 @@
 /* ============================= */
 
 .slider{
+    margin: 10%;
     display:flex;
     flex-direction:row;
     align-items: center;

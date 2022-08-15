@@ -1,7 +1,7 @@
 <html>
     <head>
         <link rel="stylesheet" type="text/css" href="css/style.css"></style>
-        <title>DSS</title>
+        <title>DSS (EXPERIMENTAL BRANCH)</title>
         <style>
 
             /* ============== */
@@ -13,57 +13,58 @@
                 margin:0;
                 padding:0;
                 background-color: #383838;
-            }
-
-            .logo{
-                top: 5%;
-                position:absolute;
-                width: 387.23px;
-                height: 157.12px;
-                background-image: url(png/dss.png);
-                transform: scale(0.8);
-
-            }
-
-            .presentation{
+                flex-direction: column;
                 display: flex;
                 align-items: center;
                 justify-content: center;
             }
-            .text{
+            .new-slider{
+                margin: 5%;
+                display:flex;
+                flex-direction:row;
+                align-items: center;
+                justify-content: center;
+                height: var(--height);
+                width: 100%;
+            }
+
+            .new-gallery{
                 display: flex;
-                position: absolute;
-                top: 23.5%;
-                font-family: 'Arial', sans-serif;
-                font-style: normal;
-                font-weight: 300;
-                font-size: 14pt;
-                line-height: 17pt;
-                /* identical to box height */
-
-                letter-spacing: 2em;
-                text-transform: uppercase;
-
+                position: relative;
+                margin: 0;
+                padding: 0;
+                border-radius: 15px;
+                width: var(--width);
+                height: var(--height);
+                overflow: hidden;
             }
-            #light{
 
-                color: #FFFFFF;
-
+            .new-photos{
+                transform: translateX(calc(var(--width) - (2 * var(--width))));
+                width: max-content;
+                border-radius: inherit;
+                display: flex;
+                flex-direction: row;
             }
-            #blueGradient{
 
-                color: transparent;    
-	            -webkit-background-clip: text;
-
-                background-clip: text;
-	            background-image: linear-gradient(to right, #60A7E3, #9CFBFF);
-
+            .new-photos > div{
+                background-color: rgb(59, 144, 170);
+                min-width: var(--width);
+                min-height: var(--height);
+                position: relative;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 48pt;
+                color:azure;
             }
+
         </style>
+        <script type="text/javascript" src="scripts/script.js"></script>
     </head>
     <body class="presentation">
-        <div class="logo"></div>
-        <div class="text"> <div id="light">doryan&thinsp;</div><div id="blueGradient">simple slider</div></div>
+        <!-- <div class="logo"></div>
+        <div class="text"> <div id="light">doryan&thinsp;</div><div id="blueGradient">simple slider</div></div> -->
         <div class="slider">
             <div class="gallery">
                 <div class="photos">
@@ -74,6 +75,25 @@
                 </div>
             </div>
         </div>
+
+        <div class="new-slider">
+            <div class="new-gallery">
+                <div class="new-photos">
+                    <div>1</div>
+                    <div>2</div>
+                    <div>3</div>
+                    <div>4</div>
+                    <div>1</div>
+                    <div>2</div>
+                    <div>3</div>
+                    <div>4</div>
+                </div>
+            </div>
+        </div>
+
     </body>
-    <script type="text/javascript" src="scripts/script.js"></script>
+    <script>
+        startGallery(".slider", ".photos");
+        startGallery(".new-slider", ".new-photos");
+    </script>
 </html>
