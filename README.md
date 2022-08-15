@@ -1,4 +1,4 @@
-# DSS (Doryan Simple Slider)
+# DSS (Doryan Simple Slider) EXPERIMENTAL BRANCH
 
 ![photo](pic/DSS.png)
 
