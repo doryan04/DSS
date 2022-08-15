@@ -1,4 +1,4 @@
-# DSS (Doryan Simple Slider) EXPERIMENTAL BRANCH
+# DSS (Doryan Simple Slider)
 
 ![photo](pic/DSS.png)
 
@@ -11,28 +11,70 @@ Slider on native javascript and contains nothing extra.
 1. Create a construction in the "body" that looks like this:
 
 ```
-<div class="slider">
-    <div class="gallery">
-        <div class="photos">
+<div class="YourSliderName">
+    <div>1</div>
+    <div>2</div>
+    <div>3</div>
+    <div>4</div>
+</div>
+```
+### WARNING
+
+
+In case of using two or more sliders, please don't use the same name for all the sliders on the site or you will end up with a semi-non-working slider
+
+To avoid the problem described above, do as indicated in the code below:
+```
+...
+        <div class="YourSliderName_1">
             <div>1</div>
             <div>2</div>
             <div>3</div>
             <div>4</div>
-            <div>...</div>
-            <div>n</div>
         </div>
-    </div>
-</div>
+
+        <div class="YourSliderName_2">
+            <div>1</div>
+            <div>2</div>
+            <div>3</div>
+            <div>4</div>
+            <div>5</div>
+            <div>6</div>
+            <div>7</div>
+            <div>8</div>
+        </div>
+
+    </body>
+    <script>
+        startGallery(".YourSliderName_1);
+        startGallery(".YourSliderName_2");
+    </script>
+</html>
 ```
+
 
 2. Append in HTML document after tags ```<bodу>...</bodу>``` script tag:
 
 ```
-<script type="text/javascript" src="scripts/script.js"></script>
+<script type="text/javascript" src="scripts/script.js"> startGallery(".YourSliderName"); </script>
 ```
-as shown in the picture:
+as shown in the code:
 
-![photo](pic/2.png)
+```
+...
+    <body>
+        <div class="YourSliderName">
+            <div>1</div>
+            <div>2</div>
+            <div>3</div>
+            <div>4</div>
+        </div>
+    </body>
+    <script>
+        startGallery(".YourSliderName");
+    </script>
+</html>
+```
 
 3. Configure the slider in the CSS file:
 
@@ -55,7 +97,7 @@ const settings = {
 
 ## What on stady "work in progress"?
 
-- [ ] Support two or more sliders
+- [X] Support two or more sliders
 - [ ] Dots navigation
 - [ ] Arrow toggle
 - [ ] Endless slider toggle
