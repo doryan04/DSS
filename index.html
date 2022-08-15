@@ -8,6 +8,12 @@
             /* Для красоты :3 */
             /* ============== */
 
+            :root{
+                --width: 480px;
+                --height: 240px;
+                --dots-size: 15px;
+            }
+
             html,
             body{
                 margin:0;
@@ -19,44 +25,13 @@
                 justify-content: center;
             }
             .new-slider{
-                margin: 5%;
+                margin: 10%;
                 display:flex;
                 flex-direction:row;
                 align-items: center;
                 justify-content: center;
                 height: var(--height);
                 width: 100%;
-            }
-
-            .new-gallery{
-                display: flex;
-                position: relative;
-                margin: 0;
-                padding: 0;
-                border-radius: 15px;
-                width: var(--width);
-                height: var(--height);
-                overflow: hidden;
-            }
-
-            .new-photos{
-                transform: translateX(calc(var(--width) - (2 * var(--width))));
-                width: max-content;
-                border-radius: inherit;
-                display: flex;
-                flex-direction: row;
-            }
-
-            .new-photos > div{
-                background-color: rgb(59, 144, 170);
-                min-width: var(--width);
-                min-height: var(--height);
-                position: relative;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 48pt;
-                color:azure;
             }
 
         </style>
@@ -66,34 +41,26 @@
         <!-- <div class="logo"></div>
         <div class="text"> <div id="light">doryan&thinsp;</div><div id="blueGradient">simple slider</div></div> -->
         <div class="slider">
-            <div class="gallery">
-                <div class="photos">
-                    <div>1</div>
-                    <div>2</div>
-                    <div>3</div>
-                    <div>4</div>
-                </div>
-            </div>
+            <div>1</div>
+            <div>2</div>
+            <div>3</div>
+            <div>4</div>
         </div>
 
         <div class="new-slider">
-            <div class="new-gallery">
-                <div class="new-photos">
-                    <div>1</div>
-                    <div>2</div>
-                    <div>3</div>
-                    <div>4</div>
-                    <div>1</div>
-                    <div>2</div>
-                    <div>3</div>
-                    <div>4</div>
-                </div>
-            </div>
+            <div>1</div>
+            <div>2</div>
+            <div>3</div>
+            <div>4</div>
+            <div>5</div>
+            <div>6</div>
+            <div>7</div>
+            <div>8</div>
         </div>
 
     </body>
     <script>
-        startGallery(".slider", ".photos");
-        startGallery(".new-slider", ".new-photos");
+        startGallery(".slider");
+        startGallery(".new-slider");
     </script>
 </html>
