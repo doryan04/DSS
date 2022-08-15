@@ -14,7 +14,7 @@
 
 .slider{
     margin: 10%;
-    display:flex;
+    display: flex;
     flex-direction:row;
     align-items: center;
     justify-content: center;
@@ -22,26 +22,26 @@
     width: 100%;
 }
 
-.gallery{
+.slider-container{
+    border-radius: 15px;
     display: flex;
     position: relative;
     margin: 0;
     padding: 0;
-    border-radius: 15px;
     width: var(--width);
     height: var(--height);
     overflow: hidden;
 }
 
-.photos{
-    transform: translateX(calc(var(--width) - (2 * var(--width))));
-    width: max-content;
+.slider-track{
     border-radius: inherit;
     display: flex;
     flex-direction: row;
+    transform: translateX(calc(var(--width) - (2 * var(--width))));
+    width: max-content;
 }
 
-.photos > div{
+.slider-track > div{
     background-color: rgb(59, 144, 170);
     min-width: var(--width);
     min-height: var(--height);
@@ -88,6 +88,7 @@ button:active{
 
 .dots-bar{
     align-self: flex-end;
+    justify-self: center;
     display: flex;
     position: absolute;
     padding: 0px 5px 5px 5px;
