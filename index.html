@@ -60,7 +60,28 @@
 
     </body>
     <script>
-        startGallery(".slider");
-        startGallery(".new-slider");
+        startGallery(".slider", 
+        
+            settings = {
+                transition: "ease-in-out",
+                dots: true,
+                arrows: true,
+                endlessSlider: false,
+                speedAnimation: 500,
+            }
+        
+        );
+
+        startGallery(".new-slider", 
+
+            settings = {
+                transition: "ease-in",
+                dots: true,
+                arrows: true,
+                endlessSlider: true,
+                speedAnimation: 200,
+            }
+
+        );
     </script>
 </html>
