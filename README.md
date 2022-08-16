@@ -46,8 +46,30 @@ To avoid the problem described above, do as indicated in the code below:
 
     </body>
     <script>
-        startGallery(".YourSliderName_1);
-        startGallery(".YourSliderName_2");
+    
+        startGallery(".YourSliderName_1,
+        
+            YourSettings_1 = {
+                transition: "ease-in-out",
+                dots: true,
+                arrows: true,
+                endlessSlider: false,
+                speedAnimation: 500,
+            }
+
+        );
+
+        startGallery(".YourSliderName_2",
+
+            YourSettings_2 = {
+                transition: "ease-in",
+                dots: true,
+                arrows: true,
+                endlessSlider: true,
+                speedAnimation: 200,
+            }
+        
+        );
     </script>
 </html>
 ```
@@ -99,8 +121,8 @@ const settings = {
 
 - [X] Support two or more sliders
 - [ ] Dots navigation
-- [ ] Arrow toggle
-- [ ] Endless slider toggle
+- [X] Arrow toggle
+- [X] Endless slider toggle
 - [ ] Swipes on smartphones
 
 ## Did you find the bug? Make sure to [leave an issue](https://github.com/doryan04/DSS/issues/new) in case of any problems.
