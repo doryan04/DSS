@@ -37,7 +37,6 @@
     border-radius: inherit;
     display: flex;
     flex-direction: row;
-    transform: translateX(calc(var(--width) - (2 * var(--width))));
     width: max-content;
 }
 
@@ -103,7 +102,6 @@ button:active{
     height: var(--dots-size);
     margin: 0px 5px 5px 5px;
     opacity: 60%;
-    transition: 0.5s ease-in-out;
     width: var(--dots-size);
 }
 
