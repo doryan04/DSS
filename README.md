@@ -73,17 +73,28 @@ To avoid the problem described above, do as indicated in the code below:
     </script>
 </html>
 ```
-
-
-2. Append in HTML document after tags ```<bodу>...</bodу>``` script tag:
+You can not configure the slider, but just call the function where you passed the slider class name:
 
 ```
-<script type="text/javascript" src="scripts/script.js"> startGallery(".YourSliderName"); </script>
+...
+        startGallery(".YourSliderName");
+    </script>
+</html>
+```
+
+2. Insert the line with the JavaScript file in the ```<head>...</head>``` tags:
+
+```
+<script type="text/javascript" src="ds_slider/ds_slider.js"></script>
 ```
 as shown in the code:
 
 ```
-...
+<html>
+    <head>
+        ...
+        <script type="text/javascript" src="ds_slider/ds_slider.js"></script>
+    </head>
     <body>
         <div class="YourSliderName">
             <div>1</div>
@@ -97,6 +108,7 @@ as shown in the code:
     </script>
 </html>
 ```
+and only then after ```</body>``` tag insert the ```<script>``` tag, where you call the function to run the slider, like in the example above.
 
 3. Configure the slider in the CSS file:
 
@@ -107,13 +119,40 @@ as shown in the code:
     --dots-size: 15px;  //default size a dots
 }
 ```
-4. Configure the slider in the js file:
+4. Configure the slider to your liking:
 ```
-const settings = {
-    transition: "ease-in-out", // default transition for animation
-    dots: "on",                // default toggle value
-    speedAnimation: 500,       // default speed animation
+settings = {
+
+    transition: "ease-in-out",   // animation type for the slider scrolling
+    dots: true,                  // dots, which are responsible for the indication of the active slide
+    dotsEffect: "dot-default",   // appearance of dots
+    arrows: true,                // arrows toggle
+    endlessSlider: true,         // endless slider toggle
+    speedAnimation: 350,         // speed of scrolling animation
+
 }
+```
+Then enter all the settings into the slider function, as shown in the example below:
+```
+        ...
+    </body>
+    <script>
+        startGallery(".YourSliderName",
+        
+            exampleSettings = {
+
+                transition: "ease-in",
+                dots: false,
+                dotsEffect: "dot-default",
+                arrows: true,
+                endlessSlider: false,
+                speedAnimation: 850,
+
+            }
+        
+        );
+    </script>
+</html>
 ```
 5. All ready to go
 
