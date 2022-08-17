@@ -105,7 +105,16 @@ button:active{
     width: var(--dots-size);
 }
 
-.dot-active{
+.dot-pull{
     width: calc(var(--dots-size) * 3);
+    opacity: 100%;
+}
+
+.dot-default{
+    opacity: 100%;
+}
+
+.dot-scaling{
+    transform: scale(1.1);
     opacity: 100%;
 }
