@@ -8,7 +8,7 @@ Slider on native javascript and contains nothing extra.
 
 # How to use?
 
-1. Create a construction in the "body" that looks like this:
+1. Create a construction in the ```<body>...</body>``` that looks like this:
 
 ```
 <div class="YourSliderName">
