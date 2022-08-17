@@ -3,8 +3,8 @@
 /* ================= */
 
 :root{
-    --width: 640px;
-    --height: 400px;
+    --width: 480px;
+    --height: 240px;
     --dots-size: 15px;
 }
 
@@ -13,7 +13,8 @@
 /* ============================= */
 
 .slider{
-    display:flex;
+    margin: 10%;
+    display: flex;
     flex-direction:row;
     align-items: center;
     justify-content: center;
@@ -21,26 +22,25 @@
     width: 100%;
 }
 
-.gallery{
+.slider-container{
+    border-radius: 15px;
     display: flex;
     position: relative;
     margin: 0;
     padding: 0;
-    border-radius: 15px;
     width: var(--width);
     height: var(--height);
     overflow: hidden;
 }
 
-.photos{
-    transform: translateX(calc(var(--width) - (2 * var(--width))));
-    width: max-content;
+.slider-track{
     border-radius: inherit;
     display: flex;
     flex-direction: row;
+    width: max-content;
 }
 
-.photos > div{
+.slider-track > div{
     background-color: rgb(59, 144, 170);
     min-width: var(--width);
     min-height: var(--height);
@@ -87,6 +87,7 @@ button:active{
 
 .dots-bar{
     align-self: flex-end;
+    justify-self: center;
     display: flex;
     position: absolute;
     padding: 0px 5px 5px 5px;
@@ -101,11 +102,19 @@ button:active{
     height: var(--dots-size);
     margin: 0px 5px 5px 5px;
     opacity: 60%;
-    transition: 0.5s ease-in-out;
     width: var(--dots-size);
 }
 
-.dot-active{
+.dot-pull{
     width: calc(var(--dots-size) * 3);
+    opacity: 100%;
+}
+
+.dot-default{
+    opacity: 100%;
+}
+
+.dot-scaling{
+    transform: scale(1.1);
     opacity: 100%;
 }

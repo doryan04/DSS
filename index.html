@@ -8,11 +8,21 @@
             /* Для красоты :3 */
             /* ============== */
 
+            :root{
+                --width: 480px;
+                --height: 240px;
+                --dots-size: 15px;
+            }
+
             html,
             body{
                 margin:0;
                 padding:0;
                 background-color: #383838;
+                flex-direction: column;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
 
             .logo{
@@ -59,21 +69,24 @@
 	            background-image: linear-gradient(to right, #60A7E3, #9CFBFF);
 
             }
+            .sliderMargin{
+                margin: 40% 10%;
+            }
+
         </style>
+        <script type="text/javascript" src="ds_slider/ds_slider.js"></script>
     </head>
     <body class="presentation">
         <div class="logo"></div>
         <div class="text"> <div id="light">doryan&thinsp;</div><div id="blueGradient">simple slider</div></div>
-        <div class="slider">
-            <div class="gallery">
-                <div class="photos">
-                    <div>1</div>
-                    <div>2</div>
-                    <div>3</div>
-                    <div>4</div>
-                </div>
-            </div>
+        <div class="slider sliderMargin">
+            <div>1</div>
+            <div>2</div>
+            <div>3</div>
+            <div>4</div>
         </div>
     </body>
-    <script type="text/javascript" src="scripts/script.js"> startGallery(); </script>
+    <script>
+        DSS_start(".slider");
+    </script>
 </html>

@@ -11,28 +11,104 @@ Slider on native javascript and contains nothing extra.
 1. Create a construction in the "body" that looks like this:
 
 ```
-<div class="slider">
-    <div class="gallery">
-        <div class="photos">
+<div class="YourSliderName">
+    <div>1</div>
+    <div>2</div>
+    <div>3</div>
+    <div>4</div>
+</div>
+```
+### WARNING
+
+
+In case of using two or more sliders, please don't use the same name for all the sliders on the site or you will end up with a semi-non-working slider
+
+To avoid the problem described above, do as indicated in the code below:
+```
+...
+        <div class="YourSliderName_1">
             <div>1</div>
             <div>2</div>
             <div>3</div>
             <div>4</div>
-            <div>...</div>
-            <div>n</div>
         </div>
-    </div>
-</div>
+
+        <div class="YourSliderName_2">
+            <div>1</div>
+            <div>2</div>
+            <div>3</div>
+            <div>4</div>
+            <div>5</div>
+            <div>6</div>
+            <div>7</div>
+            <div>8</div>
+        </div>
+
+    </body>
+    <script>
+    
+        startGallery(".YourSliderName_1,
+        
+            YourSettings_1 = {
+                transition: "ease-in-out",
+                dots: true,
+                arrows: true,
+                endlessSlider: false,
+                speedAnimation: 500,
+            }
+
+        );
+
+        startGallery(".YourSliderName_2",
+
+            YourSettings_2 = {
+                transition: "ease-in",
+                dots: true,
+                arrows: true,
+                endlessSlider: true,
+                speedAnimation: 200,
+            }
+        
+        );
+    </script>
+</html>
+```
+You can not configure the slider, but just call the function where you passed the slider class name:
+
+```
+...
+        startGallery(".YourSliderName");
+    </script>
+</html>
 ```
 
-2. Append in HTML document after tags ```<bodу>...</bodу>``` script tag:
+2. Insert the line with the JavaScript file in the ```<head>...</head>``` tags:
 
 ```
-<script type="text/javascript" src="scripts/script.js"></script>
+<script type="text/javascript" src="ds_slider/ds_slider.js"></script>
 ```
-as shown in the picture:
+as shown in the code:
 
-![photo](pic/2.png)
+```
+<html>
+    <head>
+        ...
+        <script type="text/javascript" src="ds_slider/ds_slider.js"></script>
+    </head>
+    <body>
+        <div class="YourSliderName">
+            <div>1</div>
+            <div>2</div>
+            <div>3</div>
+            <div>4</div>
+        </div>
+    </body>
+    <script>
+        startGallery(".YourSliderName");
+    </script>
+</html>
+```
+and only then after ```</body>``` tag insert the ```<script>``` tag, where you call the function to run the slider, like in the example above.
 
 3. Configure the slider in the CSS file:
 
@@ -43,22 +119,49 @@ as shown in the picture:
     --dots-size: 15px;  //default size a dots
 }
 ```
-4. Configure the slider in the js file:
+4. Configure the slider to your liking:
 ```
-const settings = {
-    transition: "ease-in-out", // default transition for animation
-    dots: "on",                // default toggle value
-    speedAnimation: 500,       // default speed animation
+settings = {
+
+    transition: "ease-in-out",   // animation type for the slider scrolling
+    dots: true,                  // dots, which are responsible for the indication of the active slide
+    dotsEffect: "dot-default",   // appearance of dots
+    arrows: true,                // arrows toggle
+    endlessSlider: true,         // endless slider toggle
+    speedAnimation: 350,         // speed of scrolling animation
+
 }
+```
+Then enter all the settings into the slider function, as shown in the example below:
+```
+        ...
+    </body>
+    <script>
+        startGallery(".YourSliderName",
+        
+            exampleSettings = {
+
+                transition: "ease-in",
+                dots: false,
+                dotsEffect: "dot-default",
+                arrows: true,
+                endlessSlider: false,
+                speedAnimation: 850,
+
+            }
+        
+        );
+    </script>
+</html>
 ```
 5. All ready to go
 
 ## What on stady "work in progress"?
 
-- [ ] Support two or more sliders
+- [X] Support two or more sliders
 - [ ] Dots navigation
-- [ ] Arrow toggle
-- [ ] Endless slider toggle
+- [X] Arrow toggle
+- [X] Endless slider toggle
 - [ ] Swipes on smartphones
 
 At the moment I am actively working on it and it works, but it requires some improvements. For the test versions of the slider, I created a separate branch for experiments, and all updates will be uploaded there, and only stable versions will get into this branch.
