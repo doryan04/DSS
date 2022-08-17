@@ -60,23 +60,14 @@
 
     </body>
     <script>
-        startGallery(".slider", 
-        
-            settings = {
-                transition: "ease-in-out",
-                dots: true,
-                arrows: true,
-                endlessSlider: false,
-                speedAnimation: 500,
-            }
-        
-        );
+        DSS_start(".slider");
 
-        startGallery(".new-slider", 
+        DSS_start(".new-slider", 
 
-            settings = {
+            settings2 = {
                 transition: "ease-in",
                 dots: true,
+                dotsEffect: "dot-pull",
                 arrows: true,
                 endlessSlider: true,
                 speedAnimation: 200,
