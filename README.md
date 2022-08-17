@@ -164,6 +164,10 @@ Then enter all the settings into the slider function, as shown in the example be
 - [X] Endless slider toggle
 - [ ] Swipes on smartphones
 
+At the moment I am actively working on it and it works, but it requires some improvements. For the test versions of the slider, I created a separate branch for experiments, and all updates will be uploaded there, and only stable versions will get into this branch.
+
+![photo](/pic/Screenshot%20from%202022-08-15%2019-59-49.png)
+
 ## Did you find the bug? Make sure to [leave an issue](https://github.com/doryan04/DSS/issues/new) in case of any problems.
 
 ### Check out @tfk004 on Telegram. https://t.me/tfk004
