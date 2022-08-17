@@ -24,55 +24,69 @@
                 align-items: center;
                 justify-content: center;
             }
-            .new-slider{
-                margin: 10%;
-                display:flex;
-                flex-direction:row;
+
+            .logo{
+                top: 5%;
+                position:absolute;
+                width: 387.23px;
+                height: 157.12px;
+                background-image: url(png/dss.png);
+                transform: scale(0.8);
+
+            }
+
+            .presentation{
+                display: flex;
                 align-items: center;
                 justify-content: center;
-                height: var(--height);
-                width: 100%;
+            }
+            .text{
+                display: flex;
+                position: absolute;
+                top: 23.5%;
+                font-family: 'Arial', sans-serif;
+                font-style: normal;
+                font-weight: 300;
+                font-size: 14pt;
+                line-height: 17pt;
+                /* identical to box height */
+
+                letter-spacing: 2em;
+                text-transform: uppercase;
+
+            }
+            #light{
+
+                color: #FFFFFF;
+
+            }
+            #blueGradient{
+
+                color: transparent;    
+	            -webkit-background-clip: text;
+
+                background-clip: text;
+	            background-image: linear-gradient(to right, #60A7E3, #9CFBFF);
+
+            }
+            .sliderMargin{
+                margin: 40% 10%;
             }
 
         </style>
-        <script type="text/javascript" src="scripts/script.js"></script>
+        <script type="text/javascript" src="ds_slider/ds_slider.js"></script>
     </head>
     <body class="presentation">
-        <!-- <div class="logo"></div>
-        <div class="text"> <div id="light">doryan&thinsp;</div><div id="blueGradient">simple slider</div></div> -->
-        <div class="slider">
+        <div class="logo"></div>
+        <div class="text"> <div id="light">doryan&thinsp;</div><div id="blueGradient">simple slider</div></div>
+        <div class="slider sliderMargin">
             <div>1</div>
             <div>2</div>
             <div>3</div>
             <div>4</div>
         </div>
-
-        <div class="new-slider">
-            <div>1</div>
-            <div>2</div>
-            <div>3</div>
-            <div>4</div>
-            <div>5</div>
-            <div>6</div>
-            <div>7</div>
-            <div>8</div>
-        </div>
-
     </body>
     <script>
         DSS_start(".slider");
-
-        DSS_start(".new-slider", 
-
-            settings2 = {
-                transition: "ease-in",
-                dots: true,
-                dotsEffect: "dot-pull",
-                arrows: true,
-                endlessSlider: true,
-                speedAnimation: 200,
-            }
-
-        );
     </script>
 </html>
