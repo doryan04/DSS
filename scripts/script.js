@@ -1,10 +1,45 @@
-function startGallery(sliderClassName, settings){
+function DSS_start(sliderClassName, settings){
+
+    // ===================== //
+    // Стандартные настройки //
+    // ===================== //
+
+    // Лучше их не трогай пожалуйста //
+
+    var defaultSettings = {
+
+        transition: "ease-in-out",
+        dots: true,
+        dotsEffect: "dot-default",
+        arrows: true,
+        endlessSlider: true,
+        speedAnimation: 350,
+
+    }
+
+    // Проверка на наличие всех параметров слайдера, где в противном случае применяется стандартные параметры //
+    
+    if (settings === undefined){ settings = defaultSettings; }
+
+    else{
+
+        for (var defaultParameter in defaultSettings){
+
+            if (settings[defaultParameter] === undefined || settings[defaultParameter] === null) { 
+
+                settings[defaultParameter] = defaultSettings[defaultParameter]; 
+
+            }
+
+        }
+
+    }
 
     // ========== //
     // Переменные //
     // ========== //
 
-    var indexItem = 0; var indexActiveItem = 0;
+    var indexItem = 1; var indexActiveItem = 1;
 
     // ======================= //
     // Вспомогательные функции //
@@ -87,7 +122,7 @@ function startGallery(sliderClassName, settings){
         let sliderWindow = document.createElement('div');
     
         sliderWindow.classList.add("slider-container")
-    
+
         track.before(sliderWindow); sliderWindow.append(track);
 
         // Настройка, отвечающая за безграничный скролл слайдера //
@@ -164,7 +199,7 @@ function startGallery(sliderClassName, settings){
             
                             let dot = document.createElement("div");
                 
-                            dot.classList = "dot"; dot.id = i;
+                            dot.classList = "dot"; dot.id = i + 1;
                             dot.style.transition = settings.speedAnimation + "ms " + settings.transition;
     
                             dotsBarContainer.append(dot);
@@ -179,7 +214,7 @@ function startGallery(sliderClassName, settings){
             
                 preparingDotsBar();
             
-                document.querySelectorAll(sliderClassName + " .dots-bar .dot")[0].classList.add("dot-active");
+                document.querySelectorAll(sliderClassName + " .dots-bar .dot")[0].classList.add(settings.dotsEffect);
     
                 break;
     
@@ -295,7 +330,7 @@ function startGallery(sliderClassName, settings){
 
                 indexItem--;
 
-                sliderTrack.style.transform = "translateX(-"+ ((slide) * (indexItem)) +"px)";
+                sliderTrack.style.transform = "translateX(-"+ ((slide) * indexItem) +"px)";
 
                 setTimeout(function(){
 
@@ -305,7 +340,7 @@ function startGallery(sliderClassName, settings){
                     
                         indexItem = countSlides - 1;
 
-                        sliderTrack.style.transform = "translateX(-"+ ((slide) * (indexItem)) +"px)";
+                        sliderTrack.style.transform = "translateX(-"+ ((slide) * indexItem) +"px)";
 
                     }
             
@@ -323,11 +358,11 @@ function startGallery(sliderClassName, settings){
 
                     sliderTrack.style.transition = null;
 
-                    if (indexItem == countSlides && settings.endlessSlider === true){
+                    if (indexItem === countSlides && settings.endlessSlider === true){
 
                         indexItem = 1;
                 
-                        sliderTrack.style.transform = "translateX(-"+ ((slide) * (indexItem)) +"px)";
+                        sliderTrack.style.transform = "translateX(-"+ ((slide) * indexItem) +"px)";
                 
                     }
         
@@ -339,9 +374,9 @@ function startGallery(sliderClassName, settings){
 
     }
 
-    // =============================== //
-    // Индентификация активного слайда //
-    // =============================== //
+    // ==================================== //
+    // Функция, определяющая активный слайд //
+    // ==================================== //
 
     function ActiveSlide(item, count, direction){
 
@@ -386,9 +421,9 @@ function startGallery(sliderClassName, settings){
 
     function dotsAnimation(dots, indexDot){
 
-        dots[indexDot].classList.remove("dot-active");
+        dots[indexDot].classList.remove(settings.dotsEffect);
                 
-        dots[document.querySelectorAll(sliderClassName + " " + ".slider-track" + " div.slide.active")[0].getAttribute("indexitem")].classList.add("dot-active");
+        dots[document.querySelectorAll(sliderClassName + " " + ".slider-track" + " div.slide.active")[0].getAttribute("indexitem")].classList.add(settings.dotsEffect);
 
     }
 
