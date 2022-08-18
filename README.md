@@ -156,13 +156,17 @@ Then enter all the settings into the slider function, as shown in the example be
 ```
 5. All ready to go
 
+## At the moment the slider is built into my website and works great:
+
+![photo](./pic/site_update.png)
+
+I'll be working on the AutoPlay option soon
+
 ## What on stady "work in progress"?
 
-- [X] Support two or more sliders
 - [ ] Dots navigation
-- [X] Arrow toggle
-- [X] Endless slider toggle
 - [ ] Swipes on smartphones
+- [ ] AutoPlay
 
 ## Did you find the bug? Make sure to [leave an issue](https://github.com/doryan04/DSS/issues/new) in case of any problems.
 
