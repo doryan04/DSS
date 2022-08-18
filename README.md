@@ -158,7 +158,7 @@ Then enter all the settings into the slider function, as shown in the example be
 
 ## At the moment the slider is built into my website and works great:
 
-![photo](./pic/site_update.png)
+![photo](pic/site_update.png)
 
 I'll be working on the AutoPlay option soon
 
