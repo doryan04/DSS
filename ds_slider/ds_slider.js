@@ -167,13 +167,13 @@ function DSS_start(sliderClassName, settings){
     
         function preparingButtons(){
     
-            let arrowRight = document.createElement("button");
-            let arrowLeft = document.createElement("button");
+            var slideRight = document.createElement("button");
+            var slideLeft = document.createElement("button");
         
-            arrowRight.classList = "button"; arrowRight.id = "right";
-            arrowLeft.classList = "button"; arrowLeft.id = "left";
+            slideRight.classList = "button"; slideRight.id = "right";
+            slideLeft.classList = "button"; slideLeft.id = "left";
     
-            container.append(arrowRight); container.prepend(arrowLeft);
+            container.append(slideRight); container.prepend(slideLeft);
         
         }
     
