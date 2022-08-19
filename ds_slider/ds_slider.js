@@ -8,12 +8,15 @@ function DSS_start(sliderClassName, settings){
 
     var defaultSettings = {
 
-        transition: "ease-in-out",
+        autoPlaySlider: true,
+        autoPlayDelay: 5000,
+        autoPlayDirrection: "right",
+        arrows: true,
         dots: true,
         dotsEffect: "dot-default",
-        arrows: true,
         endlessSlider: true,
-        speedAnimation: 350,
+        transition: "ease-in-out",
+        speedAnimation: 400,
 
     }
 
@@ -251,57 +254,126 @@ function DSS_start(sliderClassName, settings){
 
     function sliderNavigation(){
 
-        let left = document.querySelector(sliderClassName + " #left");
-        let right = document.querySelector(sliderClassName + " #right");
-        let items = document.querySelectorAll(sliderClassName + " .slider-track .slide");
+        // Переменные, необходимые для данной функции //
 
-        const countSlides = items.length - 1; 
+        var items = document.querySelectorAll(sliderClassName + " .slider-track .slide");
+        var countSlides = items.length - 1;
 
-        function leftArrow(){
+        // Если стрелочки включены, то они видимы и рабочие //
 
-            right.onclick = null;
+        if (settings.arrows === true){
 
-            slideScroll(left.id, countSlides, items); ActiveSlide(items, countSlides, left.id);
+            // Переменные, нужные для стрелочек //
 
-            setTimeout(() => {right.onclick = throttle(rightArrow, settings.speedAnimation);}, settings.speedAnimation);
+            var left = document.querySelector(sliderClassName + " #left");
+            var right = document.querySelector(sliderClassName + " #right");
 
-            if (indexItem == 0 && settings.endlessSlider === false){
+            // ================================================ //
+            // Автопрокрутка слайдера, когда стрелочки включены //
+            // ================================================ //
 
-                left.onclick = null;
+            if(settings.autoPlaySlider === true){
+
+                // Функция автопрокрутки при включённых стрелочках //
+
+                function autoPlayWithArrows(){
+
+                    left.onclick = null;
+                    right.onclick = null;
+    
+                    slideScroll(settings.autoPlayDirrection, countSlides, items); ActiveSlide(items, countSlides, settings.autoPlayDirrection);
+    
+                    setTimeout(() => {  left.onclick = throttle(slideLeft, settings.speedAnimation);
+                                        right.onclick = throttle(slideRight, settings.speedAnimation);}, 
+                                        settings.speedAnimation);
+    
+                }
+
+                // Зацикливание функции автопрокрутки //
+    
+                autoPlayInterval = setInterval(autoPlayWithArrows, settings.autoPlayDelay);
 
             }
 
-        }
+            // Слайд влево //
 
-        function rightArrow(){
+            function slideLeft(){
 
-            left.onclick = null;
-
-            slideScroll(right.id, countSlides, items); ActiveSlide(items, countSlides, right.id);
-
-            setTimeout(() => {left.onclick = throttle(leftArrow, settings.speedAnimation);}, settings.speedAnimation);
-
-            if (indexItem == document.querySelectorAll(sliderClassName + " .slider-container .slider-track .slide").length - 1 && settings.endlessSlider === false){
-
+                if (settings.autoPlaySlider === true){ clearInterval(autoPlayInterval); } // Если включена автопрокрутка, то интервал обнуляется для красивой работы слайдера
+                
                 right.onclick = null;
+    
+                slideScroll(left.id, countSlides, items); ActiveSlide(items, countSlides, left.id);
+    
+                setTimeout(() => {right.onclick = throttle(slideRight, settings.speedAnimation);}, settings.speedAnimation);
+    
+                if (indexItem == 0 && settings.endlessSlider === false){
+    
+                    left.onclick = null;
+    
+                }
 
+                if (settings.autoPlaySlider === true){ autoPlayInterval = setInterval(autoPlayWithArrows, settings.autoPlayDelay); } // Если включена автопрокрутка, то интервал запускается
+    
             }
+
+            // Слайд вправо //
+    
+            function slideRight(){
+
+                if (settings.autoPlaySlider === true){ clearInterval(autoPlayInterval); } // Если включена автопрокрутка, то интервал обнуляется для красивой работы слайдера
+    
+                left.onclick = null;
+    
+                slideScroll(right.id, countSlides, items); ActiveSlide(items, countSlides, right.id);
+    
+                setTimeout(() => {left.onclick = throttle(slideLeft, settings.speedAnimation);}, settings.speedAnimation);
+    
+                if (indexItem == document.querySelectorAll(sliderClassName + " .slider-container .slider-track .slide").length - 1 && settings.endlessSlider === false){
+    
+                    right.onclick = null;
+    
+                }
+
+                if (settings.autoPlaySlider === true){ autoPlayInterval = setInterval(autoPlayWithArrows, settings.autoPlayDelay); } // Если включена автопрокрутка, то интервал запускается
+    
+            }
+            
+            // ================= //
+            // События на кнопки //
+            // ================= //
+
+            left.onclick = throttle(slideLeft, settings.speedAnimation);
+            right.onclick = throttle(slideRight, settings.speedAnimation);
 
         }
 
-        left.onclick = throttle(leftArrow, settings.speedAnimation);
-        right.onclick = throttle(rightArrow, settings.speedAnimation);
+        // ============================================================== //
+        // Зацикливание функции автопрокрутки, если стрелочки не включены //
+        // ============================================================== //
 
+        if (settings.autoPlaySlider === true && settings.arrows === false){
+
+            setInterval(function(){
+
+                slideScroll(settings.autoPlayDirrection, countSlides, items); ActiveSlide(items, countSlides, settings.autoPlayDirrection);
+
+            }, settings.autoPlayDelay);
+
+        }
+        
     }
 
-    // Так же настройка стрелочек, но отвечающая за отключение навигации посредством отключения стрелочек //
+    if (settings.arrows === false && settings.autoPlaySlider === false){
 
-    switch(settings.arrows){ 
+        alert("Please turn on either autoplay or arrows");
 
-        case true: sliderNavigation(); break;
-        case false: break;
-    
-    } 
+    } else { 
+        
+        if (settings.autoPlayDelay < settings.speedAnimation) { alert("Please change the value of autoPlayDelay so that it is greater than speedAnimation"); }
+        else{ sliderNavigation(); }
+
+    }
 
     // ====================================== //
     // Запуск анимации пролистывания слайдера //
