@@ -256,8 +256,8 @@ function DSS_start(sliderClassName, settings){
 
         // Переменные, необходимые для данной функции //
 
-        var items = document.querySelectorAll(sliderClassName + " .slider-track .slide");
-        var countSlides = items.length - 1;
+        let items = document.querySelectorAll(sliderClassName + " .slider-track .slide");
+        let countSlides = items.length - 1;
 
         // Если стрелочки включены, то они видимы и рабочие //
 
@@ -265,8 +265,8 @@ function DSS_start(sliderClassName, settings){
 
             // Переменные, нужные для стрелочек //
 
-            var left = document.querySelector(sliderClassName + " #left");
-            var right = document.querySelector(sliderClassName + " #right");
+            let left = document.querySelector(sliderClassName + " #left");
+            let right = document.querySelector(sliderClassName + " #right");
 
             // ================================================ //
             // Автопрокрутка слайдера, когда стрелочки включены //
@@ -291,7 +291,7 @@ function DSS_start(sliderClassName, settings){
 
                 // Зацикливание функции автопрокрутки //
     
-                autoPlayInterval = setInterval(autoPlayWithArrows, settings.autoPlayDelay);
+                var autoPlayInterval = setInterval(autoPlayWithArrows, settings.autoPlayDelay); 
 
             }
 
