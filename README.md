@@ -1,6 +1,6 @@
 # DSS (Doryan Simple Slider)
 
-![photo](pic/DSS.png)
+![photo](png/dss.png)
 
 Slider on native javascript and contains nothing extra.
 
@@ -47,29 +47,42 @@ To avoid the problem described above, do as indicated in the code below:
     </body>
     <script>
     
-        startGallery(".YourSliderName_1,
-        
-            YourSettings_1 = {
-                transition: "ease-in-out",
-                dots: true,
+        DSS_start(".YourSliderName_1",
+            
+            yourSettings1 = {
+
+                autoPlaySlider: true,
+                autoPlayDelay: 5000,
+                autoPlayDirrection: "right",
                 arrows: true,
-                endlessSlider: false,
-                speedAnimation: 500,
-            }
-
-        );
-
-        startGallery(".YourSliderName_2",
-
-            YourSettings_2 = {
-                transition: "ease-in",
                 dots: true,
-                arrows: true,
+                dotsEffect: "dot-pull",
                 endlessSlider: true,
-                speedAnimation: 200,
+                transition: "ease-in-out",
+                speedAnimation: 500,
+
             }
-        
+
         );
+
+        DSS_start(".YourSliderName_2",
+            
+            yourSettings2 = {
+
+                autoPlaySlider: true,
+                autoPlayDelay: 1000,
+                autoPlayDirrection: "left",
+                arrows: true,
+                dots: true,
+                dotsEffect: "dot-pull",
+                endlessSlider: true,
+                transition: "ease-in-out",
+                speedAnimation: 350,
+
+            }
+
+        );
+
     </script>
 </html>
 ```
@@ -77,7 +90,7 @@ You can not configure the slider, but just call the function where you passed th
 
 ```
 ...
-        startGallery(".YourSliderName");
+        DSS_start(".YourSliderName");
     </script>
 </html>
 ```
@@ -104,7 +117,7 @@ as shown in the code:
         </div>
     </body>
     <script>
-        startGallery(".YourSliderName");
+        DSS_start(".YourSliderName");
     </script>
 </html>
 ```
@@ -123,11 +136,14 @@ and only then after ```</body>``` tag insert the ```<script>``` tag, where you c
 ```
 settings = {
 
-    transition: "ease-in-out",   // animation type for the slider scrolling
+    autoPlaySlider: true,        // AutoPlay toggle
+    autoPlayDelay: 1000,         // AutoPlay delay
+    autoPlayDirrection: "left",  // AutoPlay dirrection
+    arrows: true,                // arrows toggle
     dots: true,                  // dots, which are responsible for the indication of the active slide
     dotsEffect: "dot-default",   // appearance of dots
-    arrows: true,                // arrows toggle
     endlessSlider: true,         // endless slider toggle
+    transition: "ease-in-out",   // animation type for the slider scrolling
     speedAnimation: 350,         // speed of scrolling animation
 
 }
@@ -137,16 +153,19 @@ Then enter all the settings into the slider function, as shown in the example be
         ...
     </body>
     <script>
-        startGallery(".YourSliderName",
+        DSS_start(".YourSliderName",
         
             exampleSettings = {
 
-                transition: "ease-in",
-                dots: false,
-                dotsEffect: "dot-default",
+                autoPlaySlider: true,
+                autoPlayDelay: 1000,
+                autoPlayDirrection: "left",
                 arrows: true,
-                endlessSlider: false,
-                speedAnimation: 850,
+                dots: true,
+                dotsEffect: "dot-default",
+                endlessSlider: true,
+                transition: "ease-in-out",
+                speedAnimation: 350,
 
             }
         
@@ -166,7 +185,7 @@ I'll be working on the AutoPlay option soon
 
 - [ ] Dots navigation
 - [ ] Swipes on smartphones
-- [ ] AutoPlay
+- [X] AutoPlay
 
 ## Did you find the bug? Make sure to [leave an issue](https://github.com/doryan04/DSS/issues/new) in case of any problems.
 
