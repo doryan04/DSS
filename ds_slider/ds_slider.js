@@ -23,26 +23,15 @@ function DSS_start(sliderClassName, settings){
     // Проверка на наличие всех параметров слайдера, где в противном случае применяется стандартные параметры //
     
     if (settings === undefined){ settings = defaultSettings; }
-
     else{
 
         for (var defaultParameter in defaultSettings){
 
-            if (settings[defaultParameter] === undefined || settings[defaultParameter] === null) { 
-
-                settings[defaultParameter] = defaultSettings[defaultParameter]; 
-
-            }
+            if (settings[defaultParameter] === undefined || settings[defaultParameter] === null) { settings[defaultParameter] = defaultSettings[defaultParameter]; }
 
         }
 
     }
-
-    // ========== //
-    // Переменные //
-    // ========== //
-
-    var indexItem = 1; var indexActiveItem = 1;
 
     // ======================= //
     // Вспомогательные функции //
@@ -248,6 +237,13 @@ function DSS_start(sliderClassName, settings){
     
     const sliderTrack = preparingGallery();
 
+    // ========== //
+    // Переменные //
+    // ========== //
+    
+    if (settings.endlessSlider === true){ var indexItem = 1; } else { var indexItem = 0; }
+    let dots = document.querySelectorAll(sliderClassName + " .dots-bar .dot");
+
     // ============================================ //
     // Функция, отвечающая за навигацию по слайдеру //
     // ============================================ //
@@ -281,7 +277,7 @@ function DSS_start(sliderClassName, settings){
                     left.onclick = null;
                     right.onclick = null;
     
-                    slideScroll(settings.autoPlayDirrection, countSlides, items); ActiveSlide(items, countSlides, settings.autoPlayDirrection);
+                    slideScroll(settings.autoPlayDirrection, countSlides, items);
     
                     setTimeout(() => {  left.onclick = throttle(slideLeft, settings.speedAnimation);
                                         right.onclick = throttle(slideRight, settings.speedAnimation);}, 
@@ -302,8 +298,8 @@ function DSS_start(sliderClassName, settings){
                 if (settings.autoPlaySlider === true){ clearInterval(autoPlayInterval); } // Если включена автопрокрутка, то интервал обнуляется для красивой работы слайдера
                 
                 right.onclick = null;
-    
-                slideScroll(left.id, countSlides, items); ActiveSlide(items, countSlides, left.id);
+
+                slideScroll(left.id, countSlides, items);
     
                 setTimeout(() => {right.onclick = throttle(slideRight, settings.speedAnimation);}, settings.speedAnimation);
     
@@ -324,8 +320,8 @@ function DSS_start(sliderClassName, settings){
                 if (settings.autoPlaySlider === true){ clearInterval(autoPlayInterval); } // Если включена автопрокрутка, то интервал обнуляется для красивой работы слайдера
     
                 left.onclick = null;
-    
-                slideScroll(right.id, countSlides, items); ActiveSlide(items, countSlides, right.id);
+                
+                slideScroll(right.id, countSlides, items);
     
                 setTimeout(() => {left.onclick = throttle(slideLeft, settings.speedAnimation);}, settings.speedAnimation);
     
@@ -381,109 +377,69 @@ function DSS_start(sliderClassName, settings){
 
     function slideScroll(direction, countSlides, items){
 
-        if (direction == "left" && indexItem > 0){ animationSlide(direction, countSlides, items); } 
-        else if (direction == "right" && indexItem < countSlides){ animationSlide(direction, countSlides, items); }
+        if (direction == "left" && indexItem > 0){ changeSlide(direction, countSlides, items); } 
+        else if (direction == "right" && indexItem < countSlides){ changeSlide(direction, countSlides, items); }
 
     }
 
-    // =============================== //
-    // Анимация пролистывания слайдера //
-    // =============================== //
+    // ============= //
+    // Пролистование //
+    // ============= //
 
-    function animationSlide(direction, countSlides, items){
-
-        const slide = items[0].clientWidth;
+    function scrollingSlide(direction, countSlides, items, width){
 
         sliderTrack.style.transition = settings.speedAnimation + "ms " + settings.transition;
-    
-        switch(direction){
 
-            case "left":
+        if (Object.is("right", direction) === true){ indexItem++; } else { indexItem--;};
 
-                indexItem--;
+        sliderTrack.style.transform = "translateX(-"+ ((width) * indexItem) +"px)";
 
-                sliderTrack.style.transform = "translateX(-"+ ((slide) * indexItem) +"px)";
+        setTimeout(function(){
 
-                setTimeout(function(){
-
-                    sliderTrack.style.transition = null;
-
-                    if (indexItem == 0 && settings.endlessSlider === true){
-                    
-                        indexItem = countSlides - 1;
-
-                        sliderTrack.style.transform = "translateX(-"+ ((slide) * indexItem) +"px)";
-
-                    }
+            sliderTrack.style.transition = null;
             
-                }, settings.speedAnimation);
-            
-                break;
-
-            case "right":
-
-                indexItem++;
-
-                sliderTrack.style.transform = "translateX(-"+ ((slide) * indexItem) +"px)";
-
-                setTimeout(function(){
-
-                    sliderTrack.style.transition = null;
-
-                    if (indexItem === countSlides && settings.endlessSlider === true){
-
-                        indexItem = 1;
+            if (Object.is("right", direction) === true){ 
                 
-                        sliderTrack.style.transform = "translateX(-"+ ((slide) * indexItem) +"px)";
-                
-                    }
+                if (indexItem == countSlides && settings.endlessSlider === true){ indexItem = 1; }
         
-                }, settings.speedAnimation)
+            } else {
 
-            break;
+                if (indexItem == 0 && settings.endlessSlider === true){ indexItem = countSlides - 1; }
+
+            };
+
+            sliderTrack.style.transform = "translateX(-"+ ((width) * indexItem) +"px)";
+
+        }, settings.speedAnimation);
+
+        if (Object.is("right", direction) === true){
+
+            if (indexItem == countSlides && settings.endlessSlider === true){ items[1].classList.add("active"); } 
+            else { items[indexItem].classList.add("active"); };
+
+        } else {
+
+            if (indexItem == 0 && settings.endlessSlider === true){ items[countSlides - 1].classList.add("active"); } 
+            else { items[indexItem].classList.add("active"); };
 
         }
 
     }
 
-    // ==================================== //
-    // Функция, определяющая активный слайд //
-    // ==================================== //
+    // ==================== //
+    // Функция смены слайда //
+    // ==================== //
 
-    function ActiveSlide(item, count, direction){
+    function changeSlide(direction, countSlides, items){
 
-        let i = document.querySelectorAll(sliderClassName + " " + ".slider-track" + " div.slide.active")[0].getAttribute("indexitem");
-        let dots = document.querySelectorAll(sliderClassName + " .dots-bar .dot");
+        const slideWidth = items[0].clientWidth;
+        let i = document.querySelectorAll(sliderClassName + " " + ".slider-track" + " div.slide.active")[0].getAttribute("indexitem"); // Индекс активного слайда для корректной работы индикации
 
-        item[indexActiveItem].classList.remove("active");
+        items[indexItem].classList.remove("active");
+    
+        scrollingSlide(direction, countSlides, items, slideWidth);
 
-        if(direction == "left" && settings.endlessSlider === true){
-
-            if (indexActiveItem > 1) { indexActiveItem--; }
-            else { indexActiveItem = count - 1; }
-
-        } else if (direction == "left" && settings.endlessSlider === false){
-
-            if (indexActiveItem > 0) { indexActiveItem--; }
-
-        }
-
-        if(direction == "right" && settings.endlessSlider === true){ 
-
-            if (indexActiveItem < count - 1) { indexActiveItem++; }
-            else { indexActiveItem = 1; }
-
-        } else if (direction == "right" && settings.endlessSlider === false){
-
-            if (indexActiveItem < count) { indexActiveItem++; }
-
-        }
-
-        item[indexActiveItem].classList.add("active");
-
-        try { dotsAnimation(dots, i); } 
-        
-        catch { return; }
+        if (settings.dots === true){ dotsAnimation(dots, i); }
 
     }
 
