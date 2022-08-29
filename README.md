@@ -189,4 +189,4 @@ I'll be working on the AutoPlay option soon
 
 ## Did you find the bug? Make sure to [leave an issue](https://github.com/doryan04/DSS/issues/new) in case of any problems.
 
-### Check out @tfk004 on Telegram. https://t.me/tfk004
+### Check out @tfk004 on Telegram. https://t.me/doryanProjects
