@@ -69,6 +69,31 @@
 	            background-image: linear-gradient(to right, #60A7E3, #9CFBFF);
 
             }
+
+            .thumbTrackContainer{
+                overflow: hidden;
+                position: relative;
+                margin-top: 5px;
+                display: flex;
+                background-color: #60A7E3;
+                width: var(--width);
+                height: calc(var(--height)/2.5);
+            }
+
+            .thumbTrack{
+                position: absolute;
+                display: flex;
+                width: max-content;
+                height: inherit;
+            }
+
+            .thumbTrack > div{
+                margin: 5px;
+                border-radius: 5px;
+                background-color: deeppink;
+                width: calc((var(--width) - (5px * 2 * 3))/3);
+                height: calc((((var(--width) - (5px * 2 * 3))/3) * var(--height))/var(--width));
+            }
             
             .sliderMargin1{
                 margin: 30vh 0 0 0;
@@ -100,17 +125,14 @@
             <div>3</div>
             <div>4</div>
         </div>
-
-        <div class="slider_new sliderMargin2">
-            <div>1</div>
-            <div>2</div>
-            <div>3</div>
-            <div>4</div>
-            <div>5</div>
-            <div>6</div>
-            <div>7</div>
-        </div>
-
+        <div class="thumbTrackContainer">
+            <div class="thumbTrack">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </section>
     </body>
     <script>
 
@@ -126,25 +148,8 @@
                 dotsEffect: "dot-pull",
                 endlessSlider: false,
                 transition: "ease-in-out",
+                presentationMode: true,
                 speedAnimation: 500,
-
-            }
-
-        );
-
-        DSS_start(".slider_new",
-            
-            settings = {
-
-                autoPlaySlider: true,
-                autoPlayDelay: 1000,
-                autoPlayDirrection: "left",
-                arrows: true,
-                dots: true,
-                dotsEffect: "dot-pull",
-                endlessSlider: true,
-                transition: "ease-in-out",
-                speedAnimation: 350,
 
             }
 

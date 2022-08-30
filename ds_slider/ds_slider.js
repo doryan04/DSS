@@ -16,6 +16,7 @@ function DSS_start(sliderClassName, settings){
         dotsEffect: "dot-default",
         endlessSlider: true,
         transition: "ease-in-out",
+        presentationMode: false,
         speedAnimation: 400,
 
     }
@@ -75,6 +76,39 @@ function DSS_start(sliderClassName, settings){
 
         }
 
+    }
+
+    // эксперементальная фича //
+
+    if (settings.presentationMode === true){
+        let thumbTrack = document.querySelectorAll(".thumbTrack")[0];
+        var x0;
+        var x1;
+
+        thumbTrack.onmouseenter = thumbTrack.onmouseleave = function(event){
+            event.preventDefault();
+            var touch = false;
+            if(event.type == "mouseenter") {
+                thumbTrack.addEventListener("mousedown", (e) => {
+                    x0 = e.pageX - thumbTrack.offsetLeft;
+                    touch = true;
+                })
+                thumbTrack.onmousemove = (e) => {
+                    e.preventDefault();
+                    if (touch == true){
+                        x1 = e.pageX;
+                        console.log(x1);
+                        thumbTrack.style.left = (x1 - x0) + "px";
+                    }
+                }
+                thumbTrack.onmouseup = () => {
+                    touch = false;
+                }
+            }
+            else{
+                touch = false;
+            }
+        }
     }
 
     // ============================================================================================================= //
