@@ -78,66 +78,6 @@ function DSS_start(sliderClassName, settings){
 
     }
 
-    // эксперементальная фича //
-
-    // if (settings.presentationMode === true){
-    //     let index = 0;
-    //     let thumbTrack = document.querySelectorAll(".thumbTrack")[0];
-    //     let thumbContainer = document.querySelectorAll(".thumbTrackContainer")[0];
-    //     let thumbSlide = document.querySelectorAll(".thumbTrack > div")[0];
-    //     let marginSlide = parseInt(getComputedStyle(thumbSlide, true).margin);
-    //     function transition(animation){
-    //         thumbTrack.style.transition = `${animation} ${settings.speedAnimation/2}ms`;
-    //         thumbTrack.style.left = `${-((thumbSlide.offsetWidth + (marginSlide * 2)) * index)}px`;
-    //         setTimeout(() => {thumbTrack.style.transition = `none`;}, settings.speedAnimation/2);
-    //     }
-    //     thumbTrack.onmouseenter = thumbTrack.onmouseleave = function(event){
-    //         event.preventDefault();
-    //         var touch = false;
-    //         if(event.type == "mouseenter") {
-    //             thumbTrack.addEventListener("mousedown", (e) => {
-    //                 startPosX = ((e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2)) - thumbTrack.offsetLeft);
-    //                 startContPosX = ((e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2))); 
-    //                 touch = true;
-    //             })
-    //             thumbTrack.onmousemove = (e) => {
-    //                 e.preventDefault();
-    //                 if (touch == true){
-    //                     mousePosX = e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2);
-    //                     thumbTrack.style.left = `${(mousePosX - startPosX)}px`;
-    //                     if (Math.abs(mousePosX - startContPosX) >= (thumbSlide.clientWidth * (2 / 3))){
-    //                         if ((mousePosX - startContPosX) > 0 && index > 0){
-    //                             index--;
-    //                             transition("ease-out");
-    //                         }
-    //                         else if ((mousePosX - startContPosX) > 0 && index == 0){
-    //                             transition(settings.transition);
-    //                         }
-    //                         else if ((mousePosX - startContPosX) < 0 && index < 1){
-    //                             index++;
-    //                             transition("ease-out");
-    //                         } 
-    //                         else {
-    //                             transition(settings.transition);
-    //                         }
-    //                         touch = false;
-    //                     }
-    //                 }
-    //             }
-    //             thumbTrack.onmouseup = () => {
-    //                 if (Math.abs(mousePosX - startContPosX) < (thumbSlide.clientWidth * (2 / 3))){
-    //                     transition(settings.transition);
-    //                 }
-    //                 touch = false;
-    //             }
-    //         }
-    //         else{
-    //             transition(settings.transition);
-    //             touch = false;
-    //         }
-    //     }
-    // }
-
     // ============================================================================================================= //
     // Функция, отвечающая за подготовку галереи к работе и инициализация объектов путём присвайвания класса "slide" //
     // ============================================================================================================= //
@@ -516,4 +456,50 @@ function DSS_start(sliderClassName, settings){
 
     }
 
+    // эксперементальная фича //
+
+    function presentationMode(){
+        let thumbTrack = document.querySelectorAll(".thumbTrack")[0];
+        let thumbContainer = document.querySelectorAll(".thumbTrackContainer")[0];
+        let thumbSlide = document.querySelectorAll(".thumbTrack > div")[0];
+        for (var slideIndex = 0; slideIndex < document.querySelectorAll(".thumbTrack > div").length; slideIndex++){
+            document.querySelectorAll(".thumbTrack > div")[slideIndex].classList.add("thumbSlide");
+        }
+        document.querySelectorAll(".thumbSlide")[0].classList.add("thumbActive");
+        let marginSlide = parseInt(getComputedStyle(thumbSlide, true).margin);
+        thumbTrack.onmouseenter = thumbTrack.onmouseleave = function(event){
+            event.preventDefault();
+            var touch = false;
+            if(event.type == "mouseenter") {
+                thumbTrack.addEventListener("mousedown", (e) => {
+                    startPosX = ((e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2)) - thumbTrack.offsetLeft);
+                    startContPosX = ((e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2))); 
+                    touch = true;
+                })
+                thumbTrack.onmousemove = (e) => {
+                    e.preventDefault();
+                    if (touch == true){
+                        mousePosX = e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2);
+                        thumbTrack.style.left = `${(mousePosX - startPosX)}px`;
+                        if (mousePosX - startPosX > 0){
+                            thumbTrack.style.left = `0px`;
+                            touch = false;
+                        } else if ((mousePosX - startPosX) < (-(document.querySelectorAll(".thumbTrack > div").length - 3) * ((marginSlide * 2) + thumbSlide.clientWidth))){
+                            thumbTrack.style.left = `${(-(document.querySelectorAll(".thumbTrack > div").length - 3) * ((marginSlide * 2) + thumbSlide.clientWidth))}px`;
+                            touch = false;
+                        }
+                    }
+                }
+                thumbTrack.onmouseup = () => {
+                    touch = false;
+                }
+            }
+            else{
+                touch = false;
+            }
+        }
+    }
+    if (settings.presentationMode === true){
+        presentationMode();
+    }
 }
