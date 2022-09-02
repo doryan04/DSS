@@ -465,6 +465,16 @@ function DSS_start(sliderClassName, settings){
         for (var slideIndex = 0; slideIndex < document.querySelectorAll(".thumbTrack > div").length; slideIndex++){
             document.querySelectorAll(".thumbTrack > div")[slideIndex].classList.add("thumbSlide");
         }
+        let thumb = document.querySelectorAll(".thumbSlide");
+        function scrollLimit(){
+            thumbTrack.style.transition = "ease-out" + ` ${settings.speedAnimation/2}ms`;
+            if (0 < thumbTrack.offsetLeft){
+                thumbTrack.style.left = "0px";
+            } else if (thumbTrack.offsetLeft < -(thumb.length - 3) * (thumbSlide.clientWidth + (marginSlide * 2))){
+                thumbTrack.style.left = `${-(thumb.length - 3) * (thumbSlide.clientWidth + (marginSlide * 2))}`;
+            }
+            setTimeout(() => {thumbTrack.style.transition = "none";}, settings.speedAnimation/2);
+        } 
         document.querySelectorAll(".thumbSlide")[0].classList.add("thumbActive");
         let marginSlide = parseInt(getComputedStyle(thumbSlide, true).margin);
         thumbTrack.onmouseenter = thumbTrack.onmouseleave = function(event){
@@ -478,23 +488,24 @@ function DSS_start(sliderClassName, settings){
                 })
                 thumbTrack.onmousemove = (e) => {
                     e.preventDefault();
-                    if (touch == true){
+                    if(touch == true){
                         mousePosX = e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2);
                         thumbTrack.style.left = `${(mousePosX - startPosX)}px`;
-                        if (mousePosX - startPosX > 0){
-                            thumbTrack.style.left = `0px`;
-                            touch = false;
-                        } else if ((mousePosX - startPosX) < (-(document.querySelectorAll(".thumbTrack > div").length - 3) * ((marginSlide * 2) + thumbSlide.clientWidth))){
-                            thumbTrack.style.left = `${(-(document.querySelectorAll(".thumbTrack > div").length - 3) * ((marginSlide * 2) + thumbSlide.clientWidth))}px`;
-                            touch = false;
+                        if (thumbTrack.offsetLeft < -(thumb.length - 3) * (thumbSlide.clientWidth + (marginSlide * 2)) || thumbTrack.offsetLeft > 0){
+                            if (Math.abs(mousePosX - startContPosX) >= window.innerWidth/10){
+                                scrollLimit();
+                                touch = false;
+                            }
                         }
                     }
                 }
                 thumbTrack.onmouseup = () => {
+                    scrollLimit();
                     touch = false;
                 }
             }
             else{
+                scrollLimit();
                 touch = false;
             }
         }
