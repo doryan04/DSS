@@ -51,6 +51,9 @@
     font-size: 48pt;
     color:azure;
 }
+.slide{
+    user-select: none;
+}
 
 /* ====== */
 /* Кнопки */
