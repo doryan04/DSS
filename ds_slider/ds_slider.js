@@ -116,7 +116,7 @@ function DSS_start(sliderClassName, settings){
             for (var slideIndex = 0; slideIndex < document.querySelectorAll(".thumbTrack > div").length; slideIndex++){
                 document.querySelectorAll(".thumbTrack > div")[slideIndex].classList.add("thumbSlide");
             }
-            document.querySelectorAll(".thumbSlide")[0].classList.add("thumbActive");
+            document.querySelectorAll(".thumbSlide")[0].classList.add("thumb-active");
             
             let thumbSlides = document.querySelectorAll(".thumbSlide");
 
@@ -455,11 +455,13 @@ function DSS_start(sliderClassName, settings){
         let i = document.querySelectorAll(sliderClassName + " " + ".slider-track" + " div.slide.active")[0].getAttribute("indexitem"); // Индекс активного слайда для корректной работы индикации
 
         items[indexItem].classList.remove("active");
-        thumbSlides[indexItem].classList.remove("thumbActive");
+        thumbSlides[indexItem].classList.remove("thumb-active");
     
         scrollingSlide(direction, countSlides, items, slideWidth);
 
         if (settings.dots === true){ dotsAnimation(dots, i); }
+
+        thumbSlides[indexItem].classList.add("thumb-active");
 
     }
 
