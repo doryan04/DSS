@@ -21,6 +21,8 @@ function DSS_start(sliderClassName, settings){
 
     }
 
+    var className = sliderClassName.slice(1, sliderClassName.length);
+
     // Проверка на наличие всех параметров слайдера, где в противном случае применяется стандартные параметры //
     
     if (settings === undefined){ settings = defaultSettings; }
@@ -86,13 +88,13 @@ function DSS_start(sliderClassName, settings){
 
         // Перенос слайдов в родительский тег //
 
-        let slideMigtation = new function(){
+        let slideMigration = new function(){
 
             var track = document.createElement("div");
             var slide = document.querySelectorAll(sliderClassName + " div");
             var countDivs = slide.length;
     
-            track.className = "slider-track";
+            track.className = className + "-track";
     
             for (let i = 0; i < countDivs; i++){
     
@@ -102,36 +104,19 @@ function DSS_start(sliderClassName, settings){
     
             document.querySelectorAll(sliderClassName)[0].append(track);
     
-        }; slideMigtation;
+        }; slideMigration;
 
         // Временные переменные, созданные для удобства //
 
         var container = document.querySelectorAll(sliderClassName)[0];
-        var items = document.querySelectorAll(sliderClassName + " .slider-track > div");
-        var track = document.querySelectorAll(sliderClassName + " .slider-track")[0];
-
-        //эксперементальная фишка
-
-        if (settings.presentationMode === true){
-            for (var slideIndex = 0; slideIndex < document.querySelectorAll(".thumbTrack > div").length; slideIndex++){
-                document.querySelectorAll(".thumbTrack > div")[slideIndex].classList.add("thumbSlide");
-            }
-            document.querySelectorAll(".thumbSlide")[0].classList.add("thumb-active");
-            
-            let thumbSlides = document.querySelectorAll(".thumbSlide");
-
-            for (let i = 0; i < thumbSlides.length; i++){
-    
-                thumbSlides[i].setAttribute("indexItem", i);
-    
-            }
-        }
+        var items = document.querySelectorAll(sliderClassName + " " + sliderClassName + "-track > div");
+        var track = document.querySelectorAll(sliderClassName + " " + sliderClassName + "-track")[0];
 
         // Создание родительских тегов //
 
         let sliderWindow = document.createElement('div');
     
-        sliderWindow.classList.add("slider-container")
+        sliderWindow.classList.add(className + "-container")
 
         track.before(sliderWindow); sliderWindow.append(track);
 
@@ -151,7 +136,7 @@ function DSS_start(sliderClassName, settings){
         
         function classIndent(){
             
-            var items = document.querySelectorAll(sliderClassName + " " + ".slider-track" + " > div");
+            var items = document.querySelectorAll(sliderClassName + " " + sliderClassName + "-track" + " > div");
             
             for (let j = 0; j < items.length; j++){
                 
@@ -162,11 +147,11 @@ function DSS_start(sliderClassName, settings){
             
             switch(settings.endlessSlider){
 
-                case true:  document.querySelectorAll(sliderClassName + " .slider-track .slide")[1].classList.add("active");
-                            track.style.transform = "translateX(-"+ (document.querySelectorAll(sliderClassName + " .slider-track > div")[0].clientWidth) +"px)"
+                case true:  document.querySelectorAll(sliderClassName + " " + sliderClassName + "-track .slide")[1].classList.add("active");
+                            track.style.transform = "translateX(-"+ (document.querySelectorAll(sliderClassName + " " + sliderClassName + "-track > div")[0].clientWidth) +"px)";
                             break;
 
-                case false: document.querySelectorAll(sliderClassName + " .slider-track .slide")[0].classList.add("active");
+                case false: document.querySelectorAll(sliderClassName + " " + sliderClassName + "-track .slide")[0].classList.add("active");
                             break;
 
             }
@@ -231,7 +216,20 @@ function DSS_start(sliderClassName, settings){
             case false: break;
     
         }
+
+        let mainSlides = [];
+        let allSlides = Array.from(document.querySelectorAll(sliderClassName + " " + sliderClassName + "-container " + sliderClassName + "-track > div"));
         
+        switch(settings.endlessSlider){
+
+            case true:  mainSlides = allSlides.slice(1, allSlides.length - 1);
+                        break;
+
+            case false: mainSlides = allSlides;
+                        break;
+
+        }
+
         // Применение настроек стрелочек //
 
         switch(settings.arrows){ 
@@ -244,6 +242,67 @@ function DSS_start(sliderClassName, settings){
         // Вызов функции подготовки слайдов //
         
         classIndent();
+
+        // experimental, разделение галереи и предпросмотра эскизов на блоки //
+
+        function elemBlocks(){
+
+            // experimental, первый блок //
+
+            let sliderBlock = document.querySelectorAll(sliderClassName + " > div," + sliderClassName + " > button");
+            
+            let firstBlock = document.createElement("div");
+            firstBlock.className = className + "-block";
+
+            document.querySelectorAll(sliderClassName)[0].append(firstBlock);
+
+            for (let i = 0; i < items.length; i++){ firstBlock.append(sliderBlock[i]); }
+
+            // experimental, второй блок //
+
+            if (settings.presentationMode == true){
+
+                let secondBlock = document.createElement("div");
+                secondBlock.className = className + "-thumb-block";
+
+                let sliderThumbCont = document.createElement("section");
+                let sliderThumb = document.createElement("div");
+
+                sliderThumbCont.className = className + "-thumb-container";
+                sliderThumb.className = className + "-thumb";
+
+                for (let i = 0; i < items.length; i++){ 
+                    let mainSlide = mainSlides[i].cloneNode(true);
+                    mainSlide.style.backgroundColor = getComputedStyle(mainSlides[0], true).backgroundColor;
+                    mainSlide.style.backgroundClip = "content-box";
+                    sliderThumb.append(mainSlide); 
+                }
+
+                document.querySelectorAll(sliderClassName)[0].append(sliderThumbCont);
+                sliderThumbCont.append(sliderThumb);
+
+                var thumbnailDiv = document.querySelectorAll(sliderClassName + "-thumb > div");
+
+                for (var slideIndex = 0; slideIndex < document.querySelectorAll(sliderClassName + "-thumb > div").length; slideIndex++){
+                    thumbnailDiv[slideIndex].classList.add("slide-thumb");
+                }
+                
+                let thumbSlides = document.querySelectorAll(".slide-thumb");
+                let thumbBlock = document.querySelectorAll("section" + sliderClassName + "-thumb-container")[0];
+
+                for (let i = 0; i < thumbSlides.length; i++){ thumbSlides[i].setAttribute("indexItem", i); }
+
+                document.querySelectorAll(sliderClassName)[0].append(secondBlock);
+                secondBlock.append(thumbBlock);
+
+                (document.querySelectorAll(sliderClassName + " " + sliderClassName + "-thumb-block " + sliderClassName + "-thumb " + "div.slide.active")[0]).classList.remove("active");
+
+                let mainSlide = document.querySelectorAll(sliderClassName + " " + sliderClassName + "-thumb-container .slide-thumb")[0];
+                mainSlide.style.backgroundImage = "linear-gradient(to top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3)";
+
+            }
+
+        } elemBlocks();
 
         // Возврат переменной, в которой находится трек слайдера //
 
@@ -261,7 +320,7 @@ function DSS_start(sliderClassName, settings){
     
     if (settings.endlessSlider === true){ var indexItem = 1; } else { var indexItem = 0; }
     if (settings.dots === true){ var dots = document.querySelectorAll(sliderClassName + " .dots-bar .dot");}
-    if (settings.presentationMode === true){ var thumbSlides = document.querySelectorAll(".thumbSlide");}
+    if (settings.presentationMode === true){ var thumbnails = document.querySelectorAll(".slide-thumb");}
 
     // ============================================ //
     // Функция, отвечающая за навигацию по слайдеру //
@@ -344,7 +403,7 @@ function DSS_start(sliderClassName, settings){
     
                 setTimeout(() => {left.onclick = throttle(slideLeft, settings.speedAnimation);}, settings.speedAnimation);
     
-                if (indexItem == document.querySelectorAll(sliderClassName + " .slider-container .slider-track .slide").length - 1 && settings.endlessSlider === false){
+                if (indexItem == document.querySelectorAll(sliderClassName + " " + sliderClassName + "-container " + sliderClassName + "-track .slide").length - 1 && settings.endlessSlider === false){
     
                     right.onclick = null;
     
@@ -452,16 +511,13 @@ function DSS_start(sliderClassName, settings){
     function changeSlide(direction, countSlides, items){
 
         const slideWidth = items[0].clientWidth;
-        let i = document.querySelectorAll(sliderClassName + " " + ".slider-track" + " div.slide.active")[0].getAttribute("indexitem"); // Индекс активного слайда для корректной работы индикации
+        let i = document.querySelectorAll(sliderClassName + " " + sliderClassName + "-block " + sliderClassName + "-container " + sliderClassName + "-track div.slide.active")[0].getAttribute("indexitem"); // Индекс активного слайда для корректной работы индикации
 
         items[indexItem].classList.remove("active");
-        thumbSlides[indexItem].classList.remove("thumb-active");
     
         scrollingSlide(direction, countSlides, items, slideWidth);
 
-        if (settings.dots === true){ dotsAnimation(dots, i); }
-
-        thumbSlides[indexItem].classList.add("thumb-active");
+        decorationAnim(dots, thumbnails, i);
 
     }
 
@@ -469,21 +525,35 @@ function DSS_start(sliderClassName, settings){
     // Анимация индикации слайдера //
     // =========================== //
 
-    function dotsAnimation(dots, indexDot){
+    function decorationAnim(dots, thumbnails, index){
 
-        dots[indexDot].classList.remove(settings.dotsEffect);
+        if (settings.dots === true){
+
+            dots[index].classList.remove(settings.dotsEffect);
+                    
+            dots[document.querySelectorAll(sliderClassName + " " + sliderClassName + "-track" + " div.slide.active")[0].getAttribute("indexitem")].classList.add(settings.dotsEffect);
+
+        }
+        
+        if (settings.presentationMode === true){
+
+            thumbnails[index].style.backgroundImage = "none";
                 
-        dots[document.querySelectorAll(sliderClassName + " " + ".slider-track" + " div.slide.active")[0].getAttribute("indexitem")].classList.add(settings.dotsEffect);
+            thumbnails[document.querySelectorAll(sliderClassName + " " + sliderClassName + "-track" + " div.slide.active")[0].getAttribute("indexitem")].style.backgroundImage = "linear-gradient(to top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3)";
+
+        }
+
+        return 0;
 
     }
 
     // эксперементальная фича //
 
     function presentationMode(){
-        let thumbTrack = document.querySelectorAll(".thumbTrack")[0];
-        let thumbContainer = document.querySelectorAll(".thumbTrackContainer")[0];
-        let thumbSlide = document.querySelectorAll(".thumbTrack > div")[0];
-        let thumb = document.querySelectorAll(".thumbSlide");
+        let thumbTrack = document.querySelectorAll(sliderClassName + "-thumb")[0];
+        let thumbContainer = document.querySelectorAll(sliderClassName + "-thumb-container")[0];
+        let thumbSlide = document.querySelectorAll(sliderClassName + "-thumb > div")[0];
+        let thumb = document.querySelectorAll(".slide-thumb");
         function scrollLimit(){
             thumbTrack.style.transition = "ease-out" + ` ${settings.speedAnimation/2}ms`;
             if (0 < thumbTrack.offsetLeft){

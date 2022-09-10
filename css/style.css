@@ -15,10 +15,16 @@
 .slider{
     margin: 10%;
     display: flex;
-    flex-direction:row;
+    flex-direction:column;
+    align-items: center;
+    height: var(--height);
+    width: 100%;
+}
+
+.slider-block{
+    display: flex;
     align-items: center;
     justify-content: center;
-    height: var(--height);
     width: 100%;
 }
 
@@ -125,14 +131,4 @@ button:active{
 .dot-scaling{
     transform: scale(1.1);
     opacity: 100%;
-}
-
-/* ========= */
-/* thumbnail */
-/* ========= */
-
-.thumb-active{
-    opacity: 0.5;
-    background-clip: content-box;
-	background-color: rgba(255, 255, 255, 0.3);
 }

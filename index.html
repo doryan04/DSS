@@ -70,29 +70,30 @@
 
             }
 
-            .thumbTrackContainer{
+            .slider-thumb-container{
                 overflow: hidden;
                 position: relative;
                 margin-top: 5px;
                 display: flex;
                 border-radius: 15px;
-                background-color: whitesmoke;
                 width: var(--width);
                 height: calc(var(--height)/2.5);
             }
 
-            .thumbTrack{
+            .slider-thumb{
                 position: absolute;
                 display: flex;
                 width: max-content;
                 height: inherit;
             }
 
-            .thumbSlide{
+            .slide-thumb{
+                display: flex;
+                align-items: center;
+                justify-content: center;
                 color: #FFFFFF;
                 margin: 5px;
                 border-radius: 10px;
-                background-image: linear-gradient(to right, #60A7E3, #c580d3);
                 width: calc((var(--width) - (5px * 2 * 3))/3);
                 height: calc((((var(--width) - (5px * 2 * 3))/3) * var(--height))/var(--width));
             }
@@ -119,22 +120,21 @@
         <script type="text/javascript" src="ds_slider/ds_slider.js"></script>
     </head>
     <body class="presentation">
-        <div class="logo"></div>
-        <div class="text"> <div id="light">doryan&thinsp;</div><div id="blueGradient">simple slider</div></div>
+        <!-- <div class="logo"></div>
+        <div class="text">
+            <div id="light">
+                doryan&thinsp;
+            </div>
+            <div id="blueGradient">
+                simple slider
+            </div>
+        </div> -->
         <div class="slider sliderMargin1">
             <div>1</div>
             <div>2</div>
             <div>3</div>
             <div>4</div>
         </div>
-        <section class="thumbTrackContainer">
-            <div class="thumbTrack">
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-            </div>
-        </section>
     </body>
     <script>
 
@@ -142,8 +142,8 @@
             
             settings = {
 
-                autoPlaySlider: false,
-                autoPlayDelay: 5000,
+                autoPlaySlider: true,
+                autoPlayDelay: 1000,
                 autoPlayDirrection: "right",
                 arrows: true,
                 dots: true,
