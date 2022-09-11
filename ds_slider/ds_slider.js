@@ -109,8 +109,8 @@ function DSS_start(sliderClassName, settings){
         // Временные переменные, созданные для удобства //
 
         var container = document.querySelectorAll(sliderClassName)[0];
-        var items = document.querySelectorAll(sliderClassName + " " + sliderClassName + "-track > div");
-        var track = document.querySelectorAll(sliderClassName + " " + sliderClassName + "-track")[0];
+        var track = document.querySelectorAll(sliderClassName + "-track")[0];
+        var items = track.childNodes;
 
         // Создание родительских тегов //
 
@@ -125,7 +125,7 @@ function DSS_start(sliderClassName, settings){
         switch(settings.endlessSlider){ 
     
             case true: track.prepend(items[items.length - 1].cloneNode(true)); 
-                       track.append(items[0].cloneNode(true));
+                       track.append(items[1].cloneNode(true));
                        break;
     
             case false: break;
@@ -134,10 +134,7 @@ function DSS_start(sliderClassName, settings){
     
         // Подготовка слайдов //
         
-        function classIndent(){
-            
-            var items = document.querySelectorAll(sliderClassName + " " + sliderClassName + "-track" + " > div");
-            
+        function classIndent(items){
             for (let j = 0; j < items.length; j++){
                 
                 if(settings.endlessSlider === true){ items[j].classList = "slide"; items[j].setAttribute("indexItem", j - 1); }
@@ -147,11 +144,11 @@ function DSS_start(sliderClassName, settings){
             
             switch(settings.endlessSlider){
 
-                case true:  document.querySelectorAll(sliderClassName + " " + sliderClassName + "-track .slide")[1].classList.add("active");
-                            track.style.transform = "translateX(-"+ (document.querySelectorAll(sliderClassName + " " + sliderClassName + "-track > div")[0].clientWidth) +"px)";
+                case true:  document.querySelector(sliderClassName + "-track").childNodes[1].classList.add("active");
+                            track.style.transform = "translateX(-"+ (document.querySelectorAll(sliderClassName + "-track > div")[0].clientWidth) +"px)";
                             break;
 
-                case false: document.querySelectorAll(sliderClassName + " " + sliderClassName + "-track .slide")[0].classList.add("active");
+                case false: document.querySelector(sliderClassName + "-track").firstChild.classList.add("active");
                             break;
 
             }
@@ -190,7 +187,7 @@ function DSS_start(sliderClassName, settings){
             
                         let dotsBarContainer = document.querySelector(sliderClassName + " .dots-bar");
             
-                        for (let i = 0; i < items.length; i++){
+                        for (let i = 0; i < items.length - 2; i++){
             
                             let dot = document.createElement("div");
                 
@@ -208,8 +205,8 @@ function DSS_start(sliderClassName, settings){
                 }
             
                 preparingDotsBar();
-            
-                document.querySelectorAll(sliderClassName + " .dots-bar .dot")[0].classList.add(settings.dotsEffect);
+
+                document.querySelector(sliderClassName + " .dots-bar").firstChild.classList.add(settings.dotsEffect);
     
                 break;
     
@@ -218,8 +215,8 @@ function DSS_start(sliderClassName, settings){
         }
 
         let mainSlides = [];
-        let allSlides = Array.from(document.querySelectorAll(sliderClassName + " " + sliderClassName + "-container " + sliderClassName + "-track > div"));
-        
+        let allSlides = Array.from(document.querySelector(sliderClassName + "-track").childNodes);
+
         switch(settings.endlessSlider){
 
             case true:  mainSlides = allSlides.slice(1, allSlides.length - 1);
@@ -241,7 +238,7 @@ function DSS_start(sliderClassName, settings){
 
         // Вызов функции подготовки слайдов //
         
-        classIndent();
+        classIndent(items);
 
         // experimental, разделение галереи и предпросмотра эскизов на блоки //
 
@@ -249,14 +246,14 @@ function DSS_start(sliderClassName, settings){
 
             // experimental, первый блок //
 
-            let sliderBlock = document.querySelectorAll(sliderClassName + " > div," + sliderClassName + " > button");
+            let sliderBlock = Array.from(document.querySelectorAll(sliderClassName)[0].childNodes);
             
             let firstBlock = document.createElement("div");
             firstBlock.className = className + "-block";
 
-            document.querySelectorAll(sliderClassName)[0].append(firstBlock);
+            document.querySelector(sliderClassName).append(firstBlock);
 
-            for (let i = 0; i < items.length; i++){ firstBlock.append(sliderBlock[i]); }
+            for (let i = 0; i < sliderBlock.length; i++){ firstBlock.append(sliderBlock[i]); }
 
             // experimental, второй блок //
 
@@ -271,11 +268,15 @@ function DSS_start(sliderClassName, settings){
                 sliderThumbCont.className = className + "-thumb-container";
                 sliderThumb.className = className + "-thumb";
 
-                for (let i = 0; i < items.length; i++){ 
-                    let mainSlide = mainSlides[i].cloneNode(true);
-                    mainSlide.style.backgroundColor = getComputedStyle(mainSlides[0], true).backgroundColor;
-                    mainSlide.style.backgroundClip = "content-box";
-                    sliderThumb.append(mainSlide); 
+                for (let i = 0; i < mainSlides.length; i++){ 
+
+                    mainThumbsSlide = mainSlides[i].cloneNode(true);
+
+                    mainThumbsSlide.style.backgroundColor = getComputedStyle(mainSlides[0], true).backgroundColor;
+                    mainThumbsSlide.style.backgroundClip = "content-box";
+
+                    sliderThumb.append(mainThumbsSlide);
+
                 }
 
                 document.querySelectorAll(sliderClassName)[0].append(sliderThumbCont);
@@ -295,9 +296,9 @@ function DSS_start(sliderClassName, settings){
                 document.querySelectorAll(sliderClassName)[0].append(secondBlock);
                 secondBlock.append(thumbBlock);
 
-                (document.querySelectorAll(sliderClassName + " " + sliderClassName + "-thumb-block " + sliderClassName + "-thumb " + "div.slide.active")[0]).classList.remove("active");
+                (Array.from(document.querySelectorAll(sliderClassName + "-thumb")[0].childNodes)[0]).classList.remove("active");
 
-                let mainSlide = document.querySelectorAll(sliderClassName + " " + sliderClassName + "-thumb-container .slide-thumb")[0];
+                let mainSlide = document.querySelectorAll(sliderClassName + "-thumb-container .slide-thumb")[0];
                 mainSlide.style.backgroundImage = "linear-gradient(to top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3)";
 
             }
@@ -319,7 +320,7 @@ function DSS_start(sliderClassName, settings){
     // ========== //
     
     if (settings.endlessSlider === true){ var indexItem = 1; } else { var indexItem = 0; }
-    if (settings.dots === true){ var dots = document.querySelectorAll(sliderClassName + " .dots-bar .dot");}
+    if (settings.dots === true){ var dots = Array.from(document.querySelector(sliderClassName + " .dots-bar").childNodes);}
     if (settings.presentationMode === true){ var thumbnails = document.querySelectorAll(".slide-thumb");}
 
     // ============================================ //
@@ -403,7 +404,7 @@ function DSS_start(sliderClassName, settings){
     
                 setTimeout(() => {left.onclick = throttle(slideLeft, settings.speedAnimation);}, settings.speedAnimation);
     
-                if (indexItem == document.querySelectorAll(sliderClassName + " " + sliderClassName + "-container " + sliderClassName + "-track .slide").length - 1 && settings.endlessSlider === false){
+                if (indexItem == document.querySelectorAll(sliderClassName + "-track .slide").length - 1 && settings.endlessSlider === false){
     
                     right.onclick = null;
     
@@ -511,7 +512,7 @@ function DSS_start(sliderClassName, settings){
     function changeSlide(direction, countSlides, items){
 
         const slideWidth = items[0].clientWidth;
-        let i = document.querySelectorAll(sliderClassName + " " + sliderClassName + "-block " + sliderClassName + "-container " + sliderClassName + "-track div.slide.active")[0].getAttribute("indexitem"); // Индекс активного слайда для корректной работы индикации
+        let i = document.querySelectorAll(sliderClassName + "-track div.slide.active")[0].getAttribute("indexitem"); // Индекс активного слайда для корректной работы индикации
 
         items[indexItem].classList.remove("active");
     
@@ -531,7 +532,7 @@ function DSS_start(sliderClassName, settings){
 
             dots[index].classList.remove(settings.dotsEffect);
                     
-            dots[document.querySelectorAll(sliderClassName + " " + sliderClassName + "-track" + " div.slide.active")[0].getAttribute("indexitem")].classList.add(settings.dotsEffect);
+            dots[document.querySelector(sliderClassName + "-track div.slide.active").getAttribute("indexitem")].classList.add(settings.dotsEffect);
 
         }
         
@@ -539,7 +540,7 @@ function DSS_start(sliderClassName, settings){
 
             thumbnails[index].style.backgroundImage = "none";
                 
-            thumbnails[document.querySelectorAll(sliderClassName + " " + sliderClassName + "-track" + " div.slide.active")[0].getAttribute("indexitem")].style.backgroundImage = "linear-gradient(to top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3)";
+            thumbnails[document.querySelector(sliderClassName + "-track div.slide.active").getAttribute("indexitem")].style.backgroundImage = "linear-gradient(to top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3)";
 
         }
 
@@ -550,54 +551,74 @@ function DSS_start(sliderClassName, settings){
     // эксперементальная фича //
 
     function presentationMode(){
+
         let thumbTrack = document.querySelectorAll(sliderClassName + "-thumb")[0];
         let thumbContainer = document.querySelectorAll(sliderClassName + "-thumb-container")[0];
-        let thumbSlide = document.querySelectorAll(sliderClassName + "-thumb > div")[0];
+        let thumbSlide = thumbTrack.querySelectorAll("div")[0];
         let thumb = document.querySelectorAll(".slide-thumb");
+
         function scrollLimit(){
+
             thumbTrack.style.transition = "ease-out" + ` ${settings.speedAnimation/2}ms`;
-            if (0 < thumbTrack.offsetLeft){
-                thumbTrack.style.left = "0px";
-            } else if (thumbTrack.offsetLeft < -(thumb.length - 3) * (thumbSlide.clientWidth + (marginSlide * 2))){
+
+            if (0 < thumbTrack.offsetLeft){ thumbTrack.style.left = "0px"; } 
+            else if (thumbTrack.offsetLeft < -(thumb.length - 3) * (thumbSlide.clientWidth + (marginSlide * 2))){
+
                 thumbTrack.style.left = `${-(thumb.length - 3) * (thumbSlide.clientWidth + (marginSlide * 2))}`;
+
             }
+
             setTimeout(() => {thumbTrack.style.transition = "none";}, settings.speedAnimation/2);
         }
+
         let marginSlide = parseInt(getComputedStyle(thumbSlide, true).margin);
+
         thumbTrack.onmouseenter = thumbTrack.onmouseleave = function(event){
+
             event.preventDefault();
+
             var touch = false;
+
             if(event.type == "mouseenter") {
+
                 thumbTrack.addEventListener("mousedown", (e) => {
+
                     startPosX = ((e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2)) - thumbTrack.offsetLeft);
                     startContPosX = ((e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2))); 
+
                     touch = true;
+
                 })
+
                 thumbTrack.onmousemove = (e) => {
+
                     e.preventDefault();
+
                     if(touch == true){
+
                         mousePosX = e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2);
                         thumbTrack.style.left = `${(mousePosX - startPosX)}px`;
+
                         if (thumbTrack.offsetLeft < -(thumb.length - 3) * (thumbSlide.clientWidth + (marginSlide * 2)) || thumbTrack.offsetLeft > 0){
-                            if (Math.abs(mousePosX - startContPosX) >= window.innerWidth/10){
-                                scrollLimit();
-                                touch = false;
-                            }
+
+                            if (Math.abs(mousePosX - startContPosX) >= window.innerWidth/10){ scrollLimit(); touch = false; }
+
                         }
+
                     }
+
                 }
-                thumbTrack.onmouseup = () => {
-                    scrollLimit();
-                    touch = false;
-                }
+
+                thumbTrack.onmouseup = () => { scrollLimit(); touch = false; }
+
             }
-            else{
-                scrollLimit();
-                touch = false;
-            }
+
+            else{ scrollLimit(); touch = false; }
+
         }
+
     }
-    if (settings.presentationMode === true){
-        presentationMode();
-    }
+
+    if (settings.presentationMode === true){ presentationMode();}
+
 }
