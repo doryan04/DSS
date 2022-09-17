@@ -556,52 +556,67 @@ function DSS_start(sliderClassName, settings){
         let thumbContainer = document.querySelectorAll(sliderClassName + "-thumb-container")[0];
         let thumbSlide = thumbTrack.querySelectorAll("div")[0];
         let thumb = document.querySelectorAll(".slide-thumb");
+        let marginSlide = parseInt(getComputedStyle(thumbSlide, true).margin);
 
-        function scrollLimit(){
+        let widthTrack = -(thumbTrack.clientWidth - ((thumb[0].clientWidth + (2 * marginSlide)) * 3));
 
-            thumbTrack.style.transition = "ease-out" + ` ${settings.speedAnimation/2}ms`;
+        let touch = false;
+        let isToched = false;
+        let isDelayed = false;
 
-            if (0 < thumbTrack.offsetLeft){ thumbTrack.style.left = "0px"; } 
-            else if (thumbTrack.offsetLeft < -(thumb.length - 3) * (thumbSlide.clientWidth + (marginSlide * 2))){
+        function touchUp(){
 
+            touch = false;
+            isToched = false;
+            isDelayed = true;
+
+            if (thumbTrack.offsetLeft >= 0){
+
+                thumbTrack.style.transition = "ease-out" + ` ${settings.speedAnimation/2}ms`;
+                thumbTrack.style.left = "0px";
+
+            } else if (thumbTrack.offsetLeft < widthTrack){
+
+                thumbTrack.style.transition = "ease-out" + ` ${settings.speedAnimation/2}ms`;
                 thumbTrack.style.left = `${-(thumb.length - 3) * (thumbSlide.clientWidth + (marginSlide * 2))}`;
 
             }
 
-            setTimeout(() => {thumbTrack.style.transition = "none";}, settings.speedAnimation/2);
-        }
+            setTimeout(function () {thumbTrack.style.transition = "none"; isDelayed = false; console.log(isDelayed);}, settings.speedAnimation/2);
 
-        let marginSlide = parseInt(getComputedStyle(thumbSlide, true).margin);
+        }
 
         thumbTrack.onmouseenter = thumbTrack.onmouseleave = function(event){
 
             event.preventDefault();
 
-            var touch = false;
-
             if(event.type == "mouseenter") {
 
                 thumbTrack.addEventListener("mousedown", (e) => {
 
-                    startPosX = ((e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2)) - thumbTrack.offsetLeft);
-                    startContPosX = ((e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2))); 
+                    if (isDelayed == false){ 
 
-                    touch = true;
+                        isToched = true;
+
+                        startPosX = ((e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2)) - thumbTrack.offsetLeft);
+                        startContPosX = ((e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2))); 
+        
+                        touch = true;
+
+                    }
 
                 })
 
                 thumbTrack.onmousemove = (e) => {
 
                     e.preventDefault();
+                
+                    if (isDelayed == false){
 
-                    if(touch == true){
+                        if(touch == true) {
 
-                        mousePosX = e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2);
-                        thumbTrack.style.left = `${(mousePosX - startPosX)}px`;
-
-                        if (thumbTrack.offsetLeft < -(thumb.length - 3) * (thumbSlide.clientWidth + (marginSlide * 2)) || thumbTrack.offsetLeft > 0){
-
-                            if (Math.abs(mousePosX - startContPosX) >= window.innerWidth/10){ scrollLimit(); touch = false; }
+                            mousePosX = e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2);
+                            thumbTrack.style.left = `${(mousePosX - startPosX)}px`;
 
                         }
 
@@ -609,14 +624,17 @@ function DSS_start(sliderClassName, settings){
 
                 }
 
-                thumbTrack.onmouseup = () => { scrollLimit(); touch = false; }
+                thumbTrack.onmouseup = () => { 
+                    touchUp(); 
+                }
 
             }
 
-            else{ scrollLimit(); touch = false; }
+            else if(event.type == "mouseleave" && isToched == true){ 
+                touchUp(); 
 
+            }
         }
-
     }
 
     if (settings.presentationMode === true){ presentationMode();}
