@@ -91,7 +91,7 @@ function DSS_start(sliderClassName, settings){
         let slideMigration = new function(){
 
             var track = document.createElement("div");
-            var slide = document.querySelectorAll(sliderClassName + " div");
+            var slide = document.querySelectorAll(sliderClassName + " > div");
             var countDivs = slide.length;
     
             track.className = className + "-track";
@@ -262,8 +262,8 @@ function DSS_start(sliderClassName, settings){
                 let secondBlock = document.createElement("div");
                 secondBlock.className = className + "-thumb-block";
 
-                let sliderThumbCont = document.createElement("section");
-                let sliderThumb = document.createElement("div");
+                let sliderThumbCont = document.createElement("section"),
+                    sliderThumb = document.createElement("div");
 
                 sliderThumbCont.className = className + "-thumb-container";
                 sliderThumb.className = className + "-thumb";
@@ -331,7 +331,7 @@ function DSS_start(sliderClassName, settings){
 
         // Переменные, необходимые для данной функции //
 
-        let items = document.querySelectorAll(sliderClassName + " .slider-track .slide");
+        let items = document.querySelectorAll(sliderClassName + " " + sliderClassName +"-track .slide");
         let countSlides = items.length - 1;
 
         // Если стрелочки включены, то они видимы и рабочие //
@@ -340,8 +340,8 @@ function DSS_start(sliderClassName, settings){
 
             // Переменные, нужные для стрелочек //
 
-            let left = document.querySelector(sliderClassName + " #left");
-            let right = document.querySelector(sliderClassName + " #right");
+            let left = document.querySelector(sliderClassName + " #left"),
+                right = document.querySelector(sliderClassName + " #right");
 
             // ================================================ //
             // Автопрокрутка слайдера, когда стрелочки включены //
@@ -544,8 +544,6 @@ function DSS_start(sliderClassName, settings){
 
         }
 
-        return 0;
-
     }
 
     // эксперементальная фича //
@@ -554,21 +552,23 @@ function DSS_start(sliderClassName, settings){
 
         let thumbTrack = document.querySelectorAll(sliderClassName + "-thumb")[0];
         let thumbContainer = document.querySelectorAll(sliderClassName + "-thumb-container")[0];
-        let thumbSlide = thumbTrack.querySelectorAll("div")[0];
-        let thumb = document.querySelectorAll(".slide-thumb");
+
+        let thumbSlide = thumbTrack.firstChild,
+            thumbSlides = thumbTrack.childNodes; 
+
         let marginSlide = parseInt(getComputedStyle(thumbSlide, true).margin);
 
-        let widthTrack = -(thumbTrack.clientWidth - ((thumb[0].clientWidth + (2 * marginSlide)) * 3));
+        let widthTrack = -1 * ((thumbSlide.clientWidth + 2 * marginSlide) * (thumbSlides.length - 3));
 
-        let touch = false;
-        let isToched = false;
-        let isDelayed = false;
+        let touch = false,
+            isTouched = false,
+            isDelayed = false;
 
         function touchUp(){
 
-            touch = false;
-            isToched = false;
             isDelayed = true;
+            touch = false;
+            isTouched = false;
 
             if (thumbTrack.offsetLeft >= 0){
 
@@ -578,65 +578,73 @@ function DSS_start(sliderClassName, settings){
             } else if (thumbTrack.offsetLeft < widthTrack){
 
                 thumbTrack.style.transition = "ease-out" + ` ${settings.speedAnimation/2}ms`;
-                thumbTrack.style.left = `${-(thumb.length - 3) * (thumbSlide.clientWidth + (marginSlide * 2))}`;
+                thumbTrack.style.left = `${-(thumbSlides.length - 3) * (thumbSlide.clientWidth + (marginSlide * 2))}`;
 
             }
 
-            setTimeout(function () {thumbTrack.style.transition = "none"; isDelayed = false; console.log(isDelayed);}, settings.speedAnimation/2);
+            setTimeout(function() {
+
+                thumbTrack.style.transition = "none";
+                isDelayed = false;
+
+            }, settings.speedAnimation/2);
 
         }
+
+        var onMouseDown = throttle((e) => {
+
+            touch = true;
+            isTouched = true;
+            startPosX = ((e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2)) - thumbTrack.offsetLeft);
+            startContPosX = ((e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2))); 
+
+        }, settings.speedAnimation/2);
+
+        var onMouseMove = (e) => { 
+
+            e.preventDefault();
+                
+            if (touch === true && isDelayed === false){
+
+                mousePosX = e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2);
+                thumbTrack.style.left = `${(mousePosX - startPosX)}px`;
+
+                if (thumbTrack.offsetLeft < widthTrack - ((2 * thumbSlide.clientWidth)/3) || thumbTrack.offsetLeft > (2 * thumbSlide.clientWidth)/3){ touchUp(); }
+                else{ return };
+
+            }
+            else{ return; }
+
+        }
+
+        var onMouseUp = throttle(() => {
+
+            if(isDelayed === false){
+
+                touchUp(); 
+
+            }
+        
+        }, settings.speedAnimation/2);
 
         thumbTrack.onmouseenter = thumbTrack.onmouseleave = function(event){
 
             event.preventDefault();
 
-            if(event.type == "mouseenter") {
+            if(event.type === "mouseenter" && isDelayed === false) {
 
-                thumbTrack.addEventListener("mousedown", (e) => {
-
-                    if (isDelayed == false){ 
-
-                        isToched = true;
-
-                        startPosX = ((e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2)) - thumbTrack.offsetLeft);
-                        startContPosX = ((e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2))); 
-        
-                        touch = true;
-
-                    }
-
-                })
-
-                thumbTrack.onmousemove = (e) => {
-
-                    e.preventDefault();
-                
-                    if (isDelayed == false){
-
-                        if(touch == true) {
-
-                            mousePosX = e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2);
-                            thumbTrack.style.left = `${(mousePosX - startPosX)}px`;
-
-                        }
-
-                    }
-
-                }
-
-                thumbTrack.onmouseup = () => { 
-                    touchUp(); 
-                }
+                thumbTrack.addEventListener("mousedown", onMouseDown);
+                thumbTrack.addEventListener("mousemove", onMouseMove);
+                thumbTrack.addEventListener("mouseup", onMouseUp);
 
             }
+            else if(event.type === "mouseleave" && isTouched === true && isDelayed === false){ touchUp(); }
+            else { touch = false; isTouched = false; }
 
-            else if(event.type == "mouseleave" && isToched == true){ 
-                touchUp(); 
-
-            }
         }
+
     }
 
     if (settings.presentationMode === true){ presentationMode();}
 
-}
+}  // жырнаяъ галереяъ
