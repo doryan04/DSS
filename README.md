@@ -175,17 +175,20 @@ Then enter all the settings into the slider function, as shown in the example be
 ```
 5. All ready to go
 
-## At the moment the slider is built into my website and works great:
+## At the moment the slider is built into my website and works great (v0.2.0 BETA):
 
 ![photo](pic/site_update.png)
-
-I'll be working on the AutoPlay option soon
 
 ## What on stady "work in progress"?
 
 - [ ] Dots navigation
 - [ ] Swipes on smartphones
-- [X] AutoPlay
+
+## What doesn't works?
+
+- [ ] Thumbs stuff customizations
+- [ ] Swipes carousel pic in PC/Smartphones
+- [ ] Thumbs navigation
 
 ## Did you find the bug? Make sure to [leave an issue](https://github.com/doryan04/DSS/issues/new) in case of any problems.
 
