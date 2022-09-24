@@ -110,7 +110,7 @@ function DSS_start(sliderClassName, settings){
 
         var container = document.querySelectorAll(sliderClassName)[0];
         var track = document.querySelectorAll(sliderClassName + "-track")[0];
-        var items = track.childNodes;
+        let items = track.childNodes;
 
         // Создание родительских тегов //
 
@@ -186,16 +186,20 @@ function DSS_start(sliderClassName, settings){
                     function dotsGenerator(){
             
                         let dotsBarContainer = document.querySelector(sliderClassName + " .dots-bar");
-            
-                        for (let i = 0; i < items.length - 2; i++){
-            
+                        let countItems;
+
+                        if (settings.endlessSlider === true){countItems = items.length - 2;} 
+                        else { countItems = items.length; }
+
+                        for (let i = 0; i < countItems; i++){
+                    
                             let dot = document.createElement("div");
-                
-                            dot.classList = "dot"; dot.id = i + 1;
+                    
+                            dot.classList = "dot"; dot.setAttribute("indexItem", i);
                             dot.style.transition = settings.speedAnimation + "ms " + settings.transition;
-    
+        
                             dotsBarContainer.append(dot);
-                
+                    
                         }
             
                     }
@@ -319,9 +323,18 @@ function DSS_start(sliderClassName, settings){
     // Переменные //
     // ========== //
     
-    if (settings.endlessSlider === true){ var indexItem = 1; } else { var indexItem = 0; }
+    var indexItem = 0,
+        mainItems = Array.from(document.querySelectorAll(sliderClassName + " " + sliderClassName +"-track .slide"));
     if (settings.dots === true){ var dots = Array.from(document.querySelector(sliderClassName + " .dots-bar").childNodes);}
     if (settings.presentationMode === true){ var thumbnails = document.querySelectorAll(".slide-thumb");}
+
+    let isDelayed = false,
+        targetSlide,
+        currentSlide = document.querySelector(sliderClassName + "-track .slide.active").getAttribute("indexItem");
+
+    if (settings.endlessSlider === true){
+        mainItems = mainItems.slice(1, Array.from(document.querySelectorAll(sliderClassName + " " + sliderClassName +"-track .slide")).length - 1);
+    }
 
     // ============================================ //
     // Функция, отвечающая за навигацию по слайдеру //
@@ -329,10 +342,7 @@ function DSS_start(sliderClassName, settings){
 
     function sliderNavigation(){
 
-        // Переменные, необходимые для данной функции //
-
-        let items = document.querySelectorAll(sliderClassName + " " + sliderClassName +"-track .slide");
-        let countSlides = items.length - 1;
+        let countSlides = mainItems.length;
 
         // Если стрелочки включены, то они видимы и рабочие //
 
@@ -342,7 +352,7 @@ function DSS_start(sliderClassName, settings){
 
             let left = document.querySelector(sliderClassName + " #left"),
                 right = document.querySelector(sliderClassName + " #right");
-
+            
             // ================================================ //
             // Автопрокрутка слайдера, когда стрелочки включены //
             // ================================================ //
@@ -356,7 +366,7 @@ function DSS_start(sliderClassName, settings){
                     left.onclick = null;
                     right.onclick = null;
     
-                    slideScroll(settings.autoPlayDirrection, countSlides, items);
+                    slideScroll(settings.autoPlayDirrection, countSlides, mainItems);
     
                     setTimeout(() => {  left.onclick = throttle(slideLeft, settings.speedAnimation);
                                         right.onclick = throttle(slideRight, settings.speedAnimation);}, 
@@ -364,7 +374,7 @@ function DSS_start(sliderClassName, settings){
     
                 }
 
-                // Зацикливание функции автопрокрутки //
+                // Зацикливание функции автопрокрутки /
     
                 var autoPlayInterval = setInterval(autoPlayWithArrows, settings.autoPlayDelay); 
 
@@ -376,20 +386,24 @@ function DSS_start(sliderClassName, settings){
 
                 if (settings.autoPlaySlider === true){ clearInterval(autoPlayInterval); } // Если включена автопрокрутка, то интервал обнуляется для красивой работы слайдера
                 
-                right.onclick = null;
+                if(isDelayed === false){
 
-                slideScroll(left.id, countSlides, items);
-    
-                setTimeout(() => {right.onclick = throttle(slideRight, settings.speedAnimation);}, settings.speedAnimation);
-    
-                if (indexItem == 0 && settings.endlessSlider === false){
-    
-                    left.onclick = null;
-    
+                    right.onclick = null;
+
+                    slideScroll(left.id, countSlides, mainItems);
+        
+                    setTimeout(() => {right.onclick = throttle(slideRight, settings.speedAnimation);}, settings.speedAnimation);
+        
+                    if (indexItem == 0 && settings.endlessSlider === false){
+        
+                        left.onclick = null;
+        
+                    }
+
+                    if (settings.autoPlaySlider === true){ autoPlayInterval = setInterval(autoPlayWithArrows, settings.autoPlayDelay); } // Если включена автопрокрутка, то интервал запускается
+        
                 }
 
-                if (settings.autoPlaySlider === true){ autoPlayInterval = setInterval(autoPlayWithArrows, settings.autoPlayDelay); } // Если включена автопрокрутка, то интервал запускается
-    
             }
 
             // Слайд вправо //
@@ -397,20 +411,24 @@ function DSS_start(sliderClassName, settings){
             function slideRight(){
 
                 if (settings.autoPlaySlider === true){ clearInterval(autoPlayInterval); } // Если включена автопрокрутка, то интервал обнуляется для красивой работы слайдера
-    
-                left.onclick = null;
                 
-                slideScroll(right.id, countSlides, items);
-    
-                setTimeout(() => {left.onclick = throttle(slideLeft, settings.speedAnimation);}, settings.speedAnimation);
-    
-                if (indexItem == document.querySelectorAll(sliderClassName + "-track .slide").length - 1 && settings.endlessSlider === false){
-    
-                    right.onclick = null;
-    
-                }
+                if(isDelayed === false){
 
-                if (settings.autoPlaySlider === true){ autoPlayInterval = setInterval(autoPlayWithArrows, settings.autoPlayDelay); } // Если включена автопрокрутка, то интервал запускается
+                    left.onclick = null;
+                
+                    slideScroll(right.id, countSlides, mainItems);
+        
+                    setTimeout(() => {left.onclick = throttle(slideLeft, settings.speedAnimation);}, settings.speedAnimation);
+        
+                    if (indexItem == document.querySelectorAll(sliderClassName + "-track .slide").length - 1 && settings.endlessSlider === false){
+        
+                        right.onclick = null;
+        
+                    }
+
+                    if (settings.autoPlaySlider === true){ autoPlayInterval = setInterval(autoPlayWithArrows, settings.autoPlayDelay); } // Если включена автопрокрутка, то интервал запускается
+
+                }
     
             }
             
@@ -456,7 +474,7 @@ function DSS_start(sliderClassName, settings){
 
     function slideScroll(direction, countSlides, items){
 
-        if (direction == "left" && indexItem > 0){ changeSlide(direction, countSlides, items); } 
+        if (direction == "left" && ((indexItem > 0 && settings.endlessSlider === false) || (indexItem >= 0 && settings.endlessSlider === true))){ changeSlide(direction, countSlides, items); } 
         else if (direction == "right" && indexItem < countSlides){ changeSlide(direction, countSlides, items); }
 
     }
@@ -471,7 +489,14 @@ function DSS_start(sliderClassName, settings){
 
         if (Object.is("right", direction) === true){ indexItem++; } else { indexItem--;};
 
-        sliderTrack.style.transform = "translateX(-"+ ((width) * indexItem) +"px)";
+        currentSlide = indexItem;
+
+        let offsetKoef;
+
+        if (settings.endlessSlider === true){offsetKoef = indexItem + 1;}
+        else {offsetKoef = indexItem;}
+
+        sliderTrack.style.transform = "translateX(-"+ ((width) * offsetKoef) +"px)";
 
         setTimeout(function(){
 
@@ -479,29 +504,31 @@ function DSS_start(sliderClassName, settings){
             
             if (Object.is("right", direction) === true){ 
                 
-                if (indexItem == countSlides && settings.endlessSlider === true){ indexItem = 1; }
+                if (offsetKoef == countSlides + 1 && settings.endlessSlider === true){ indexItem = 0; offsetKoef = indexItem + 1; currentSlide = indexItem;}
         
             } else {
 
-                if (indexItem == 0 && settings.endlessSlider === true){ indexItem = countSlides - 1; }
+                if (offsetKoef == 0 && settings.endlessSlider === true){ indexItem = countSlides - 1; offsetKoef = countSlides; currentSlide = indexItem;}
 
             };
 
-            sliderTrack.style.transform = "translateX(-"+ ((width) * indexItem) +"px)";
+            sliderTrack.style.transform = "translateX(-"+ ((width) * offsetKoef) +"px)";
 
         }, settings.speedAnimation);
 
         if (Object.is("right", direction) === true){
 
-            if (indexItem == countSlides && settings.endlessSlider === true){ items[1].classList.add("active"); } 
+            if (offsetKoef == countSlides + 1 && settings.endlessSlider === true){ items[0].classList.add("active"); } 
             else { items[indexItem].classList.add("active"); };
 
         } else {
 
-            if (indexItem == 0 && settings.endlessSlider === true){ items[countSlides - 1].classList.add("active"); } 
+            if (offsetKoef == 0 && settings.endlessSlider === true){ items[countSlides - 1].classList.add("active"); } 
             else { items[indexItem].classList.add("active"); };
 
         }
+
+        delete offsetKoef;
 
     }
 
@@ -546,15 +573,21 @@ function DSS_start(sliderClassName, settings){
 
     }
 
-    // эксперементальная фича //
+    // ---------------------- //
+    // эксперементальные фичи //
+    // ---------------------- //
+
+    // режим презентации //
 
     function presentationMode(){
+
+        const z = 9.5112702529; // константа для подгонки логарифмического графика к её касательной
 
         let thumbTrack = document.querySelectorAll(sliderClassName + "-thumb")[0];
         let thumbContainer = document.querySelectorAll(sliderClassName + "-thumb-container")[0];
 
         let thumbSlide = thumbTrack.firstChild,
-            thumbSlides = thumbTrack.childNodes; 
+            thumbSlides = thumbTrack.childNodes;
 
         let marginSlide = parseInt(getComputedStyle(thumbSlide, true).margin);
 
@@ -563,6 +596,15 @@ function DSS_start(sliderClassName, settings){
         let touch = false,
             isTouched = false,
             isDelayed = false;
+
+
+        function logBase(x, y) {
+            return Math.log(y) / Math.log(x);
+        }
+
+        function logAnimGraphic(x){
+            return Math.round(Math.sqrt(10*Math.pow(logBase(2, x-z),3)));
+        }
 
         function touchUp(){
 
@@ -595,6 +637,7 @@ function DSS_start(sliderClassName, settings){
 
             touch = true;
             isTouched = true;
+            
             startPosX = ((e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2)) - thumbTrack.offsetLeft);
             startContPosX = ((e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2))); 
 
@@ -607,10 +650,18 @@ function DSS_start(sliderClassName, settings){
             if (touch === true && isDelayed === false){
 
                 mousePosX = e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2);
-                thumbTrack.style.left = `${(mousePosX - startPosX)}px`;
 
-                if (thumbTrack.offsetLeft < widthTrack - ((2 * thumbSlide.clientWidth)/3) || thumbTrack.offsetLeft > (2 * thumbSlide.clientWidth)/3){ touchUp(); }
-                else{ return };
+                if (logAnimGraphic(mousePosX - startPosX) >= 23){
+                    thumbTrack.style.left = `${logAnimGraphic(mousePosX - startPosX)}px`;
+                }
+
+                else if ((mousePosX - startPosX) < 0 && -1*(mousePosX - startPosX) + widthTrack >= 23){
+                    thumbTrack.style.left = `${widthTrack - (logAnimGraphic(Math.abs((-1 * widthTrack) + (mousePosX - startPosX))))}px`;
+                }
+
+                else {
+                    thumbTrack.style.left = `${mousePosX - startPosX}px`;
+                }
 
             }
             else{ return; }
@@ -644,7 +695,62 @@ function DSS_start(sliderClassName, settings){
         }
 
     }
-
     if (settings.presentationMode === true){ presentationMode();}
+
+    // навигация по точкам //
+
+    function target(target, width){
+
+        sliderTrack.style.transition = settings.speedAnimation + "ms " + settings.transition;
+
+        var offsetKoef;
+        
+        if (settings.endlessSlider === false){offsetKoef = target;}
+        else {offsetKoef = target+1;}
+
+        console.log(offsetKoef);
+
+        sliderTrack.style.transform = "translateX(-"+ ((width) * offsetKoef) +"px)";
+
+        setTimeout(function(){
+
+            sliderTrack.style.transition = null;
+
+            sliderTrack.style.transform = "translateX(-"+ ((width) * offsetKoef) +"px)";
+
+        }, settings.speedAnimation);
+
+        delete offsetKoef;
+
+    }
+
+    for (var i = 0; i < dots.length; i++) {
+
+        dots[i].addEventListener("click", function() {
+
+            if (isDelayed === false){
+                
+                isDelayed = true;
+
+                mainItems[currentSlide].classList.remove("active");
+
+                targetSlide = parseInt(this.getAttribute("indexItem"));
+
+                mainItems[targetSlide].classList.add("active");
+
+                decorationAnim(dots, thumbnails, currentSlide);
+                target(targetSlide, mainItems[0].clientWidth);
+
+                indexItem = currentSlide = targetSlide;
+
+                delete targetSlide;
+
+                setTimeout(() => {isDelayed = false}, settings.speedAnimation);
+
+            }
+            
+        })
+
+    }
 
 }  // жырнаяъ галереяъ
