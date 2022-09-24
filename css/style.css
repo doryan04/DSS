@@ -118,6 +118,9 @@ button:active{
     opacity: 60%;
     width: var(--dots-size);
 }
+.dot:hover{
+    cursor: pointer;
+}
 
 .dot-pull{
     width: calc(var(--dots-size) * 3);
