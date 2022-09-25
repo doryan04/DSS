@@ -2,10 +2,114 @@
 /* Настройка галереи */
 /* ================= */
 
+
 :root{
     --width: 480px;
     --height: 240px;
     --dots-size: 15px;
+}
+
+html,
+body{
+    margin:0;
+    padding:0;
+    background-color: #383838;
+    flex-direction: column;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo{
+    top: 0%;
+    position:absolute;
+    width: 720px;
+    height: 248px;
+    background-image: url(png/logo.png);
+    transform: scale(0.8);
+
+}
+
+.presentation{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.text{
+    display: flex;
+    position: absolute;
+    top: 23.5%;
+    font-family: 'Arial', sans-serif;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 14pt;
+    line-height: 17pt;
+    /* identical to box height */
+
+    letter-spacing: 2em;
+    text-transform: uppercase;
+
+}
+#light{
+
+    color: #FFFFFF;
+
+}
+#blueGradient{
+
+    color: transparent;    
+    -webkit-background-clip: text;
+
+    background-clip: text;
+    background-image: linear-gradient(to right, #60A7E3, #9CFBFF);
+
+}
+
+.slider-thumb-container{
+    overflow: hidden;
+    position: relative;
+    margin-top: 5px;
+    display: flex;
+    border-radius: 15px;
+    width: var(--width);
+    height: calc(var(--height)/2.5);
+}
+
+.slider-thumb{
+    position: absolute;
+    display: flex;
+    width: max-content;
+    height: inherit;
+}
+
+.slide-thumb{
+    font-size: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    margin: 5px;
+    border-radius: 10px;
+    width: calc((var(--width) - (5px * 2 * 3))/3);
+    height: calc((((var(--width) - (5px * 2 * 3))/3) * var(--height))/var(--width));
+}
+
+.sliderMargin1{
+    margin: 30vh 0 0 0;
+}
+
+.sliderMargin2{
+    margin: 40vh 0 0 0;
+}
+
+.slider_new{
+    margin: 10%;
+    display: flex;
+    flex-direction:row;
+    align-items: center;
+    justify-content: center;
+    height: var(--height);
+    width: 100%;
 }
 
 /* ============================= */
@@ -13,7 +117,8 @@
 /* ============================= */
 
 .slider{
-    margin: 10%;
+    font-family: 'Arial', sans-serif;
+    font-size: 30pt;
     display: flex;
     flex-direction:column;
     align-items: center;
@@ -47,15 +152,12 @@
 }
 
 .slider-track > div{
-    background-color: rgb(59, 144, 170);
     min-width: var(--width);
     min-height: var(--height);
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 48pt;
-    color:azure;
 }
 .slide{
     user-select: none;
