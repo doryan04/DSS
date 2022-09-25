@@ -2,122 +2,29 @@
     <head>
         <link rel="stylesheet" type="text/css" href="css/style.css"></style>
         <title>DSS</title>
+        <script type="text/javascript" src="ds_slider/ds_slider.js"></script>
         <style>
 
-            /* ============== */
-            /* Для красоты :3 */
-            /* ============== */
-
-            :root{
-                --width: 480px;
-                --height: 240px;
-                --dots-size: 15px;
+            .slide{ /*  default color scheme  */
+                background-color:cornflowerblue;
+                color:white;
             }
-
-            html,
-            body{
-                margin:0;
-                padding:0;
-                background-color: #383838;
-                flex-direction: column;
-                display: flex;
-                align-items: center;
-                justify-content: center;
+            .gold{
+                background-color:gold; 
+                color: black;
             }
-
-            .logo{
-                top: 0%;
-                position:absolute;
-                width: 720px;
-                height: 248px;
-                background-image: url(png/logo.png);
-                transform: scale(0.8);
-
+            .blueviolet{
+                font-size: 28pt; 
+                background-color: blueviolet;
             }
-
-            .presentation{
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-            .text{
-                display: flex;
-                position: absolute;
-                top: 23.5%;
-                font-family: 'Arial', sans-serif;
-                font-style: normal;
-                font-weight: 300;
-                font-size: 14pt;
-                line-height: 17pt;
-                /* identical to box height */
-
-                letter-spacing: 2em;
-                text-transform: uppercase;
-
-            }
-            #light{
-
-                color: #FFFFFF;
-
-            }
-            #blueGradient{
-
-                color: transparent;    
-	            -webkit-background-clip: text;
-
-                background-clip: text;
-	            background-image: linear-gradient(to right, #60A7E3, #9CFBFF);
-
-            }
-
-            .slider-thumb-container{
-                overflow: hidden;
-                position: relative;
-                margin-top: 5px;
-                display: flex;
-                border-radius: 15px;
-                width: var(--width);
-                height: calc(var(--height)/2.5);
-            }
-
-            .slider-thumb{
-                position: absolute;
-                display: flex;
-                width: max-content;
-                height: inherit;
-            }
-
-            .slide-thumb{
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: #FFFFFF;
-                margin: 5px;
-                border-radius: 10px;
-                width: calc((var(--width) - (5px * 2 * 3))/3);
-                height: calc((((var(--width) - (5px * 2 * 3))/3) * var(--height))/var(--width));
-            }
-            
-            .sliderMargin1{
-                margin: 30vh 0 0 0;
-            }
-
-            .sliderMargin2{
-                margin: 40vh 0 0 0;
-            }
-            
-            .slider_new{
-                margin: 10%;
-                display: flex;
-                flex-direction:row;
-                align-items: center;
-                justify-content: center;
-                height: var(--height);
-                width: 100%;
+            .lightsalmon{
+                font-size: 36pt; 
+                background-color:lightsalmon; 
+                color: black; 
+                border: 5px;
             }
 
         </style>
-        <script type="text/javascript" src="ds_slider/ds_slider.js"></script>
     </head>
     <body class="presentation">
         <div class="logo"></div>
@@ -130,12 +37,11 @@
             </div>
         </div>
         <div class="slider sliderMargin1">
-            <div>1</div>
-            <div>2</div>
-            <div>3</div>
-            <div>4</div>
-            <div>5</div>
-            <div>6</div>
+            <div>Welcome!</div>
+            <div class="gold">This is a DSS</div>
+            <div class="blueviolet"> On native JS carousel </div>
+            <div class="lightsalmon"> It's very simple </div>
+            <div style="background-color:thistle ;"> It's respinsive and beauty </div>
         </div>
     </body>
     <script>
@@ -150,7 +56,7 @@
                 arrows: true,
                 dots: true,
                 dotsEffect: "dot-pull",
-                endlessSlider: true,
+                endlessSlider: false,
                 transition: "ease-in-out",
                 presentationMode: true, //its a experimental function. recommended off this parameter
                 speedAnimation: 500,
