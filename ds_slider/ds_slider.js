@@ -131,14 +131,14 @@ function DSS_start(sliderClassName, settings){
             case false: break;
     
         }
-    
+
         // Подготовка слайдов //
         
         function classIndent(items){
             for (let j = 0; j < items.length; j++){
                 
-                if(settings.endlessSlider === true){ items[j].classList = "slide"; items[j].setAttribute("indexItem", j - 1); }
-                else{ items[j].classList = "slide"; items[j].setAttribute("indexItem", j); }
+                if(settings.endlessSlider === true){ items[j].classList.add("slide"); items[j].setAttribute("indexItem", j - 1); }
+                else{ items[j].classList.add("slide"); items[j].setAttribute("indexItem", j); }
             
             }
             
@@ -261,7 +261,21 @@ function DSS_start(sliderClassName, settings){
 
             // experimental, второй блок //
 
-            if (settings.presentationMode == true){
+            let mainItems;
+
+            if (settings.endlessSlider === true) { 
+                
+                let mainItemsTemp = Array.from(document.querySelectorAll(sliderClassName + "-track")[0].childNodes); 
+                mainItems = mainItemsTemp.slice(1, mainItemsTemp.length - 1);
+                delete mainItemsTemp;
+
+            } else {
+
+                mainItems = Array.from(document.querySelectorAll(sliderClassName + "-track")[0].childNodes); 
+                
+            }
+
+            if (settings.presentationMode == true && mainItems.length >= 3){
 
                 let secondBlock = document.createElement("div");
                 secondBlock.className = className + "-thumb-block";
@@ -276,22 +290,30 @@ function DSS_start(sliderClassName, settings){
 
                     mainThumbsSlide = mainSlides[i].cloneNode(true);
 
-                    mainThumbsSlide.style.backgroundColor = getComputedStyle(mainSlides[0], true).backgroundColor;
+                    mainThumbsSlide.style.backgroundColor = getComputedStyle(mainSlides[i], true).backgroundColor;
                     mainThumbsSlide.style.backgroundClip = "content-box";
 
                     sliderThumb.append(mainThumbsSlide);
 
                 }
-
+                
                 document.querySelectorAll(sliderClassName)[0].append(sliderThumbCont);
                 sliderThumbCont.append(sliderThumb);
 
                 var thumbnailDiv = document.querySelectorAll(sliderClassName + "-thumb > div");
 
                 for (var slideIndex = 0; slideIndex < document.querySelectorAll(sliderClassName + "-thumb > div").length; slideIndex++){
+
                     thumbnailDiv[slideIndex].classList.add("slide-thumb");
+
+                    let thumb = document.querySelectorAll(sliderClassName + " .slide-thumb")[slideIndex],
+                        slide = document.querySelectorAll(sliderClassName + " .slide")[slideIndex];
+                        k = parseFloat(getComputedStyle(thumb, true).height)/parseFloat(getComputedStyle(slide, true).height) - 0.05;
+                        sizeText = parseFloat(window.getComputedStyle(thumb, null).getPropertyValue('font-size'));
+                    thumb.style.fontSize = sizeText * k;
+
                 }
-                
+
                 let thumbSlides = document.querySelectorAll(".slide-thumb");
                 let thumbBlock = document.querySelectorAll("section" + sliderClassName + "-thumb-container")[0];
 
@@ -562,14 +584,18 @@ function DSS_start(sliderClassName, settings){
             dots[document.querySelector(sliderClassName + "-track div.slide.active").getAttribute("indexitem")].classList.add(settings.dotsEffect);
 
         }
-        
-        if (settings.presentationMode === true){
 
-            thumbnails[index].style.backgroundImage = "none";
-                
-            thumbnails[document.querySelector(sliderClassName + "-track div.slide.active").getAttribute("indexitem")].style.backgroundImage = "linear-gradient(to top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3)";
+        try{
 
-        }
+            if (settings.presentationMode === true && document.querySelectorAll(sliderClassName + "-thumb")[0].childNodes.length >= 3){
+
+                thumbnails[index].style.backgroundImage = "none";
+                    
+                thumbnails[document.querySelector(sliderClassName + "-track div.slide.active").getAttribute("indexitem")].style.backgroundImage = "linear-gradient(to top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3)";
+
+            }
+
+        } catch (err) { return; }
 
     }
 
@@ -651,17 +677,13 @@ function DSS_start(sliderClassName, settings){
 
                 mousePosX = e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2);
 
-                if (logAnimGraphic(mousePosX - startPosX) >= 23){
-                    thumbTrack.style.left = `${logAnimGraphic(mousePosX - startPosX)}px`;
-                }
+                if (logAnimGraphic(mousePosX - startPosX) >= 23){ thumbTrack.style.left = `${logAnimGraphic(mousePosX - startPosX)}px`; }
+                else if ((mousePosX - startPosX) < 0 && -1 * (mousePosX - startPosX) + widthTrack >= 23){ 
 
-                else if ((mousePosX - startPosX) < 0 && -1*(mousePosX - startPosX) + widthTrack >= 23){
-                    thumbTrack.style.left = `${widthTrack - (logAnimGraphic(Math.abs((-1 * widthTrack) + (mousePosX - startPosX))))}px`;
-                }
+                    thumbTrack.style.left = `${widthTrack - (logAnimGraphic(Math.abs((-1 * widthTrack) + (mousePosX - startPosX))))}px`; 
 
-                else {
-                    thumbTrack.style.left = `${mousePosX - startPosX}px`;
                 }
+                else { thumbTrack.style.left = `${mousePosX - startPosX}px`; }
 
             }
             else{ return; }
@@ -695,7 +717,11 @@ function DSS_start(sliderClassName, settings){
         }
 
     }
-    if (settings.presentationMode === true){ presentationMode();}
+
+    let PMerror = "Please, add slides for correctly working Presentation Mode \nCode error: "
+
+    try{ if (settings.presentationMode === true && document.querySelectorAll(sliderClassName + "-thumb")[0].childNodes.length >= 3){ presentationMode();} }
+    catch(e){ alert(PMerror + e); delete PMerror;}
 
     // навигация по точкам //
 
@@ -707,8 +733,6 @@ function DSS_start(sliderClassName, settings){
         
         if (settings.endlessSlider === false){offsetKoef = target;}
         else {offsetKoef = target+1;}
-
-        console.log(offsetKoef);
 
         sliderTrack.style.transform = "translateX(-"+ ((width) * offsetKoef) +"px)";
 
