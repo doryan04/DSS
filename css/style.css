@@ -25,7 +25,7 @@ body{
     position:absolute;
     width: 720px;
     height: 248px;
-    background-image: url(png/logo.png);
+    background-image: url(/png/logo.png);
     transform: scale(0.8);
 
 }
@@ -65,17 +65,18 @@ body{
 
 }
 
-.slider-thumb-container{
+.slider-thumb-container, 
+.slider2-thumb-container{
     overflow: hidden;
     position: relative;
     margin-top: 5px;
     display: flex;
-    border-radius: 15px;
     width: var(--width);
     height: calc(var(--height)/2.5);
 }
 
-.slider-thumb{
+.slider-thumb,
+.slider2-thumb{
     position: absolute;
     display: flex;
     width: max-content;
@@ -102,21 +103,12 @@ body{
     margin: 40vh 0 0 0;
 }
 
-.slider_new{
-    margin: 10%;
-    display: flex;
-    flex-direction:row;
-    align-items: center;
-    justify-content: center;
-    height: var(--height);
-    width: 100%;
-}
-
 /* ============================= */
 /* Классы для просмотра картинок */
 /* ============================= */
 
-.slider{
+.slider,
+.slider2{
     font-family: 'Arial', sans-serif;
     font-size: 30pt;
     display: flex;
@@ -126,14 +118,16 @@ body{
     width: 100%;
 }
 
-.slider-block{
+.slider-block,
+.slider2-block{
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
 }
 
-.slider-container{
+.slider-container,
+.slider2-container{
     border-radius: 15px;
     display: flex;
     position: relative;
@@ -144,14 +138,16 @@ body{
     overflow: hidden;
 }
 
-.slider-track{
+.slider-track,
+.slider2-track{
     border-radius: inherit;
     display: flex;
     flex-direction: row;
     width: max-content;
 }
 
-.slider-track > div{
+.slider-track > div,
+.slider2-track > div{
     min-width: var(--width);
     min-height: var(--height);
     position: relative;
@@ -190,11 +186,11 @@ button:active{
 }
 
 #left{
-    background-image: url(/arrows/Left\ Arrow.svg);
+    background-image: url(/arrows/Left\ Arrow.png);
 }
 
 #right{
-    background-image: url(/arrows/Right\ Arrow.svg);
+    background-image: url(/arrows/Right\ Arrow.png);
 }
 
 /* ========= */
