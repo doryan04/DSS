@@ -62,7 +62,7 @@ function DSS_start(sliderClassName, settings){
     
             isThrottled = true;
     
-            setTimeout(function() {
+            setTimeout((function() {
 
                 isThrottled = false;
 
@@ -74,7 +74,7 @@ function DSS_start(sliderClassName, settings){
 
                 }
 
-            }, delay);
+            }), delay);
 
         }
 
@@ -135,6 +135,7 @@ function DSS_start(sliderClassName, settings){
         // Подготовка слайдов //
         
         function classIndent(items){
+
             for (let j = 0; j < items.length; j++){
                 
                 if(settings.endlessSlider === true){ items[j].classList.add("slide"); items[j].setAttribute("indexItem", j - 1); }
@@ -267,7 +268,6 @@ function DSS_start(sliderClassName, settings){
                 
                 let mainItemsTemp = Array.from(document.querySelectorAll(sliderClassName + "-track")[0].childNodes); 
                 mainItems = mainItemsTemp.slice(1, mainItemsTemp.length - 1);
-                delete mainItemsTemp;
 
             } else {
 
@@ -348,7 +348,7 @@ function DSS_start(sliderClassName, settings){
     var indexItem = 0,
         mainItems = Array.from(document.querySelectorAll(sliderClassName + " " + sliderClassName +"-track .slide"));
     if (settings.dots === true){ var dots = Array.from(document.querySelector(sliderClassName + " .dots-bar").childNodes);}
-    if (settings.presentationMode === true){ var thumbnails = document.querySelectorAll(".slide-thumb");}
+    if (settings.presentationMode === true){ var thumbnails = document.querySelectorAll(sliderClassName + " .slide-thumb");}
 
     let isDelayed = false,
         targetSlide,
@@ -385,14 +385,7 @@ function DSS_start(sliderClassName, settings){
 
                 function autoPlayWithArrows(){
 
-                    left.onclick = null;
-                    right.onclick = null;
-    
-                    slideScroll(settings.autoPlayDirrection, countSlides, mainItems);
-    
-                    setTimeout(() => {  left.onclick = throttle(slideLeft, settings.speedAnimation);
-                                        right.onclick = throttle(slideRight, settings.speedAnimation);}, 
-                                        settings.speedAnimation);
+                    if(isDelayed === false){ slideScroll(settings.autoPlayDirrection, countSlides, mainItems); }
     
                 }
 
@@ -408,12 +401,10 @@ function DSS_start(sliderClassName, settings){
 
                 if (settings.autoPlaySlider === true){ clearInterval(autoPlayInterval); } // Если включена автопрокрутка, то интервал обнуляется для красивой работы слайдера
                 
-                if(isDelayed === false){
-
-                    right.onclick = null;
+                if (isDelayed === false){
 
                     slideScroll(left.id, countSlides, mainItems);
-        
+
                     setTimeout(() => {right.onclick = throttle(slideRight, settings.speedAnimation);}, settings.speedAnimation);
         
                     if (indexItem == 0 && settings.endlessSlider === false){
@@ -435,11 +426,9 @@ function DSS_start(sliderClassName, settings){
                 if (settings.autoPlaySlider === true){ clearInterval(autoPlayInterval); } // Если включена автопрокрутка, то интервал обнуляется для красивой работы слайдера
                 
                 if(isDelayed === false){
-
-                    left.onclick = null;
                 
                     slideScroll(right.id, countSlides, mainItems);
-        
+
                     setTimeout(() => {left.onclick = throttle(slideLeft, settings.speedAnimation);}, settings.speedAnimation);
         
                     if (indexItem == document.querySelectorAll(sliderClassName + "-track .slide").length - 1 && settings.endlessSlider === false){
@@ -469,11 +458,11 @@ function DSS_start(sliderClassName, settings){
 
         if (settings.autoPlaySlider === true && settings.arrows === false){
 
-            setInterval(function(){
+            setInterval((function(){
 
                 slideScroll(settings.autoPlayDirrection, countSlides, items); ActiveSlide(items, countSlides, settings.autoPlayDirrection);
 
-            }, settings.autoPlayDelay);
+            }), settings.autoPlayDelay);
 
         }
         
@@ -496,8 +485,25 @@ function DSS_start(sliderClassName, settings){
 
     function slideScroll(direction, countSlides, items){
 
-        if (direction == "left" && ((indexItem > 0 && settings.endlessSlider === false) || (indexItem >= 0 && settings.endlessSlider === true))){ changeSlide(direction, countSlides, items); } 
-        else if (direction == "right" && indexItem < countSlides){ changeSlide(direction, countSlides, items); }
+        if (direction == "left" && 
+            ((indexItem > 0 && settings.endlessSlider === false) || 
+            (indexItem >= 0 && settings.endlessSlider === true))){ 
+
+                isDelayed = true;
+                changeSlide(direction, countSlides, items); 
+                setTimeout(()=>{isDelayed = false;}, settings.speedAnimation);
+
+        } 
+
+        else if (direction == "right" && 
+                 ((indexItem < countSlides - 1 && settings.endlessSlider === false) || 
+                 (indexItem < countSlides && settings.endlessSlider === true))){ 
+                    
+                    isDelayed = true;
+                    changeSlide(direction, countSlides, items); 
+                    setTimeout(()=>{isDelayed = false;}, settings.speedAnimation);
+                
+        }
 
     }
 
@@ -507,7 +513,7 @@ function DSS_start(sliderClassName, settings){
 
     function scrollingSlide(direction, countSlides, items, width){
 
-        sliderTrack.style.transition = settings.speedAnimation + "ms " + settings.transition;
+        sliderTrack.style.transition = `${settings.speedAnimation}ms ${settings.transition}`;
 
         if (Object.is("right", direction) === true){ indexItem++; } else { indexItem--;};
 
@@ -518,9 +524,9 @@ function DSS_start(sliderClassName, settings){
         if (settings.endlessSlider === true){offsetKoef = indexItem + 1;}
         else {offsetKoef = indexItem;}
 
-        sliderTrack.style.transform = "translateX(-"+ ((width) * offsetKoef) +"px)";
+        sliderTrack.style.transform = `translateX(-${ ((width) * offsetKoef) }px)`;
 
-        setTimeout(function(){
+        setTimeout((function(){
 
             sliderTrack.style.transition = null;
             
@@ -534,9 +540,9 @@ function DSS_start(sliderClassName, settings){
 
             };
 
-            sliderTrack.style.transform = "translateX(-"+ ((width) * offsetKoef) +"px)";
+            sliderTrack.style.transform = `translateX(-${ ((width) * offsetKoef) }px)`;
 
-        }, settings.speedAnimation);
+        }), settings.speedAnimation);
 
         if (Object.is("right", direction) === true){
 
@@ -549,8 +555,6 @@ function DSS_start(sliderClassName, settings){
             else { items[indexItem].classList.add("active"); };
 
         }
-
-        delete offsetKoef;
 
     }
 
@@ -595,7 +599,7 @@ function DSS_start(sliderClassName, settings){
 
             }
 
-        } catch (err) { return; }
+        } catch (err) { }
 
     }
 
@@ -624,12 +628,12 @@ function DSS_start(sliderClassName, settings){
             isDelayed = false;
 
 
-        function logBase(x, y) {
+        function logBase(x, y){
             return Math.log(y) / Math.log(x);
         }
 
         function logAnimGraphic(x){
-            return Math.round(Math.sqrt(10*Math.pow(logBase(2, x-z),3)));
+            return Math.round((10*((logBase(2, x-z) ** 3)))** 0.5);
         }
 
         function touchUp(){
@@ -638,28 +642,30 @@ function DSS_start(sliderClassName, settings){
             touch = false;
             isTouched = false;
 
-            if (thumbTrack.offsetLeft >= 0){
+            let tt = thumbTrack.offsetLeft;
+
+            if (tt >= 0){
 
                 thumbTrack.style.transition = "ease-out" + ` ${settings.speedAnimation/2}ms`;
                 thumbTrack.style.left = "0px";
 
-            } else if (thumbTrack.offsetLeft < widthTrack){
+            } else if (tt < widthTrack){
 
                 thumbTrack.style.transition = "ease-out" + ` ${settings.speedAnimation/2}ms`;
                 thumbTrack.style.left = `${-(thumbSlides.length - 3) * (thumbSlide.clientWidth + (marginSlide * 2))}`;
 
             }
 
-            setTimeout(function() {
+            setTimeout((function() {
 
                 thumbTrack.style.transition = "none";
                 isDelayed = false;
 
-            }, settings.speedAnimation/2);
+            }), settings.speedAnimation/2);
 
         }
 
-        var onMouseDown = throttle((e) => {
+        var onMouseDown = (e) => {
 
             touch = true;
             isTouched = true;
@@ -667,15 +673,15 @@ function DSS_start(sliderClassName, settings){
             startPosX = ((e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2)) - thumbTrack.offsetLeft);
             startContPosX = ((e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2))); 
 
-        }, settings.speedAnimation/2);
+        };
 
-        var onMouseMove = (e) => { 
+        var onMouseMove = throttle((e) => { 
 
             e.preventDefault();
                 
             if (touch === true && isDelayed === false){
 
-                mousePosX = e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2);
+                let mousePosX = e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2);
 
                 if (logAnimGraphic(mousePosX - startPosX) >= 23){ thumbTrack.style.left = `${logAnimGraphic(mousePosX - startPosX)}px`; }
                 else if ((mousePosX - startPosX) < 0 && -1 * (mousePosX - startPosX) + widthTrack >= 23){ 
@@ -686,21 +692,20 @@ function DSS_start(sliderClassName, settings){
                 else { thumbTrack.style.left = `${mousePosX - startPosX}px`; }
 
             }
-            else{ return; }
 
-        }
+        }, (1/60) * 1000);
 
-        var onMouseUp = throttle(() => {
+        var onMouseUp = () => {
 
             if(isDelayed === false){
 
                 touchUp(); 
 
             }
-        
-        }, settings.speedAnimation/2);
 
-        thumbTrack.onmouseenter = thumbTrack.onmouseleave = function(event){
+        };
+
+        thumbTrack.onmouseenter = thumbTrack.onmouseleave = throttle(function(event){
 
             event.preventDefault();
 
@@ -714,16 +719,16 @@ function DSS_start(sliderClassName, settings){
             else if(event.type === "mouseleave" && isTouched === true && isDelayed === false){ touchUp(); }
             else { touch = false; isTouched = false; }
 
-        }
+        }, (1/60) * 1000);
 
     }
 
     let PMerror = "Please, add slides for correctly working Presentation Mode \nCode error: "
 
     try{ if (settings.presentationMode === true && document.querySelectorAll(sliderClassName + "-thumb")[0].childNodes.length >= 3){ presentationMode();} }
-    catch(e){ alert(PMerror + e); delete PMerror;}
+    catch(e){ alert(PMerror + e);}
 
-    // навигация по точкам //
+    // Навигация по точкам //
 
     function target(target, width){
 
@@ -734,23 +739,21 @@ function DSS_start(sliderClassName, settings){
         if (settings.endlessSlider === false){offsetKoef = target;}
         else {offsetKoef = target+1;}
 
-        sliderTrack.style.transform = "translateX(-"+ ((width) * offsetKoef) +"px)";
+        sliderTrack.style.transform = `translateX(-${ ((width) * offsetKoef) }px)`;
 
-        setTimeout(function(){
+        setTimeout((function(){
 
             sliderTrack.style.transition = null;
 
-            sliderTrack.style.transform = "translateX(-"+ ((width) * offsetKoef) +"px)";
-
-        }, settings.speedAnimation);
-
-        delete offsetKoef;
+        }), settings.speedAnimation);
 
     }
 
-    for (var i = 0; i < dots.length; i++) {
+    let dotsBar = document.querySelector(sliderClassName + " .dots-bar").childNodes;
 
-        dots[i].addEventListener("click", function() {
+    for (var i = 0; i < dotsBar.length; i++) {
+
+        dotsBar[i].addEventListener("click", (function() {
 
             if (isDelayed === false){
                 
@@ -762,18 +765,16 @@ function DSS_start(sliderClassName, settings){
 
                 mainItems[targetSlide].classList.add("active");
 
-                decorationAnim(dots, thumbnails, currentSlide);
+                decorationAnim(dotsBar, thumbnails, currentSlide);
                 target(targetSlide, mainItems[0].clientWidth);
 
                 indexItem = currentSlide = targetSlide;
-
-                delete targetSlide;
 
                 setTimeout(() => {isDelayed = false}, settings.speedAnimation);
 
             }
             
-        })
+        }))
 
     }
 
