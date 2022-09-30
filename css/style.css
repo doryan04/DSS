@@ -2,10 +2,11 @@
 /* Настройка галереи */
 /* ================= */
 
-
 :root{
     --width: 480px;
     --height: 240px;
+    --width-thumb: calc(var(--width) * (5/16));
+    --height-thumb: calc(var(--height) * (5/16));
     --dots-size: 15px;
 }
 
@@ -65,18 +66,20 @@ body{
 
 }
 
-.slider-thumb-container, 
-.slider2-thumb-container{
+/* ================= */
+/* экспериментальная */
+/* ================= */
+
+.slider-thumb-container{
     overflow: hidden;
     position: relative;
-    margin-top: 5px;
+    margin-top: 10px;
     display: flex;
     width: var(--width);
-    height: calc(var(--height)/2.5);
+    height: var(--height-thumb);
 }
 
-.slider-thumb,
-.slider2-thumb{
+.slider-thumb{
     position: absolute;
     display: flex;
     width: max-content;
@@ -85,14 +88,15 @@ body{
 
 .slide-thumb{
     font-size: inherit;
+    padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #FFFFFF;
-    margin: 5px;
+    margin: 0px 5px;
     border-radius: 10px;
-    width: calc((var(--width) - (5px * 2 * 3))/3);
-    height: calc((((var(--width) - (5px * 2 * 3))/3) * var(--height))/var(--width));
+    width: var(--width-thumb);
+    height: var(--height-thumb);
 }
 
 .sliderMargin1{
@@ -103,12 +107,11 @@ body{
     margin: 40vh 0 0 0;
 }
 
-/* ============================= */
-/* Классы для просмотра картинок */
-/* ============================= */
+/* ================= */
+/* Основная карусель */
+/* ================= */
 
-.slider,
-.slider2{
+.slider{
     font-family: 'Arial', sans-serif;
     font-size: 30pt;
     display: flex;
@@ -118,16 +121,14 @@ body{
     width: 100%;
 }
 
-.slider-block,
-.slider2-block{
+.slider-block{
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
 }
 
-.slider-container,
-.slider2-container{
+.slider-container{
     border-radius: 15px;
     display: flex;
     position: relative;
@@ -138,18 +139,16 @@ body{
     overflow: hidden;
 }
 
-.slider-track,
-.slider2-track{
+.slider-track{
     border-radius: inherit;
     display: flex;
     flex-direction: row;
     width: max-content;
 }
 
-.slider-track > div,
-.slider2-track > div{
-    min-width: var(--width);
-    min-height: var(--height);
+.slider-track > div{
+    width: var(--width);
+    height: var(--height);
     position: relative;
     display: flex;
     align-items: center;
@@ -159,9 +158,9 @@ body{
     user-select: none;
 }
 
-/* ====== */
-/* Кнопки */
-/* ====== */
+/* ======= */
+/* Стрелки */
+/* ======= */
 
 .button{
     transition: 0.25s ease-out;
@@ -216,7 +215,9 @@ button:active{
     opacity: 60%;
     width: var(--dots-size);
 }
+
 .dot:hover{
+    opacity: 80%;
     cursor: pointer;
 }
 
