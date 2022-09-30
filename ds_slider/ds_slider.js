@@ -36,6 +36,9 @@ function DSS_start(sliderClassName, settings){
 
     }
 
+    var timeAnim = settings.speedAnimation,
+        delayAP = settings.autoPlayDelay;
+
     // ======================= //
     // Вспомогательные функции //
     // ======================= //
@@ -90,9 +93,9 @@ function DSS_start(sliderClassName, settings){
 
         let slideMigration = new function(){
 
-            var track = document.createElement("div");
-            var slide = document.querySelectorAll(sliderClassName + " > div");
-            var countDivs = slide.length;
+            var track = document.createElement("div"),
+                slide = document.querySelectorAll(sliderClassName + " > div"),
+                countDivs = slide.length;
     
             track.className = className + "-track";
     
@@ -108,8 +111,9 @@ function DSS_start(sliderClassName, settings){
 
         // Временные переменные, созданные для удобства //
 
-        var container = document.querySelectorAll(sliderClassName)[0];
-        var track = document.querySelectorAll(sliderClassName + "-track")[0];
+        var container = document.querySelectorAll(sliderClassName)[0],
+            track = document.querySelectorAll(sliderClassName + "-track")[0];
+
         let items = track.childNodes;
 
         // Создание родительских тегов //
@@ -160,8 +164,8 @@ function DSS_start(sliderClassName, settings){
     
         function preparingButtons(){
     
-            var slideRight = document.createElement("button");
-            var slideLeft = document.createElement("button");
+            var slideRight = document.createElement("button"),
+                slideLeft = document.createElement("button");
         
             slideRight.classList = "button"; slideRight.id = "right";
             slideLeft.classList = "button"; slideLeft.id = "left";
@@ -186,8 +190,8 @@ function DSS_start(sliderClassName, settings){
             
                     function dotsGenerator(){
             
-                        let dotsBarContainer = document.querySelector(sliderClassName + " .dots-bar");
-                        let countItems;
+                        let dotsBarContainer = document.querySelector(sliderClassName + " .dots-bar"),
+                            countItems;
 
                         if (settings.endlessSlider === true){countItems = items.length - 2;} 
                         else { countItems = items.length; }
@@ -197,7 +201,7 @@ function DSS_start(sliderClassName, settings){
                             let dot = document.createElement("div");
                     
                             dot.classList = "dot"; dot.setAttribute("indexItem", i);
-                            dot.style.transition = settings.speedAnimation + "ms " + settings.transition;
+                            dot.style.transition = timeAnim + "ms " + settings.transition;
         
                             dotsBarContainer.append(dot);
                     
@@ -219,8 +223,8 @@ function DSS_start(sliderClassName, settings){
     
         }
 
-        let mainSlides = [];
-        let allSlides = Array.from(document.querySelector(sliderClassName + "-track").childNodes);
+        let mainSlides = [],
+            allSlides = Array.from(document.querySelector(sliderClassName + "-track").childNodes);
 
         switch(settings.endlessSlider){
 
@@ -249,18 +253,23 @@ function DSS_start(sliderClassName, settings){
 
         function elemBlocks(){
 
-            // experimental, первый блок //
+            // =================== //
+            // Создаём первый блок //
+            // =================== //
 
-            let sliderBlock = Array.from(document.querySelectorAll(sliderClassName)[0].childNodes);
+            let sliderBlock = Array.from(document.querySelectorAll(sliderClassName)[0].childNodes),
+                SBlenght = sliderBlock.length;
             
             let firstBlock = document.createElement("div");
             firstBlock.className = className + "-block";
 
             document.querySelector(sliderClassName).append(firstBlock);
 
-            for (let i = 0; i < sliderBlock.length; i++){ firstBlock.append(sliderBlock[i]); }
+            for (let i = 0; i < SBlenght; i++){ firstBlock.append(sliderBlock[i]); }
 
-            // experimental, второй блок //
+            // =================== //
+            // Создаём второй блок //
+            // =================== //
 
             let mainItems;
 
@@ -275,7 +284,13 @@ function DSS_start(sliderClassName, settings){
                 
             }
 
-            if (settings.presentationMode == true && mainItems.length >= 3){
+            var MIlenght = mainItems.length,
+                MSlenght = mainSlides.length;
+            var MSFsize = [],
+                MSFSset = [],
+                iMSFSS = 0;
+
+            if (settings.presentationMode == true && MIlenght >= 3){
 
                 let secondBlock = document.createElement("div");
                 secondBlock.className = className + "-thumb-block";
@@ -286,13 +301,9 @@ function DSS_start(sliderClassName, settings){
                 sliderThumbCont.className = className + "-thumb-container";
                 sliderThumb.className = className + "-thumb";
 
-                for (let i = 0; i < mainSlides.length; i++){ 
+                for (let i = 0; i < MSlenght; i++){ 
 
                     mainThumbsSlide = mainSlides[i].cloneNode(true);
-
-                    mainThumbsSlide.style.backgroundColor = getComputedStyle(mainSlides[i], true).backgroundColor;
-                    mainThumbsSlide.style.backgroundClip = "content-box";
-
                     sliderThumb.append(mainThumbsSlide);
 
                 }
@@ -300,9 +311,15 @@ function DSS_start(sliderClassName, settings){
                 document.querySelectorAll(sliderClassName)[0].append(sliderThumbCont);
                 sliderThumbCont.append(sliderThumb);
 
-                var thumbnailDiv = document.querySelectorAll(sliderClassName + "-thumb > div");
+                // ================================================ //
+                // Создаём стили эскизов для масштабирование шрифта //
+                // ================================================ //
 
-                for (var slideIndex = 0; slideIndex < document.querySelectorAll(sliderClassName + "-thumb > div").length; slideIndex++){
+                let thumbnailDiv = document.querySelectorAll(sliderClassName + "-thumb > div"),
+                    countDivs = thumbnailDiv.length,
+                    SSProperties;
+
+                for (let slideIndex = 0; slideIndex < countDivs; slideIndex++){
 
                     thumbnailDiv[slideIndex].classList.add("slide-thumb");
 
@@ -310,14 +327,72 @@ function DSS_start(sliderClassName, settings){
                         slide = document.querySelectorAll(sliderClassName + " .slide")[slideIndex];
                         k = parseFloat(getComputedStyle(thumb, true).height)/parseFloat(getComputedStyle(slide, true).height) - 0.05;
                         sizeText = parseFloat(window.getComputedStyle(thumb, null).getPropertyValue('font-size'));
-                    thumb.style.fontSize = sizeText * k;
+                    
+                    if (thumb.style.fontSize){ thumb.style.fontSize = null; } // Если в атрибуте есть свойство, имеющее значение font-size,
+                                                                              // то он убирает для корректной работы
+
+                    MSFsize[slideIndex] = (sizeText * k) * 0.75; // Из px в pt
+
+                    thumb.classList.add(`fontThumb-${Math.round((sizeText * k) * 0.75)}pt`); // Добавляем класс к эскизу
 
                 }
 
-                let thumbSlides = document.querySelectorAll(".slide-thumb");
-                let thumbBlock = document.querySelectorAll("section" + sliderClassName + "-thumb-container")[0];
+                if (document.querySelectorAll("head > style").length === 0){ // Если нет атрибута style в теле head, то добавляем
 
-                for (let i = 0; i < thumbSlides.length; i++){ thumbSlides[i].setAttribute("indexItem", i); }
+                    let SSBody = document.createElement("style");
+                    document.querySelectorAll("head")[0].append(SSBody);
+
+                } 
+
+                SSProperties = document.querySelectorAll("head > style")[0]; // Все стили тута
+
+                for (let j = 0; j < MSFsize.length; j++){ // Прогоняемся циклом для избавления от дубликатов элементов
+
+                    if (MSFSset.includes(MSFsize[j]) != true){
+
+                        MSFSset[iMSFSS] = MSFsize[j];
+                        iMSFSS++;
+
+                    }
+
+                }
+                
+                for (let l = 0; l < MSFSset.length; l++){ // Создаём стили
+
+                    let fontStyle = `\t\t\t.fontThumb-${Math.round(MSFSset[l])}pt{\n\t\t\t\tfont-size: ${MSFSset[l]}pt;\n\t\t\t}\n`;
+
+                    SSProperties.append(fontStyle);
+
+                }
+
+                let img = `.img-slide{\nwidth: inherit;\nheight: inherit;\npointer-events: none;\nborder-radius: inherit;\n}\n`
+
+                SSProperties.append(img);
+
+                let selectedThumb =  `.thumb-active{background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3));}`;
+
+                SSProperties.append(selectedThumb);
+
+                let thumbSlides = document.querySelectorAll(".slide-thumb"),
+                    thumbBlock = document.querySelectorAll("section" + sliderClassName + "-thumb-container")[0],
+                    allSlides = Array.from(document.querySelector(sliderClassName + "-track").childNodes);
+
+                try{
+
+                    for (let i = 0; i < thumbSlides.length; i++){ 
+
+                        thumbSlides[i].setAttribute("indexItem", i);
+    
+                        if(thumbSlides[i].firstChild.hasAttribute){ thumbSlides[i].firstChild.classList.add("img-slide"); }
+    
+                    }
+                    for (let i = 0; i < allSlides.length; i++){
+    
+                        if(allSlides[i].firstChild.hasAttribute){ allSlides[i].firstChild.classList.add("img-slide"); }
+    
+                    }
+
+                } catch (error) { alert("Please, remove void <div> slide");}
 
                 document.querySelectorAll(sliderClassName)[0].append(secondBlock);
                 secondBlock.append(thumbBlock);
@@ -325,7 +400,7 @@ function DSS_start(sliderClassName, settings){
                 (Array.from(document.querySelectorAll(sliderClassName + "-thumb")[0].childNodes)[0]).classList.remove("active");
 
                 let mainSlide = document.querySelectorAll(sliderClassName + "-thumb-container .slide-thumb")[0];
-                mainSlide.style.backgroundImage = "linear-gradient(to top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3)";
+                mainSlide.classList.add('thumb-active');
 
             }
 
@@ -347,6 +422,7 @@ function DSS_start(sliderClassName, settings){
     
     var indexItem = 0,
         mainItems = Array.from(document.querySelectorAll(sliderClassName + " " + sliderClassName +"-track .slide"));
+        
     if (settings.dots === true){ var dots = Array.from(document.querySelector(sliderClassName + " .dots-bar").childNodes);}
     if (settings.presentationMode === true){ var thumbnails = document.querySelectorAll(sliderClassName + " .slide-thumb");}
 
@@ -374,6 +450,7 @@ function DSS_start(sliderClassName, settings){
 
             let left = document.querySelector(sliderClassName + " #left"),
                 right = document.querySelector(sliderClassName + " #right");
+                lastSlide = document.querySelectorAll(sliderClassName + "-track .slide").length - 1;
             
             // ================================================ //
             // Автопрокрутка слайдера, когда стрелочки включены //
@@ -391,7 +468,7 @@ function DSS_start(sliderClassName, settings){
 
                 // Зацикливание функции автопрокрутки /
     
-                var autoPlayInterval = setInterval(autoPlayWithArrows, settings.autoPlayDelay); 
+                var autoPlayInterval = setInterval(autoPlayWithArrows, delayAP); 
 
             }
 
@@ -405,7 +482,7 @@ function DSS_start(sliderClassName, settings){
 
                     slideScroll(left.id, countSlides, mainItems);
 
-                    setTimeout(() => {right.onclick = throttle(slideRight, settings.speedAnimation);}, settings.speedAnimation);
+                    setTimeout(() => {right.onclick = throttle(slideRight, timeAnim);}, timeAnim);
         
                     if (indexItem == 0 && settings.endlessSlider === false){
         
@@ -413,7 +490,7 @@ function DSS_start(sliderClassName, settings){
         
                     }
 
-                    if (settings.autoPlaySlider === true){ autoPlayInterval = setInterval(autoPlayWithArrows, settings.autoPlayDelay); } // Если включена автопрокрутка, то интервал запускается
+                    if (settings.autoPlaySlider === true){ autoPlayInterval = setInterval(autoPlayWithArrows, delayAP); } // Если включена автопрокрутка, то интервал запускается
         
                 }
 
@@ -429,15 +506,15 @@ function DSS_start(sliderClassName, settings){
                 
                     slideScroll(right.id, countSlides, mainItems);
 
-                    setTimeout(() => {left.onclick = throttle(slideLeft, settings.speedAnimation);}, settings.speedAnimation);
+                    setTimeout(() => {left.onclick = throttle(slideLeft, timeAnim);}, timeAnim);
         
-                    if (indexItem == document.querySelectorAll(sliderClassName + "-track .slide").length - 1 && settings.endlessSlider === false){
+                    if (indexItem == lastSlide && settings.endlessSlider === false){
         
                         right.onclick = null;
         
                     }
 
-                    if (settings.autoPlaySlider === true){ autoPlayInterval = setInterval(autoPlayWithArrows, settings.autoPlayDelay); } // Если включена автопрокрутка, то интервал запускается
+                    if (settings.autoPlaySlider === true){ autoPlayInterval = setInterval(autoPlayWithArrows, delayAP); } // Если включена автопрокрутка, то интервал запускается
 
                 }
     
@@ -447,8 +524,8 @@ function DSS_start(sliderClassName, settings){
             // События на кнопки //
             // ================= //
 
-            left.onclick = throttle(slideLeft, settings.speedAnimation);
-            right.onclick = throttle(slideRight, settings.speedAnimation);
+            left.onclick = throttle(slideLeft, timeAnim);
+            right.onclick = throttle(slideRight, timeAnim);
 
         }
 
@@ -462,7 +539,7 @@ function DSS_start(sliderClassName, settings){
 
                 slideScroll(settings.autoPlayDirrection, countSlides, items); ActiveSlide(items, countSlides, settings.autoPlayDirrection);
 
-            }), settings.autoPlayDelay);
+            }), delayAP);
 
         }
         
@@ -474,7 +551,7 @@ function DSS_start(sliderClassName, settings){
 
     } else { 
         
-        if (settings.autoPlayDelay < settings.speedAnimation) { alert("Please change the value of autoPlayDelay so that it is greater than speedAnimation"); }
+        if (delayAP < timeAnim) { alert("Please change the value of autoPlayDelay so that it is greater than speedAnimation"); }
         else{ sliderNavigation(); }
 
     }
@@ -491,7 +568,7 @@ function DSS_start(sliderClassName, settings){
 
                 isDelayed = true;
                 changeSlide(direction, countSlides, items); 
-                setTimeout(()=>{isDelayed = false;}, settings.speedAnimation);
+                setTimeout(()=>{isDelayed = false;}, timeAnim);
 
         } 
 
@@ -501,7 +578,7 @@ function DSS_start(sliderClassName, settings){
                     
                     isDelayed = true;
                     changeSlide(direction, countSlides, items); 
-                    setTimeout(()=>{isDelayed = false;}, settings.speedAnimation);
+                    setTimeout(()=>{isDelayed = false;}, timeAnim);
                 
         }
 
@@ -513,7 +590,7 @@ function DSS_start(sliderClassName, settings){
 
     function scrollingSlide(direction, countSlides, items, width){
 
-        sliderTrack.style.transition = `${settings.speedAnimation}ms ${settings.transition}`;
+        sliderTrack.style.transition = `${timeAnim}ms ${settings.transition}`;
 
         if (Object.is("right", direction) === true){ indexItem++; } else { indexItem--;};
 
@@ -542,7 +619,7 @@ function DSS_start(sliderClassName, settings){
 
             sliderTrack.style.transform = `translateX(-${ ((width) * offsetKoef) }px)`;
 
-        }), settings.speedAnimation);
+        }), timeAnim);
 
         if (Object.is("right", direction) === true){
 
@@ -593,9 +670,9 @@ function DSS_start(sliderClassName, settings){
 
             if (settings.presentationMode === true && document.querySelectorAll(sliderClassName + "-thumb")[0].childNodes.length >= 3){
 
-                thumbnails[index].style.backgroundImage = "none";
+                thumbnails[index].classList.remove('thumb-active');
                     
-                thumbnails[document.querySelector(sliderClassName + "-track div.slide.active").getAttribute("indexitem")].style.backgroundImage = "linear-gradient(to top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3)";
+                thumbnails[document.querySelector(sliderClassName + "-track div.slide.active").getAttribute("indexitem")].classList.add('thumb-active');
 
             }
 
@@ -613,15 +690,12 @@ function DSS_start(sliderClassName, settings){
 
         const z = 9.5112702529; // константа для подгонки логарифмического графика к её касательной
 
-        let thumbTrack = document.querySelectorAll(sliderClassName + "-thumb")[0];
-        let thumbContainer = document.querySelectorAll(sliderClassName + "-thumb-container")[0];
-
-        let thumbSlide = thumbTrack.firstChild,
-            thumbSlides = thumbTrack.childNodes;
-
-        let marginSlide = parseInt(getComputedStyle(thumbSlide, true).margin);
-
-        let widthTrack = -1 * ((thumbSlide.clientWidth + 2 * marginSlide) * (thumbSlides.length - 3));
+        let thumbTrack = document.querySelectorAll(sliderClassName + "-thumb")[0],
+            thumbContainer = document.querySelectorAll(sliderClassName + "-thumb-container")[0],
+            thumbSlide = thumbTrack.firstChild,
+            thumbSlides = thumbTrack.childNodes,
+            marginSlide = parseInt(getComputedStyle(thumbSlide, true).marginLeft),
+            widthTrack = (-1 * (thumbSlide.clientWidth + (2 * marginSlide))) * (thumbSlides.length - 3);
 
         let touch = false,
             isTouched = false,
@@ -646,12 +720,12 @@ function DSS_start(sliderClassName, settings){
 
             if (tt >= 0){
 
-                thumbTrack.style.transition = "ease-out" + ` ${settings.speedAnimation/2}ms`;
+                thumbTrack.style.transition = "ease-out" + ` ${timeAnim/2}ms`;
                 thumbTrack.style.left = "0px";
 
             } else if (tt < widthTrack){
 
-                thumbTrack.style.transition = "ease-out" + ` ${settings.speedAnimation/2}ms`;
+                thumbTrack.style.transition = "ease-out" + ` ${timeAnim/2}ms`;
                 thumbTrack.style.left = `${-(thumbSlides.length - 3) * (thumbSlide.clientWidth + (marginSlide * 2))}`;
 
             }
@@ -661,7 +735,7 @@ function DSS_start(sliderClassName, settings){
                 thumbTrack.style.transition = "none";
                 isDelayed = false;
 
-            }), settings.speedAnimation/2);
+            }), timeAnim/2);
 
         }
 
@@ -674,7 +748,7 @@ function DSS_start(sliderClassName, settings){
             startContPosX = ((e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2))); 
 
         };
-
+        
         var onMouseMove = throttle((e) => { 
 
             e.preventDefault();
@@ -693,7 +767,7 @@ function DSS_start(sliderClassName, settings){
 
             }
 
-        }, (1/60) * 1000);
+        }, (1/144) * 1000);
 
         var onMouseUp = () => {
 
@@ -732,7 +806,7 @@ function DSS_start(sliderClassName, settings){
 
     function target(target, width){
 
-        sliderTrack.style.transition = settings.speedAnimation + "ms " + settings.transition;
+        sliderTrack.style.transition = timeAnim + "ms " + settings.transition;
 
         var offsetKoef;
         
@@ -745,7 +819,7 @@ function DSS_start(sliderClassName, settings){
 
             sliderTrack.style.transition = null;
 
-        }), settings.speedAnimation);
+        }), timeAnim);
 
     }
 
@@ -770,7 +844,7 @@ function DSS_start(sliderClassName, settings){
 
                 indexItem = currentSlide = targetSlide;
 
-                setTimeout(() => {isDelayed = false}, settings.speedAnimation);
+                setTimeout(() => {isDelayed = false}, timeAnim);
 
             }
             
