@@ -70,7 +70,7 @@ body{
 /* экспериментальная */
 /* ================= */
 
-.slider-thumb-container{
+.slider-thumb-container, .slider2-thumb-container{
     overflow: hidden;
     position: relative;
     margin-top: 10px;
@@ -79,7 +79,7 @@ body{
     height: var(--height-thumb);
 }
 
-.slider-thumb{
+.slider-thumb, .slider2-thumb{
     position: absolute;
     display: flex;
     width: max-content;
@@ -111,7 +111,7 @@ body{
 /* Основная карусель */
 /* ================= */
 
-.slider{
+.slider,.slider2{
     font-family: 'Arial', sans-serif;
     font-size: 30pt;
     display: flex;
@@ -121,14 +121,14 @@ body{
     width: 100%;
 }
 
-.slider-block{
+.slider-block,.slider2-block{
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
 }
 
-.slider-container{
+.slider-container,.slider2-container{
     border-radius: 15px;
     display: flex;
     position: relative;
@@ -139,14 +139,14 @@ body{
     overflow: hidden;
 }
 
-.slider-track{
+.slider-track,.slider2-track{
     border-radius: inherit;
     display: flex;
     flex-direction: row;
     width: max-content;
 }
 
-.slider-track > div{
+.slider-track > div,.slider2-track > div{
     width: var(--width);
     height: var(--height);
     position: relative;
@@ -208,6 +208,7 @@ button:active{
 }
 
 .dot{
+    filter: drop-shadow(0.5px 0.5px 1px black);
     background-color: white;
     border-radius: var(--dots-size);
     height: var(--dots-size);
