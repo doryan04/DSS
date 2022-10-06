@@ -137,7 +137,6 @@ function DSS_start(sliderClassName, settings){
 
         slideBuild();
 
-
         // Временные переменные, созданные для удобства //
 
         var container = document.querySelectorAll(sliderClassName)[0],
@@ -196,8 +195,8 @@ function DSS_start(sliderClassName, settings){
             var slideRight = document.createElement("button"),
                 slideLeft = document.createElement("button");
         
-            slideRight.classList = "button"; slideRight.id = "right";
-            slideLeft.classList = "button"; slideLeft.id = "left";
+            slideRight.classList = "a-bar"; slideRight.id = "a_right";
+            slideLeft.classList = "a-bar"; slideLeft.id = "a_left";
     
             container.append(slideRight); container.prepend(slideLeft);
         
@@ -474,9 +473,11 @@ function DSS_start(sliderClassName, settings){
 
             // Переменные, нужные для стрелочек //
 
-            let left = document.querySelector(sliderClassName + " #left"),
-                right = document.querySelector(sliderClassName + " #right");
+            let left = document.querySelector(sliderClassName + " #a_left"),
+                right = document.querySelector(sliderClassName + " #a_right");
                 lastSlide = document.querySelectorAll(sliderClassName + "-track .slide").length - 1;
+
+            console.log(left, right);
             
             // ================================================ //
             // Автопрокрутка слайдера, когда стрелочки включены //
@@ -506,7 +507,7 @@ function DSS_start(sliderClassName, settings){
                 
                 if (isDelayed === false){
 
-                    slideScroll(left.id, countSlides, mainItems);
+                    slideScroll("left", countSlides, mainItems);
 
                     setTimeout(() => {right.onclick = throttle(slideRight, timeAnim);}, timeAnim);
         
@@ -530,7 +531,7 @@ function DSS_start(sliderClassName, settings){
                 
                 if(isDelayed === false){
                 
-                    slideScroll(right.id, countSlides, mainItems);
+                    slideScroll("right", countSlides, mainItems);
 
                     setTimeout(() => {left.onclick = throttle(slideLeft, timeAnim);}, timeAnim);
         
