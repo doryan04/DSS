@@ -158,40 +158,6 @@ body{
     user-select: none;
 }
 
-/* ======= */
-/* Стрелки */
-/* ======= */
-
-.button{
-    transition: 0.25s ease-out;
-    cursor: pointer;
-    margin:15px;
-    width: 16px;
-    height: 46px;
-    background: transparent;
-}
-
-button { 
-    border: none; 
-    outline: none; 
-}
-
-button:hover{
-    transform: scale(1.1);
-}
-
-button:active{
-    transform: scale(0.9);
-}
-
-#left{
-    background-image: url(/arrows/Left\ Arrow.png);
-}
-
-#right{
-    background-image: url(/arrows/Right\ Arrow.png);
-}
-
 /* ========= */
 /* Индикатор */
 /* ========= */

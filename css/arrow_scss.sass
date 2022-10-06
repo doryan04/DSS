@@ -1,0 +1,68 @@
+@use "sass:math"
+
+$a_b_width: 30px
+$a_b_border: 4px
+$angle: 25deg
+$rangle: -$angle
+
+@mixin flexable-prop()
+    display: flex
+    align-items: center
+
+body
+    @include flexable-prop
+    justify-content: center
+
+button.a-bar
+    margin: 0
+    padding: 0
+    background-color: rgba(0, 0, 0, 0)
+    border: 0px solid
+
+.a-bar
+    transition: 100ms ease-in-out
+    left: 0
+    @include flexable-prop
+    position: relative
+    height: ($a_b_border + $a_b_width) * math.sin($angle) + math.cos($angle) * ($a_b_border * math.sqrt(2) + $a_b_border)
+    width: (($a_b_border * math.sin($angle)) + (math.cos($angle) * ($a_b_border + $a_b_width))) * 2
+
+.a-bar::after,
+.a-bar::before
+    shape-rendering: geometricPrecision
+    border: $a_b_border solid
+    border-radius: $a_b_border
+    background-color: white
+    border-color: white
+    content: ''
+    @include flexable-prop
+    position: absolute
+    width: $a_b_width
+
+
+.a-bar::after
+    transform: rotate($rangle)
+
+
+.a-bar::before
+    margin-left: (($a_b_width) * math.cos($angle))
+    transform: rotate($angle)
+
+
+#a_left
+    rotate: -90deg
+#a_right
+    rotate: 90deg
+#a_up
+    rotate: none
+#a_down
+    rotate: 180deg
+
+.a-bar:hover
+    cursor: pointer
+    transition: 100ms ease-in-out
+    transform: scale(1.1)
+
+.a-bar:active
+    transform: scale(0.9)
+
