@@ -2,9 +2,7 @@ function DSS_start(sliderClassName, settings){
 
     // ===================== //
     // Стандартные настройки //
-    // ===================== //
-
-    // Лучше их не трогай пожалуйста //
+    // ===================== // 
 
     var defaultSettings = {
 
@@ -21,6 +19,8 @@ function DSS_start(sliderClassName, settings){
 
     }
 
+    var className = sliderClassName.slice(1, sliderClassName.length);
+
     // Проверка на наличие всех параметров слайдера, где в противном случае применяется стандартные параметры //
     
     if (settings === undefined){ settings = defaultSettings; }
@@ -33,6 +33,9 @@ function DSS_start(sliderClassName, settings){
         }
 
     }
+
+    var timeAnim = settings.speedAnimation,
+        delayAP = settings.autoPlayDelay;
 
     // ======================= //
     // Вспомогательные функции //
@@ -60,7 +63,7 @@ function DSS_start(sliderClassName, settings){
     
             isThrottled = true;
     
-            setTimeout(function() {
+            setTimeout((function() {
 
                 isThrottled = false;
 
@@ -72,109 +75,81 @@ function DSS_start(sliderClassName, settings){
 
                 }
 
-            }, delay);
+            }), delay);
 
         }
 
     }
 
-    // эксперементальная фича //
-
-    // if (settings.presentationMode === true){
-    //     let index = 0;
-    //     let thumbTrack = document.querySelectorAll(".thumbTrack")[0];
-    //     let thumbContainer = document.querySelectorAll(".thumbTrackContainer")[0];
-    //     let thumbSlide = document.querySelectorAll(".thumbTrack > div")[0];
-    //     let marginSlide = parseInt(getComputedStyle(thumbSlide, true).margin);
-    //     function transition(animation){
-    //         thumbTrack.style.transition = `${animation} ${settings.speedAnimation/2}ms`;
-    //         thumbTrack.style.left = `${-((thumbSlide.offsetWidth + (marginSlide * 2)) * index)}px`;
-    //         setTimeout(() => {thumbTrack.style.transition = `none`;}, settings.speedAnimation/2);
-    //     }
-    //     thumbTrack.onmouseenter = thumbTrack.onmouseleave = function(event){
-    //         event.preventDefault();
-    //         var touch = false;
-    //         if(event.type == "mouseenter") {
-    //             thumbTrack.addEventListener("mousedown", (e) => {
-    //                 startPosX = ((e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2)) - thumbTrack.offsetLeft);
-    //                 startContPosX = ((e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2))); 
-    //                 touch = true;
-    //             })
-    //             thumbTrack.onmousemove = (e) => {
-    //                 e.preventDefault();
-    //                 if (touch == true){
-    //                     mousePosX = e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2);
-    //                     thumbTrack.style.left = `${(mousePosX - startPosX)}px`;
-    //                     if (Math.abs(mousePosX - startContPosX) >= (thumbSlide.clientWidth * (2 / 3))){
-    //                         if ((mousePosX - startContPosX) > 0 && index > 0){
-    //                             index--;
-    //                             transition("ease-out");
-    //                         }
-    //                         else if ((mousePosX - startContPosX) > 0 && index == 0){
-    //                             transition(settings.transition);
-    //                         }
-    //                         else if ((mousePosX - startContPosX) < 0 && index < 1){
-    //                             index++;
-    //                             transition("ease-out");
-    //                         } 
-    //                         else {
-    //                             transition(settings.transition);
-    //                         }
-    //                         touch = false;
-    //                     }
-    //                 }
-    //             }
-    //             thumbTrack.onmouseup = () => {
-    //                 if (Math.abs(mousePosX - startContPosX) < (thumbSlide.clientWidth * (2 / 3))){
-    //                     transition(settings.transition);
-    //                 }
-    //                 touch = false;
-    //             }
-    //         }
-    //         else{
-    //             transition(settings.transition);
-    //             touch = false;
-    //         }
-    //     }
-    // }
-
     // ============================================================================================================= //
     // Функция, отвечающая за подготовку галереи к работе и инициализация объектов путём присвайвания класса "slide" //
     // ============================================================================================================= //
 
-    function preparingGallery(){
+    function buildCarousel(){
 
         // Перенос слайдов в родительский тег //
 
-        let slideMigtation = new function(){
+        function slideBuild(){
 
-            var track = document.createElement("div");
-            var slide = document.querySelectorAll(sliderClassName + " div");
-            var countDivs = slide.length;
-    
-            track.className = "slider-track";
+            var div = document.createElement("div"),
+                slides = document.querySelectorAll(sliderClassName + " > div"),
+                countDivs = slides.length;
+
+            // Перенос текста в отдельный <div> элемент //
+
+            for (let slide of slides){
+
+                let _ = slide.childNodes,
+                    div = document.createElement("div");
+                    div.classList.add("_objects"),
+                    checkIMG = false;
+                    index = 0;
+
+                for (let j of _) { if (j.nodeName == "IMG") checkIMG = true; }
+
+                if(checkIMG === true) { 
+
+                    while(_.length != 1) {
+
+                        if (_[index].nodeName == "IMG"){index++;} 
+                        else { div.append(_[index]); }
+
+                    }
+
+                } else { while(_.length != 0) div.append(_[index]); }
+
+                slide.append(div);
+ 
+            }
+
+
+            div.className = className + "-track";
     
             for (let i = 0; i < countDivs; i++){
-    
-                track.append(slide[i]);
+
+                div.append(slides[i]);
     
             }
     
-            document.querySelectorAll(sliderClassName)[0].append(track);
-    
-        }; slideMigtation;
+            document.querySelectorAll(sliderClassName)[0].append(div);
+
+        }; 
+
+        slideBuild();
+
 
         // Временные переменные, созданные для удобства //
 
-        var container = document.querySelectorAll(sliderClassName)[0];
-        var items = document.querySelectorAll(sliderClassName + " .slider-track > div");
-        var track = document.querySelectorAll(sliderClassName + " .slider-track")[0];
+        var container = document.querySelectorAll(sliderClassName)[0],
+            track = document.querySelectorAll(sliderClassName + "-track")[0];
+
+        let items = track.childNodes;
 
         // Создание родительских тегов //
 
         let sliderWindow = document.createElement('div');
     
-        sliderWindow.classList.add("slider-container")
+        sliderWindow.classList.add(className + "-container")
 
         track.before(sliderWindow); sliderWindow.append(track);
 
@@ -183,33 +158,31 @@ function DSS_start(sliderClassName, settings){
         switch(settings.endlessSlider){ 
     
             case true: track.prepend(items[items.length - 1].cloneNode(true)); 
-                       track.append(items[0].cloneNode(true));
+                       track.append(items[1].cloneNode(true));
                        break;
     
             case false: break;
     
         }
-    
+
         // Подготовка слайдов //
         
-        function classIndent(){
-            
-            var items = document.querySelectorAll(sliderClassName + " " + ".slider-track" + " > div");
-            
+        function classIndent(items){
+
             for (let j = 0; j < items.length; j++){
                 
-                if(settings.endlessSlider === true){ items[j].classList = "slide"; items[j].setAttribute("indexItem", j - 1); }
-                else{ items[j].classList = "slide"; items[j].setAttribute("indexItem", j); }
+                if(settings.endlessSlider === true){ items[j].classList.add("slide"); items[j].setAttribute("indexItem", j - 1); }
+                else{ items[j].classList.add("slide"); items[j].setAttribute("indexItem", j); }
             
             }
             
             switch(settings.endlessSlider){
 
-                case true:  document.querySelectorAll(sliderClassName + " .slider-track .slide")[1].classList.add("active");
-                            track.style.transform = "translateX(-"+ (document.querySelectorAll(sliderClassName + " .slider-track > div")[0].clientWidth) +"px)"
+                case true:  document.querySelector(sliderClassName + "-track").childNodes[1].classList.add("active");
+                            track.style.transform = "translateX(-"+ (document.querySelectorAll(sliderClassName + "-track > div")[0].clientWidth) +"px)";
                             break;
 
-                case false: document.querySelectorAll(sliderClassName + " .slider-track .slide")[0].classList.add("active");
+                case false: document.querySelector(sliderClassName + "-track").firstChild.classList.add("active");
                             break;
 
             }
@@ -218,10 +191,10 @@ function DSS_start(sliderClassName, settings){
     
         // Подготовка стрелочек к работе //
     
-        function preparingButtons(){
+        function buildButtons(){
     
-            var slideRight = document.createElement("button");
-            var slideLeft = document.createElement("button");
+            var slideRight = document.createElement("button"),
+                slideLeft = document.createElement("button");
         
             slideRight.classList = "button"; slideRight.id = "right";
             slideLeft.classList = "button"; slideLeft.id = "left";
@@ -236,7 +209,7 @@ function DSS_start(sliderClassName, settings){
     
             case true:
     
-                function preparingDotsBar(){
+                function buildDotsBar(){
     
                     let dotsBar = document.createElement("div");
             
@@ -246,17 +219,21 @@ function DSS_start(sliderClassName, settings){
             
                     function dotsGenerator(){
             
-                        let dotsBarContainer = document.querySelector(sliderClassName + " .dots-bar");
-            
-                        for (let i = 0; i < items.length; i++){
-            
+                        let dotsBarContainer = document.querySelector(sliderClassName + " .dots-bar"),
+                            countItems;
+
+                        if (settings.endlessSlider === true){countItems = items.length - 2;} 
+                        else { countItems = items.length; }
+
+                        for (let i = 0; i < countItems; i++){
+                    
                             let dot = document.createElement("div");
-                
-                            dot.classList = "dot"; dot.id = i + 1;
-                            dot.style.transition = settings.speedAnimation + "ms " + settings.transition;
-    
+                    
+                            dot.classList = "dot"; dot.setAttribute("indexItem", i);
+                            dot.style.transition = timeAnim + "ms " + settings.transition;
+        
                             dotsBarContainer.append(dot);
-                
+                    
                         }
             
                     }
@@ -265,28 +242,195 @@ function DSS_start(sliderClassName, settings){
             
                 }
             
-                preparingDotsBar();
-            
-                document.querySelectorAll(sliderClassName + " .dots-bar .dot")[0].classList.add(settings.dotsEffect);
+                buildDotsBar();
+
+                document.querySelector(sliderClassName + " .dots-bar").firstChild.classList.add(settings.dotsEffect);
     
                 break;
     
             case false: break;
     
         }
-        
+
+        let mainSlides = [],
+            allSlides = Array.from(document.querySelector(sliderClassName + "-track").childNodes);
+
+        switch(settings.endlessSlider){
+
+            case true:  mainSlides = allSlides.slice(1, allSlides.length - 1);
+                        break;
+
+            case false: mainSlides = allSlides;
+                        break;
+
+        }
+
         // Применение настроек стрелочек //
 
         switch(settings.arrows){ 
     
-            case true: preparingButtons(); break;
+            case true: buildButtons(); break;
             case false: break;
         
         }
 
         // Вызов функции подготовки слайдов //
         
-        classIndent();
+        classIndent(items);
+
+        // experimental, разделение галереи и предпросмотра эскизов на блоки //
+
+        function elemBlocks(){
+
+            // =================== //
+            // Создаём первый блок //
+            // =================== //
+
+            let sliderBlock = Array.from(document.querySelectorAll(sliderClassName)[0].childNodes),
+                SBlenght = sliderBlock.length;
+            
+            let firstBlock = document.createElement("div");
+            firstBlock.className = className + "-block";
+
+            document.querySelector(sliderClassName).append(firstBlock);
+
+            for (let i = 0; i < SBlenght; i++){ firstBlock.append(sliderBlock[i]); }
+
+            // =================== //
+            // Создаём второй блок //
+            // =================== //
+
+            let mainItems;
+
+            if (settings.endlessSlider === true) { 
+                
+                let mainItemsTemp = Array.from(document.querySelectorAll(sliderClassName + "-track")[0].childNodes); 
+                mainItems = mainItemsTemp.slice(1, mainItemsTemp.length - 1);
+
+            } else {
+
+                mainItems = Array.from(document.querySelectorAll(sliderClassName + "-track")[0].childNodes); 
+                
+            }
+
+            var MIlenght = mainItems.length,
+                MSlenght = mainSlides.length,
+                MSFsize = [],
+                MSFSset = [],
+                iMSFSS = 0;
+
+            if (settings.presentationMode == true && MIlenght >= 3){
+
+                let secondBlock = document.createElement("div"),
+                    sliderThumbCont = document.createElement("div"),
+                    sliderThumb = document.createElement("div");
+
+                secondBlock.className = className + "-thumb-block";
+                sliderThumbCont.className = className + "-thumb-container";
+                sliderThumb.className = className + "-thumb";
+
+                for (let i = 0; i < MSlenght; i++){ 
+
+                    mainThumbsSlide = mainSlides[i].cloneNode(true);
+
+                    sliderThumb.append(mainThumbsSlide);
+
+                }
+                
+                document.querySelectorAll(sliderClassName)[0].append(sliderThumbCont);
+                sliderThumbCont.append(sliderThumb);
+
+                // ========================================================= //
+                // Создаём стили эскизов для масштабирование шрифта/картинок //
+                // ========================================================= //
+
+                let thumbnailDiv = document.querySelectorAll(sliderClassName + "-thumb > div"),
+                    countDivs = thumbnailDiv.length,
+                    SSProperties;
+
+                for (let slideIndex = 0; slideIndex < countDivs; slideIndex++){
+
+                    thumbnailDiv[slideIndex].classList.add("slide-thumb");
+
+                    let thumb = document.querySelectorAll(sliderClassName + " .slide-thumb")[slideIndex],
+                        slide = document.querySelectorAll(sliderClassName + " .slide")[slideIndex];
+                        k = parseFloat(getComputedStyle(thumb, true).height)/parseFloat(getComputedStyle(slide, true).height) - 0.05;
+                        sizeText = parseFloat(window.getComputedStyle(thumb, null).getPropertyValue('font-size'));
+                    
+                    if (thumb.style.fontSize){ thumb.style.fontSize = null; } // Если в атрибуте есть свойство, имеющее значение font-size,
+                                                                              // то он убирает для корректной работы
+
+                    MSFsize[slideIndex] = (sizeText * k) * 0.75; // Из px в pt
+
+                    thumb.classList.add(`fontThumb-${Math.round((sizeText * k) * 0.75)}pt`); // Добавляем класс к эскизу
+                }
+
+                if (document.querySelectorAll("head > style").length === 0){ // Если нет атрибута style в теле head, то добавляем
+
+                    let SSBody = document.createElement("style");
+                    document.querySelectorAll("head")[0].append(SSBody);
+
+                } 
+
+                SSProperties = document.querySelectorAll("head > style")[0]; // Все стили тута
+
+                for (let j = 0; j < MSFsize.length; j++){ // Прогоняемся циклом для ликвидации дубликатов элементов
+
+                    if (MSFSset.includes(MSFsize[j]) != true){
+
+                        MSFSset[iMSFSS] = MSFsize[j];
+                        iMSFSS++;
+
+                    }
+
+                }
+                
+                for (let l = 0; l < MSFSset.length; l++){ // Создаём стили
+
+                    let fontStyle = `\t\t\t.fontThumb-${Math.round(MSFSset[l])}pt{\n\t\t\t\tfont-size: ${MSFSset[l]}pt;\n\t\t\t}\n`;
+
+                    SSProperties.append(fontStyle);
+
+                }
+
+                let img = `.img-slide{\nwidth: inherit;\nheight: inherit;\npointer-events: none;\nborder-radius: inherit;\nposition: absolute;\n}\n
+                .thumb-active::after{\nposition: absolute;\ncontent: "";\nopacity: 0.3;\nwidth: inherit;\nheight: inherit;\nbackground-color: white;\nborder-radius: inherit;\n}\n
+                ._objects{\nz-index:2;}\n`;
+                        
+
+                SSProperties.append(img);
+
+                let thumbSlides = document.querySelectorAll(".slide-thumb"),
+                    thumbBlock = document.querySelectorAll("div" + sliderClassName + "-thumb-container")[0],
+                    allSlides = Array.from(document.querySelector(sliderClassName + "-track").childNodes);
+
+                try{
+
+                    for (let _ of thumbSlides){ 
+    
+                        for (let tSlide of _.childNodes){ if(tSlide.nodeName == "IMG"){ tSlide.classList.add("img-slide"); } }
+    
+                    }
+
+                    for (let _ of allSlides){
+
+                        for (let aSlide of _.childNodes){ if(aSlide.nodeName == "IMG"){ aSlide.classList.add("img-slide"); } }
+    
+                    }
+
+                } catch (error) { }
+
+                document.querySelectorAll(sliderClassName)[0].append(secondBlock);
+                secondBlock.append(thumbBlock);
+
+                (Array.from(document.querySelectorAll(sliderClassName + "-thumb")[0].childNodes)[0]).classList.remove("active");
+
+                let mainSlide = document.querySelectorAll(sliderClassName + "-thumb-container .slide-thumb")[0];
+                mainSlide.classList.add('thumb-active');
+
+            }
+
+        } elemBlocks();
 
         // Возврат переменной, в которой находится трек слайдера //
 
@@ -296,14 +440,25 @@ function DSS_start(sliderClassName, settings){
 
     // Вызов функции и объявление переменной, отвечающей за трек слайдера //
     
-    const sliderTrack = preparingGallery();
+    const sliderTrack = buildCarousel();
 
     // ========== //
     // Переменные //
     // ========== //
     
-    if (settings.endlessSlider === true){ var indexItem = 1; } else { var indexItem = 0; }
-    let dots = document.querySelectorAll(sliderClassName + " .dots-bar .dot");
+    var indexItem = 0,
+        mainItems = Array.from(document.querySelectorAll(sliderClassName + " " + sliderClassName +"-track .slide"));
+        
+    if (settings.dots === true){ var dots = Array.from(document.querySelector(sliderClassName + " .dots-bar").childNodes);}
+    if (settings.presentationMode === true){ var thumbnails = document.querySelectorAll(sliderClassName + " .slide-thumb");}
+
+    let isDelayed = false,
+        targetSlide,
+        currentSlide = document.querySelector(sliderClassName + "-track .slide.active").getAttribute("indexItem");
+
+    if (settings.endlessSlider === true){
+        mainItems = mainItems.slice(1, Array.from(document.querySelectorAll(sliderClassName + " " + sliderClassName +"-track .slide")).length - 1);
+    }
 
     // ============================================ //
     // Функция, отвечающая за навигацию по слайдеру //
@@ -311,10 +466,7 @@ function DSS_start(sliderClassName, settings){
 
     function sliderNavigation(){
 
-        // Переменные, необходимые для данной функции //
-
-        let items = document.querySelectorAll(sliderClassName + " .slider-track .slide");
-        let countSlides = items.length - 1;
+        let countSlides = mainItems.length;
 
         // Если стрелочки включены, то они видимы и рабочие //
 
@@ -322,9 +474,10 @@ function DSS_start(sliderClassName, settings){
 
             // Переменные, нужные для стрелочек //
 
-            let left = document.querySelector(sliderClassName + " #left");
-            let right = document.querySelector(sliderClassName + " #right");
-
+            let left = document.querySelector(sliderClassName + " #left"),
+                right = document.querySelector(sliderClassName + " #right");
+                lastSlide = document.querySelectorAll(sliderClassName + "-track .slide").length - 1;
+            
             // ================================================ //
             // Автопрокрутка слайдера, когда стрелочки включены //
             // ================================================ //
@@ -335,20 +488,13 @@ function DSS_start(sliderClassName, settings){
 
                 function autoPlayWithArrows(){
 
-                    left.onclick = null;
-                    right.onclick = null;
-    
-                    slideScroll(settings.autoPlayDirrection, countSlides, items);
-    
-                    setTimeout(() => {  left.onclick = throttle(slideLeft, settings.speedAnimation);
-                                        right.onclick = throttle(slideRight, settings.speedAnimation);}, 
-                                        settings.speedAnimation);
+                    if(isDelayed === false){ slideScroll(settings.autoPlayDirrection, countSlides, mainItems); }
     
                 }
 
-                // Зацикливание функции автопрокрутки //
+                // Зацикливание функции автопрокрутки /
     
-                var autoPlayInterval = setInterval(autoPlayWithArrows, settings.autoPlayDelay); 
+                var autoPlayInterval = setInterval(autoPlayWithArrows, delayAP); 
 
             }
 
@@ -358,20 +504,22 @@ function DSS_start(sliderClassName, settings){
 
                 if (settings.autoPlaySlider === true){ clearInterval(autoPlayInterval); } // Если включена автопрокрутка, то интервал обнуляется для красивой работы слайдера
                 
-                right.onclick = null;
+                if (isDelayed === false){
 
-                slideScroll(left.id, countSlides, items);
-    
-                setTimeout(() => {right.onclick = throttle(slideRight, settings.speedAnimation);}, settings.speedAnimation);
-    
-                if (indexItem == 0 && settings.endlessSlider === false){
-    
-                    left.onclick = null;
-    
+                    slideScroll(left.id, countSlides, mainItems);
+
+                    setTimeout(() => {right.onclick = throttle(slideRight, timeAnim);}, timeAnim);
+        
+                    if (indexItem == 0 && settings.endlessSlider === false){
+        
+                        left.onclick = null;
+        
+                    }
+
+                    if (settings.autoPlaySlider === true){ autoPlayInterval = setInterval(autoPlayWithArrows, delayAP); } // Если включена автопрокрутка, то интервал запускается
+        
                 }
 
-                if (settings.autoPlaySlider === true){ autoPlayInterval = setInterval(autoPlayWithArrows, settings.autoPlayDelay); } // Если включена автопрокрутка, то интервал запускается
-    
             }
 
             // Слайд вправо //
@@ -379,20 +527,22 @@ function DSS_start(sliderClassName, settings){
             function slideRight(){
 
                 if (settings.autoPlaySlider === true){ clearInterval(autoPlayInterval); } // Если включена автопрокрутка, то интервал обнуляется для красивой работы слайдера
-    
-                left.onclick = null;
                 
-                slideScroll(right.id, countSlides, items);
-    
-                setTimeout(() => {left.onclick = throttle(slideLeft, settings.speedAnimation);}, settings.speedAnimation);
-    
-                if (indexItem == document.querySelectorAll(sliderClassName + " .slider-container .slider-track .slide").length - 1 && settings.endlessSlider === false){
-    
-                    right.onclick = null;
-    
-                }
+                if(isDelayed === false){
+                
+                    slideScroll(right.id, countSlides, mainItems);
 
-                if (settings.autoPlaySlider === true){ autoPlayInterval = setInterval(autoPlayWithArrows, settings.autoPlayDelay); } // Если включена автопрокрутка, то интервал запускается
+                    setTimeout(() => {left.onclick = throttle(slideLeft, timeAnim);}, timeAnim);
+        
+                    if (indexItem == lastSlide && settings.endlessSlider === false){
+        
+                        right.onclick = null;
+        
+                    }
+
+                    if (settings.autoPlaySlider === true){ autoPlayInterval = setInterval(autoPlayWithArrows, delayAP); } // Если включена автопрокрутка, то интервал запускается
+
+                }
     
             }
             
@@ -400,8 +550,8 @@ function DSS_start(sliderClassName, settings){
             // События на кнопки //
             // ================= //
 
-            left.onclick = throttle(slideLeft, settings.speedAnimation);
-            right.onclick = throttle(slideRight, settings.speedAnimation);
+            left.onclick = throttle(slideLeft, timeAnim);
+            right.onclick = throttle(slideRight, timeAnim);
 
         }
 
@@ -411,11 +561,11 @@ function DSS_start(sliderClassName, settings){
 
         if (settings.autoPlaySlider === true && settings.arrows === false){
 
-            setInterval(function(){
+            setInterval((function(){
 
                 slideScroll(settings.autoPlayDirrection, countSlides, items); ActiveSlide(items, countSlides, settings.autoPlayDirrection);
 
-            }, settings.autoPlayDelay);
+            }), delayAP);
 
         }
         
@@ -427,7 +577,7 @@ function DSS_start(sliderClassName, settings){
 
     } else { 
         
-        if (settings.autoPlayDelay < settings.speedAnimation) { alert("Please change the value of autoPlayDelay so that it is greater than speedAnimation"); }
+        if (delayAP < timeAnim) { alert("Please change the value of autoPlayDelay so that it is greater than speedAnimation"); }
         else{ sliderNavigation(); }
 
     }
@@ -438,8 +588,25 @@ function DSS_start(sliderClassName, settings){
 
     function slideScroll(direction, countSlides, items){
 
-        if (direction == "left" && indexItem > 0){ changeSlide(direction, countSlides, items); } 
-        else if (direction == "right" && indexItem < countSlides){ changeSlide(direction, countSlides, items); }
+        if (direction == "left" && 
+            ((indexItem > 0 && settings.endlessSlider === false) || 
+            (indexItem >= 0 && settings.endlessSlider === true))){ 
+
+                isDelayed = true;
+                changeSlide(direction, countSlides, items); 
+                setTimeout(()=>{isDelayed = false;}, timeAnim);
+
+        } 
+
+        else if (direction == "right" && 
+                 ((indexItem < countSlides - 1 && settings.endlessSlider === false) || 
+                 (indexItem < countSlides && settings.endlessSlider === true))){ 
+                    
+                    isDelayed = true;
+                    changeSlide(direction, countSlides, items); 
+                    setTimeout(()=>{isDelayed = false;}, timeAnim);
+                
+        }
 
     }
 
@@ -449,38 +616,45 @@ function DSS_start(sliderClassName, settings){
 
     function scrollingSlide(direction, countSlides, items, width){
 
-        sliderTrack.style.transition = settings.speedAnimation + "ms " + settings.transition;
+        sliderTrack.style.transition = `${timeAnim}ms ${settings.transition}`;
 
         if (Object.is("right", direction) === true){ indexItem++; } else { indexItem--;};
 
-        sliderTrack.style.transform = "translateX(-"+ ((width) * indexItem) +"px)";
+        currentSlide = indexItem;
 
-        setTimeout(function(){
+        let offsetKoef;
+
+        if (settings.endlessSlider === true){offsetKoef = indexItem + 1;}
+        else {offsetKoef = indexItem;}
+
+        sliderTrack.style.transform = `translateX(-${ ((width) * offsetKoef) }px)`;
+
+        setTimeout((function(){
 
             sliderTrack.style.transition = null;
             
             if (Object.is("right", direction) === true){ 
                 
-                if (indexItem == countSlides && settings.endlessSlider === true){ indexItem = 1; }
+                if (offsetKoef == countSlides + 1 && settings.endlessSlider === true){ indexItem = 0; offsetKoef = indexItem + 1; currentSlide = indexItem;}
         
             } else {
 
-                if (indexItem == 0 && settings.endlessSlider === true){ indexItem = countSlides - 1; }
+                if (offsetKoef == 0 && settings.endlessSlider === true){ indexItem = countSlides - 1; offsetKoef = countSlides; currentSlide = indexItem;}
 
             };
 
-            sliderTrack.style.transform = "translateX(-"+ ((width) * indexItem) +"px)";
+            sliderTrack.style.transform = `translateX(-${ ((width) * offsetKoef) }px)`;
 
-        }, settings.speedAnimation);
+        }), timeAnim);
 
         if (Object.is("right", direction) === true){
 
-            if (indexItem == countSlides && settings.endlessSlider === true){ items[1].classList.add("active"); } 
+            if (offsetKoef == countSlides + 1 && settings.endlessSlider === true){ items[0].classList.add("active"); } 
             else { items[indexItem].classList.add("active"); };
 
         } else {
 
-            if (indexItem == 0 && settings.endlessSlider === true){ items[countSlides - 1].classList.add("active"); } 
+            if (offsetKoef == 0 && settings.endlessSlider === true){ items[countSlides - 1].classList.add("active"); } 
             else { items[indexItem].classList.add("active"); };
 
         }
@@ -494,13 +668,13 @@ function DSS_start(sliderClassName, settings){
     function changeSlide(direction, countSlides, items){
 
         const slideWidth = items[0].clientWidth;
-        let i = document.querySelectorAll(sliderClassName + " " + ".slider-track" + " div.slide.active")[0].getAttribute("indexitem"); // Индекс активного слайда для корректной работы индикации
+        let i = document.querySelectorAll(sliderClassName + "-track div.slide.active")[0].getAttribute("indexitem"); // Индекс активного слайда для корректной работы индикации
 
         items[indexItem].classList.remove("active");
     
         scrollingSlide(direction, countSlides, items, slideWidth);
 
-        if (settings.dots === true){ dotsAnimation(dots, i); }
+        decorationAnim(dots, thumbnails, i);
 
     }
 
@@ -508,12 +682,203 @@ function DSS_start(sliderClassName, settings){
     // Анимация индикации слайдера //
     // =========================== //
 
-    function dotsAnimation(dots, indexDot){
+    function decorationAnim(dots, thumbnails, index){
 
-        dots[indexDot].classList.remove(settings.dotsEffect);
-                
-        dots[document.querySelectorAll(sliderClassName + " " + ".slider-track" + " div.slide.active")[0].getAttribute("indexitem")].classList.add(settings.dotsEffect);
+        if (settings.dots === true){
+
+            dots[index].classList.remove(settings.dotsEffect);
+                    
+            dots[document.querySelector(sliderClassName + "-track div.slide.active").getAttribute("indexitem")].classList.add(settings.dotsEffect);
+
+        }
+
+        try{
+
+            if (settings.presentationMode === true && document.querySelectorAll(sliderClassName + "-thumb")[0].childNodes.length >= 3){
+
+                thumbnails[index].classList.remove('thumb-active');
+                    
+                thumbnails[document.querySelector(sliderClassName + "-track div.slide.active").getAttribute("indexitem")].classList.add('thumb-active');
+
+            }
+
+        } catch (err) { }
 
     }
 
-}
+    // ---------------------- //
+    // эксперементальные фичи //
+    // ---------------------- //
+
+    // режим презентации //
+
+    function presentationMode(){
+
+        const z = 9.5112702529; // константа для подгонки логарифмического графика к её касательной
+
+        // Объекты //
+
+        let thumbTrack = document.querySelectorAll(sliderClassName + "-thumb")[0],
+            thumbContainer = document.querySelectorAll(sliderClassName + "-thumb-container")[0];
+
+        // Int значения //
+
+        let thumbSlide = thumbTrack.firstChild,
+            thumbSlides = thumbTrack.childNodes,
+            marginSlide = parseInt(getComputedStyle(thumbSlide, true).marginLeft);
+
+        let widthTrack = (-1 * (thumbSlide.clientWidth + (2 * marginSlide))) * (thumbSlides.length - 3);
+
+        // Boolean значения //
+
+        let touch = false,
+            isTouched = false,
+            isDelayed = false;
+
+        function logBase(x, y){
+            return Math.log(y) / Math.log(x);
+        }
+
+        function logAnimGraphic(x){
+            return Math.round((10*((logBase(2, x-z) ** 3)))** 0.5);
+        }
+
+        function touchUp(){
+
+            isDelayed = true;
+            touch = false;
+            isTouched = false;
+
+            if (thumbTrack.offsetLeft >= 0){
+
+                thumbTrack.style.transition = "ease-out" + ` ${timeAnim/2}ms`;
+                thumbTrack.style.left = "0px";
+
+            } else if (thumbTrack.offsetLeft < widthTrack){
+
+                thumbTrack.style.transition = "ease-out" + ` ${timeAnim/2}ms`;
+                thumbTrack.style.left = `${-(thumbSlides.length - 3) * (thumbSlide.clientWidth + (marginSlide * 2))}`;
+
+            }
+
+            setTimeout((function() {
+
+                thumbTrack.style.transition = "none";
+                isDelayed = false;
+
+            }), timeAnim/2);
+
+        }
+
+        var onMouseDown = throttle((e) => {
+
+            touch = true;
+            isTouched = true;
+            
+            startPosX = ((e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2)) - thumbTrack.offsetLeft);
+            startContPosX = ((e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2))); 
+
+        }, (1/144) * 1000);
+        
+        var onMouseMove = throttle((e) => { 
+
+            e.preventDefault();
+                
+            if (touch === true && isDelayed === false){
+
+                let mousePosX = e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2);
+
+                if (logAnimGraphic(mousePosX - startPosX) >= 23){ thumbTrack.style.left = `${logAnimGraphic(mousePosX - startPosX)}px`; }
+                else if ((mousePosX - startPosX) < 0 && -1 * (mousePosX - startPosX) + widthTrack >= 23){ 
+
+                    thumbTrack.style.left = `${widthTrack - (logAnimGraphic(Math.abs((-1 * widthTrack) + (mousePosX - startPosX))))}px`; 
+
+                }
+                else { thumbTrack.style.left = `${mousePosX - startPosX}px`;}
+
+            }
+
+        }, (1/144) * 1000);
+
+        var onMouseUp = throttle(() => {
+
+            if(isDelayed === false){ touchUp(); }
+
+        }, (1/144) * 1000);
+
+        thumbTrack.onmouseenter = thumbTrack.onmouseleave = function(event){
+
+            event.preventDefault();
+
+            let _ = document.querySelectorAll(sliderClassName + "-thumb")[0];
+
+            if(event.type === "mouseenter" && isDelayed === false) {
+
+                _.onmousedown = onMouseDown;
+                _.onmousemove = onMouseMove;
+                _.onmouseup = onMouseUp;
+
+            }
+            else if(event.type === "mouseleave" && isTouched === true && isDelayed === false){ touchUp(); }
+            else { touch = false; isTouched = false; }
+
+        };
+
+    }
+
+    let PMerror = "Please, add slides for correctly working Presentation Mode \nCode error: "
+
+    try{ if (settings.presentationMode === true && document.querySelectorAll(sliderClassName + "-thumb")[0].childNodes.length >= 3){ presentationMode();} }
+    catch(e){ alert(PMerror + e);}
+
+    // Навигация по точкам //
+
+    function target(target, width){
+
+        sliderTrack.style.transition = timeAnim + "ms " + settings.transition;
+
+        var offsetKoef;
+        
+        if (settings.endlessSlider === false){offsetKoef = target;}
+        else {offsetKoef = target+1;}
+
+        sliderTrack.style.transform = `translateX(-${ ((width) * offsetKoef) }px)`;
+
+        setTimeout((function(){
+
+            sliderTrack.style.transition = null;
+
+        }), timeAnim);
+
+    }
+
+    let dotsBar = document.querySelector(sliderClassName + " .dots-bar").childNodes;
+
+    for (var i = 0; i < dotsBar.length; i++) {
+
+        dotsBar[i].addEventListener("click", (function() {
+
+            if (isDelayed === false){
+                
+                isDelayed = true;
+
+                mainItems[currentSlide].classList.remove("active");
+
+                targetSlide = parseInt(this.getAttribute("indexItem"));
+
+                mainItems[targetSlide].classList.add("active");
+
+                decorationAnim(dotsBar, thumbnails, currentSlide);
+                target(targetSlide, mainItems[0].clientWidth);
+
+                indexItem = currentSlide = targetSlide;
+
+                setTimeout(() => {isDelayed = false}, timeAnim);
+
+            }
+            
+        }))
+
+    }
+
+}  // жырнаяъ галереяъ
