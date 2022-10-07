@@ -312,13 +312,12 @@ function DSS_start(sliderClassName, settings){
                 
             }
 
-            var MIlenght = mainItems.length,
-                MSlenght = mainSlides.length,
+            var MSlenght = mainSlides.length,
                 MSFsize = [],
                 MSFSset = [],
                 iMSFSS = 0;
 
-            if (settings.presentationMode == true && MIlenght >= 3){
+            function buildPM(){
 
                 let secondBlock = document.createElement("div"),
                     sliderThumbCont = document.createElement("div"),
@@ -360,6 +359,8 @@ function DSS_start(sliderClassName, settings){
                                                                               // то он убирает для корректной работы
 
                     MSFsize[slideIndex] = (sizeText * k) * 0.75; // Из px в pt
+
+                    console.log(MSFsize[slideIndex]);
 
                     thumb.classList.add(`fontThumb-${Math.round((sizeText * k) * 0.75)}pt`); // Добавляем класс к эскизу
                 }
@@ -429,6 +430,11 @@ function DSS_start(sliderClassName, settings){
 
             }
 
+            switch(settings.presentationMode){
+                case true: buildPM(); break;
+                case false: break;
+            }
+
         } elemBlocks();
 
         // Возврат переменной, в которой находится трек слайдера //
@@ -476,8 +482,6 @@ function DSS_start(sliderClassName, settings){
             let left = document.querySelector(sliderClassName + " #a_left"),
                 right = document.querySelector(sliderClassName + " #a_right");
                 lastSlide = document.querySelectorAll(sliderClassName + "-track .slide").length - 1;
-
-            console.log(left, right);
             
             // ================================================ //
             // Автопрокрутка слайдера, когда стрелочки включены //
