@@ -14,7 +14,7 @@ function DSS_start(sliderClassName, settings){
         dotsEffect: "dot-default",
         endlessSlider: true,
         transition: "ease-in-out",
-        presentationMode: false, //its a experimental function. recommended off this parameter
+        presentationMode: false,
         speedAnimation: 400,
 
     }
