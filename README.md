@@ -181,14 +181,8 @@ Then enter all the settings into the slider function, as shown in the example be
 
 ## What on stady "work in progress"?
 
-- [ ] Dots navigation
+- [X] Dots navigation
 - [ ] Swipes on smartphones
-
-## What doesn't works?
-
-- [ ] Thumbs stuff customizations
-- [ ] Swipes carousel pic in PC/Smartphones
-- [ ] Thumbs navigation
 
 ## Did you find the bug? Make sure to [leave an issue](https://github.com/doryan04/DSS/issues/new) in case of any problems.
 
