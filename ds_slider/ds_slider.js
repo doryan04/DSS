@@ -711,11 +711,9 @@ function DSS_start(sliderClassName, settings){
 
     }
 
-    // ---------------------- //
-    // эксперементальные фичи //
-    // ---------------------- //
-
-    // режим презентации //
+    // ================= //
+    // Режим презентации //
+    // ================= //
 
     function presentationMode(){
 
@@ -724,11 +722,8 @@ function DSS_start(sliderClassName, settings){
         // Объекты //
 
         let thumbTrack = document.querySelectorAll(sliderClassName + "-thumb")[0],
-            thumbContainer = document.querySelectorAll(sliderClassName + "-thumb-container")[0];
-
-        // Int значения //
-
-        let thumbSlide = thumbTrack.firstChild,
+            thumbContainer = document.querySelectorAll(sliderClassName + "-thumb-container")[0],
+            thumbSlide = thumbTrack.firstChild,
             thumbSlides = thumbTrack.childNodes,
             marginSlide = parseInt(getComputedStyle(thumbSlide, true).marginLeft);
 
@@ -886,4 +881,4 @@ function DSS_start(sliderClassName, settings){
 
     }
 
-}  // жырнаяъ галереяъ
+}
