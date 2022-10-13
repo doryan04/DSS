@@ -59,6 +59,7 @@ To avoid the problem described above, do as indicated in the code below:
                 dotsEffect: "dot-pull",
                 endlessSlider: true,
                 transition: "ease-in-out",
+                presentationMode: true,
                 speedAnimation: 500,
 
             }
@@ -77,6 +78,7 @@ To avoid the problem described above, do as indicated in the code below:
                 dotsEffect: "dot-pull",
                 endlessSlider: true,
                 transition: "ease-in-out",
+                presentationMode: true,
                 speedAnimation: 350,
 
             }
@@ -144,6 +146,7 @@ settings = {
     dotsEffect: "dot-default",   // appearance of dots
     endlessSlider: true,         // endless slider toggle
     transition: "ease-in-out",   // animation type for the slider scrolling
+    presentationMode: true,      // carousel with thumbtrack under gallery
     speedAnimation: 350,         // speed of scrolling animation
 
 }
@@ -165,6 +168,7 @@ Then enter all the settings into the slider function, as shown in the example be
                 dotsEffect: "dot-default",
                 endlessSlider: true,
                 transition: "ease-in-out",
+                presentationMode: true,
                 speedAnimation: 350,
 
             }
