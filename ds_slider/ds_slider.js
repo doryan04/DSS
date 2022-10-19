@@ -41,6 +41,10 @@ function DSS_start(sliderClassName, settings){
     // Вспомогательные функции //
     // ======================= //
 
+    function logBase(x, y){ return Math.log(y) / Math.log(x); }
+
+    function logAnimGraphic(x, constant){ return Math.round((10*((logBase(2, x - constant) ** 3)))** 0.5); }
+
     function throttle(func, delay) {
 
         let isThrottled = false,
@@ -361,9 +365,12 @@ function DSS_start(sliderClassName, settings){
         // Постройка трека с эскизами //
 
         switch(settings.presentationMode){
+
             case true: buildPM(SSProperties, array); 
                        break;
+
             case false: break;
+            
         }
 
     }
@@ -666,11 +673,8 @@ function DSS_start(sliderClassName, settings){
 
         if (settings.dots) _(dots, settings.dotsEffect, index)
 
-        try{
-
-            if (condition) _(thumbnails, 'thumb-active', index);
-
-        } catch (err) { alert.err(); }
+        try{ if (condition) _(thumbnails, 'thumb-active', index); } 
+        catch (err) { alert.err(); }
 
     }
 
@@ -679,6 +683,28 @@ function DSS_start(sliderClassName, settings){
     // ================= //
 
     function presentationMode(){
+
+        function touchUp(track, width, margin, slides, slide){
+
+            isDelayed = true;
+            touch = false;
+            isTouched = false;
+    
+            track.style.transition = "ease-out" + ` ${timeAnim/2}ms`;
+    
+            if (track.offsetLeft >= 0) track.style.left = "0px";
+            else if (track.offsetLeft < width){
+                track.style.left = `${-(slides.length - 3) * (slide.clientWidth + (margin * 2))}`;
+            }
+    
+            setTimeout((function() {
+    
+                track.style.transition = "none";
+                isDelayed = false;
+    
+            }), timeAnim/2);
+    
+        }
 
         const z = 9.5112702529; // константа для подгонки логарифмического графика к её касательной
 
@@ -698,32 +724,6 @@ function DSS_start(sliderClassName, settings){
             isTouched = false,
             isDelayed = false;
 
-        function logBase(x, y){ return Math.log(y) / Math.log(x); }
-
-        function logAnimGraphic(x){ return Math.round((10*((logBase(2, x-z) ** 3)))** 0.5); }
-
-        function touchUp(){
-
-            isDelayed = true;
-            touch = false;
-            isTouched = false;
-
-            thumbTrack.style.transition = "ease-out" + ` ${timeAnim/2}ms`;
-
-            if (thumbTrack.offsetLeft >= 0) thumbTrack.style.left = "0px";
-            else if (thumbTrack.offsetLeft < widthTrack){
-                thumbTrack.style.left = `${-(thumbSlides.length - 3) * (thumbSlide.clientWidth + (marginSlide * 2))}`;
-            }
-
-            setTimeout((function() {
-
-                thumbTrack.style.transition = "none";
-                isDelayed = false;
-
-            }), timeAnim/2);
-
-        }
-
         var onMouseDown = throttle((e) => {
 
             touch = true;
@@ -742,14 +742,14 @@ function DSS_start(sliderClassName, settings){
 
                 let mousePosX = e.pageX - ((window.innerWidth - thumbContainer.clientWidth)/2);
 
-                if (logAnimGraphic(mousePosX - startPosX) >= 23){ 
+                if (logAnimGraphic(mousePosX - startPosX, z) >= 23){ 
 
-                    thumbTrack.style.left = `${logAnimGraphic(mousePosX - startPosX)}px`; 
+                    thumbTrack.style.left = `${logAnimGraphic(mousePosX - startPosX, z)}px`; 
 
                 }
                 else if ((mousePosX - startPosX) < 0 && -1 * (mousePosX - startPosX) + widthTrack >= 23){ 
 
-                    thumbTrack.style.left = `${widthTrack - (logAnimGraphic(Math.abs((-1 * widthTrack) + (mousePosX - startPosX))))}px`; 
+                    thumbTrack.style.left = `${widthTrack - (logAnimGraphic(Math.abs((-1 * widthTrack) + (mousePosX - startPosX)), z))}px`; 
 
                 }
                 else { 
@@ -764,7 +764,7 @@ function DSS_start(sliderClassName, settings){
 
         var onMouseUp = throttle(() => {
 
-            if(!isDelayed) touchUp();
+            if(!isDelayed) touchUp(thumbTrack, widthTrack, marginSlide, thumbSlides, thumbSlide, isDelayed, touch, isTouched);
 
         }, (1/144) * 1000);
 
@@ -783,7 +783,7 @@ function DSS_start(sliderClassName, settings){
             }
             else if(event.type === "pointerleave" && isTouched && !isDelayed){ 
 
-                touchUp(); 
+                touchUp(thumbTrack, widthTrack, marginSlide, thumbSlides, thumbSlide, isDelayed, touch, isTouched); 
             
             }
             else { 
@@ -814,11 +814,7 @@ function DSS_start(sliderClassName, settings){
 
         sliderTrack.style.transform = `translateX(-${ ((width) * offsetKoef) }px)`;
 
-        setTimeout((function(){
-
-            sliderTrack.style.transition = null;
-
-        }), timeAnim);
+        setTimeout((() => { sliderTrack.style.transition = null; }), timeAnim);
 
     }
 
