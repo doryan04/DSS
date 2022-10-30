@@ -5,8 +5,8 @@
 
 $width: 480px
 $height: 240px
-$width-thumb: $width * 5/16
-$height-thumb: $height * 5/16
+$width-thumb: calc($width * 5/16)
+$height-thumb: calc($height * 5/16)
 $dots-size: 15px
 
 @mixin defaultProp()
@@ -25,7 +25,6 @@ body
 
 .logo
     top: 0%
-    position:absolute
     width: 720px
     height: 248px
     background-image: url(/png/logo.png)
@@ -91,7 +90,7 @@ body
 
 
 .sliderMargin1
-    margin: 8vh 0 0 0
+    margin: 8vh 0 2500px 0
 
 
 /* ================= */

@@ -20,6 +20,7 @@ body {
   background-image: url(/png/logo.png);
   transform: scale(0.8);
 }
+
 .presentation {
   display: flex;
   align-items: center;
@@ -85,7 +86,7 @@ body {
 }
 
 .sliderMargin1 {
-  margin: 8vh 0 0 0;
+  margin: 8vh 0 2500px 0;
 }
 
 /* ================= */
