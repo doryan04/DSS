@@ -3,9 +3,13 @@
 /* ================= */
 
 
-$width: 480px
+$width-container: 500px
+$width-container2: 400px
+$width: 600px
+$width2: 500px
 $height: 240px
 $width-thumb: calc($width * 5/16)
+$width-thumb2: calc($width2 * 5/16)
 $height-thumb: calc($height * 5/16)
 $dots-size: 15px
 
@@ -67,9 +71,13 @@ body
     position: relative
     margin-top: 10px
     display: flex
-    width: $width
     height: $height-thumb
 
+.slider-thumb-container
+    width: $width-container
+
+.slider2-thumb-container
+    width: $width-container2
 
 .slider-thumb, .slider2-thumb
     position: absolute
@@ -78,19 +86,28 @@ body
     height: inherit
 
 
-.slide-thumb
+@mixin thumbnail()
     font-size: inherit
     padding: 0
+    user-select: none
     @include defaultProp()
     color: #FFFFFF
+    background-color: #7c7c7c
     margin: 0px 5px
     border-radius: 10px
-    width: $width-thumb
     height: $height-thumb
+
+.slide-thumb 
+    @include thumbnail()
+    width: $width-thumb
+
+.slide2-thumb 
+    @include thumbnail()
+    width: $width-thumb2
 
 
 .sliderMargin1
-    margin: 8vh 0 2500px 0
+    margin: 8vh 0
 
 
 /* ================= */
@@ -105,10 +122,10 @@ body
     height: $height
     width: 100%
 
-
 .slider-block,.slider2-block
     @include defaultProp()
     width: 100%
+
 
 
 .slider-container,.slider2-container
@@ -117,9 +134,15 @@ body
     position: relative
     margin: 0
     padding: 0
-    width: $width
     height: $height
     overflow: hidden
+
+.slider-container
+    width: $width-container
+
+.slider2-container
+    width: $width-container2
+
 
 
 .slider-track,.slider2-track
@@ -129,13 +152,21 @@ body
     width: max-content
 
 
-.slider-track > div,.slider2-track > div
-    width: $width
+.slider-track > div, .slider2-track > div
     height: $height
     position: relative
     @include defaultProp()
 
+.slider-track > div
+    width: $width
+
+.slider2-track > div
+    width: $width2
+
+//slide
+
 .slide
+    width: $width
     user-select: none
 
 

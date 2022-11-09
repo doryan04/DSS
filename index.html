@@ -3,7 +3,7 @@
         <link rel="stylesheet" type="text/css" href="css/style.css">
         <link rel="stylesheet" type="text/css" href="css/arrow_scss.css">
         <title>DSS</title>
-        <script type="text/javascript" src="ds_slider/ds_slider.js"></script>
+        <script src="ds_slider/ds_slider.js"></script>
         <style>
 
             .slide{ /*  default color scheme  */
@@ -40,12 +40,11 @@
         </div>
 
         <div class="slider2 sliderMargin1">
-            <div>Welcome!</div>
-            <div class="gold">This is a DSS</div>
-            <div class="blueviolet"> On native JS carousel </div>
-            <div class="lightsalmon"> It's very simple </div>
-            <div style="background-color:thistle ;"> It's respinsive and beauty </div>
-            <div style="background-color:dimgray ; color: beige; font-size: 36pt;"> Full free to use </div>
+            <div>1</div>
+            <div class="gold">2</div>
+            <div class="blueviolet">3</div>
+            <div class="lightsalmon">4</div>
+            <div style="background-color:thistle ;">5</div>
         </div>
 
         <div class="slider" style="margin-top:100px; margin-bottom: 200px;">
@@ -62,16 +61,23 @@
 
         DSS_start(".slider2", settings = {
                 
-                autoPlaySlider: true,
+                autoPlaySlider: false,
                 autoPlayDelay: 1000,
-                autoPlayDirrection: "right",
+                autoPlayDirrection: "left",
                 arrows: true,
                 dots: true,
                 dotsEffect: "dot-pull",
-                endlessSlider: false,
+                endlessSlider:{
+                    toggle: false, 
+                    autoMargin: true,
+                },
                 transition: "ease-in-out",
-                presentationMode: true,
+                presentationMode: {
+                    toggle: true,
+                    slidesClassName: "slide2-thumb",
+                },
                 speedAnimation: 400,
+                swipeScroll: true, // this is so buggy
 
         });
 
@@ -83,10 +89,17 @@
                 arrows: true,
                 dots: true,
                 dotsEffect: "dot-pull",
-                endlessSlider: true,
+                endlessSlider:{
+                    toggle: true, 
+                    autoMargin: true,
+                },
                 transition: "ease-in-out",
-                presentationMode: true,
+                presentationMode: {
+                    toggle: true,
+                    slidesClassName: "slide-thumb",
+                },
                 speedAnimation: 400,
+                swipeScroll: false, // this is so buggy
 
         });
 
