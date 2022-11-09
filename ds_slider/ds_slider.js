@@ -371,6 +371,8 @@ async function DSS_start(sliderClass, settings){
         cw = slider.querySelector(sliderClass + "-container").clientWidth; // width container
         sw = track.firstChild.clientWidth; // width slide
 
+        if((!infSlider && !autoMargin) && sw > cw) autoMargin = true;
+
         marginsBuild(sw, cw, track);
 
         countES = infSlider && !autoMargin ? Math.floor(cw / sw) + 1: 
@@ -408,7 +410,7 @@ async function DSS_start(sliderClass, settings){
 
     var localCountES = countES > (cw/sw) ? countES : countES,
         position = infSlider ? -(((2*margin) + sw) * (countES + 0.5) - (0.5 * cw)) : autoMargin ? (cw - sw)/2 : 0,
-        indexItem = 0, stpTemp = 0, mainItems = Array.from(items),
+        indexItem = 0,  mainItems = Array.from(items),
         stp = position;
 
     if (settings.dots) var dots = Array.from(dotsBarContainer.childNodes);
@@ -448,15 +450,6 @@ async function DSS_start(sliderClass, settings){
 
     if (!settings.arrows && !settings.autoPlaySlider) alert("Please turn on either autoplay or arrows");
     else { if (delayAP < timeAnim) alert("Please change the value of autoPlayDelay so that it is greater than speedAnimation"); }
-
-    // Проверка и обновление значения позиции слайд-трека по оси Х //
-
-    function slideTrackPosUpdate(){
-
-        stpTemp = new WebKitCSSMatrix(window.getComputedStyle(track).transform).m41;
-        stp = stpTemp;
-
-    }
 
     // Функция скроллинга слайдера по стрелкам //
 
@@ -506,7 +499,12 @@ async function DSS_start(sliderClass, settings){
         
         items[indexItem].classList.remove("active");
 
-        scrollingSlide(items, target).then(() => { slideTrackPosUpdate(); isDelayed = false; });
+        scrollingSlide(items, target).then(() => { 
+
+            isDelayed = false;
+            stp = Math.round(new WebKitCSSMatrix(getComputedStyle(track).transform).m41);
+
+        });
         indicationAnim(dots, thumbnails, i);
 
     }
@@ -523,8 +521,8 @@ async function DSS_start(sliderClass, settings){
             currentSlide = indexItem;
             
             let indexTarget = infSlider ? indexItem + localCountES : indexItem,
-                firstCondition = (indexTarget == countSlides + localCountES && infSlider),
-                secondCondition = (indexTarget == localCountES - 1 && infSlider);
+                firstCondition = (target == 1 && indexTarget == countSlides + localCountES && infSlider),
+                secondCondition = (target == -1 && indexTarget == localCountES - 1 && infSlider);
 
             track.style.transform = `translateX(${ 
                 infSlider? -(((2*margin) + sw) * (indexTarget + 0.5) - (0.5 * cw)) :
@@ -538,32 +536,22 @@ async function DSS_start(sliderClass, settings){
 
                 track.style.transition = null;
                     
-                if (target == 1 && firstCondition) {
+                indexItem = firstCondition ? 0 : secondCondition ? countSlides - 1 : indexItem; 
+                indexTarget = firstCondition ? localCountES : secondCondition ? countSlides + (localCountES - 1) : indexTarget; 
+                currentSlide = firstCondition ? indexTarget - localCountES : secondCondition ? indexTarget - localCountES : currentSlide;
 
-                    indexItem = 0; 
-                    indexTarget = localCountES; 
-                    currentSlide = indexTarget - localCountES;
-
+                if (firstCondition || secondCondition){
+                    track.style.transform = `translateX(${ 
+                        infSlider? -(((2*margin) + sw) * (indexTarget + 0.5) - (0.5 * cw)) :
+                        autoMargin && sw > cw && !infSlider? indexTarget < 1 ? ((cw - sw)/2) : 
+                        -(((2*margin) + sw) * (indexTarget + 0.5) - (0.5 * cw)) : 
+                        autoMargin && sw < cw && !infSlider? indexTarget < 1 ? ((cw - sw)/2) : 
+                        -cw * indexTarget + ((cw - sw)/2) : -sw * indexTarget}px)`;
                 }
-                else if (target == -1 && secondCondition) {
-
-                    indexItem = countSlides - 1; 
-                    indexTarget = countSlides + (localCountES - 1); 
-                    currentSlide = indexTarget - localCountES;
-                    
-                }
-
-                track.style.transform = `translateX(${ 
-                    infSlider? -(((2*margin) + sw) * (indexTarget + 0.5) - (0.5 * cw)) :
-                    autoMargin && sw > cw && !infSlider? indexTarget < 1 ? ((cw - sw)/2) : 
-                    -(((2*margin) + sw) * (indexTarget + 0.5) - (0.5 * cw)) : 
-                    autoMargin && sw < cw && !infSlider? indexTarget < 1 ? ((cw - sw)/2) : 
-                    -cw * indexTarget + ((cw - sw)/2) : -sw * indexTarget}px)`;
-    
 
                 resolve();
             
-            }), timeAnim);
+            }), timeAnim + 20);
 
             let _ = (cond, limit, index) => {
                 if (cond) items[limit].classList.add("active");
@@ -632,7 +620,7 @@ async function DSS_start(sliderClass, settings){
                 setInter(mainItems, APtarget);
                 resolve();
 
-            }), timeAnim);
+            }), timeAnim + 20);
 
         });
 
@@ -652,10 +640,8 @@ async function DSS_start(sliderClass, settings){
         let sc = track.parentElement, sp = 0, scw = sc.clientWidth, moving, move,
             sw = track.firstChild.clientWidth,
             condition = infSlider ? countSlides : countSlides - 1,
-            ml = autoMargin && sw > cw ? sw * condition : cw * condition, sl = cw * 0.5;
-
-        console.log(cw)
-
+            ml = autoMargin && sw > cw ? sw * condition + (sw - cw): sw * condition, 
+            sl = cw * 0.5;
 
         track.style.transform = `translateX(${position}px)`;
 
@@ -664,6 +650,7 @@ async function DSS_start(sliderClass, settings){
             isTouched = t; isDelayed = d;
 
         }
+
         function overscrollAnim(){
 
             booleanEdit(false, true);
@@ -679,8 +666,10 @@ async function DSS_start(sliderClass, settings){
 
                 setInter(mainItems, APtarget);
 
-            }), timeAnim/2);
+                stp = Math.round(new WebKitCSSMatrix(getComputedStyle(track).transform).m41);
 
+            }), timeAnim/2);
+            
         }
         var onDown = (event) => {
 
@@ -701,12 +690,14 @@ async function DSS_start(sliderClass, settings){
                 booleanEdit(false, true);
 
                 var target = move < -sl ? 1 : -1;
-                
+
                 prepareToChangeSlide(mainItems, target).then(() => { 
 
                     isDelayed = false; 
 
                     setInter(mainItems, APtarget);
+
+                    stp = Math.round(new WebKitCSSMatrix(getComputedStyle(track).transform).m41);
 
                 });
 
@@ -723,16 +714,18 @@ async function DSS_start(sliderClass, settings){
                     track.style.transform = `translateX(${moving}px)`; slide(); 
                 }
                 else {
-                    
-                    if (moving > 0) track.style.transform = `translateX(${logAnimGraphic(moving, z)}px)`;
-                    else if (moving < -1*ml - 15112394871293874981234) {
+                    if (moving > 23){
+                        track.style.transform = `translateX(${logAnimGraphic(moving, z)}px)`;
+                    }
+                    else if (moving < -1*ml - 23) {
+                        console.log(ml, "its works", moving)
                         track.style.transform = `translateX(${-1 * ml - (logAnimGraphic(Math.abs((ml) + (moving)), z))}px)`;
                     }
-                    else{ track.style.transform = `translateX(${moving}px)`; slide(); }
+                    else{ 
+                        track.style.transform = `translateX(${moving}px)`; slide(); 
+                    }
                 }
             }
-
-            stpTemp = new WebKitCSSMatrix(window.getComputedStyle(track).transform).m41;
             
         }, 1/144 * 1000);
         var onUp = () => {
@@ -760,9 +753,10 @@ async function DSS_start(sliderClass, settings){
         let tt = slider.querySelector(sliderClass + "-thumb"),
             ts = tt.firstChild, ws = window.innerWidth,
             tsm = 2 * parseFloat(getComputedStyle(ts, true).marginLeft),
+            tsw = parseFloat(getComputedStyle(ts, true).width),
             tcw = tt.parentElement.clientWidth, sp = 0, ttp = 0, mpx = 0,
-            ml = -((tsm + ts.clientWidth) * (tt.childNodes).length) > -tcw ? 0 : 
-                 -((tsm + ts.clientWidth) * (tt.childNodes).length) + tcw;
+            ml = -((tsm + tsw) * (tt.childNodes).length) > -tcw ? 0 : 
+                 -((tsm + tsw) * (tt.childNodes).length) + tcw;
 
         tt.style.transform = `translateX(0px)`
 
@@ -774,18 +768,18 @@ async function DSS_start(sliderClass, settings){
 
         function overscrollAnim(){
 
-            booleanEdit(false, true);
-
             tt.style.transition = "ease-out" + ` ${timeAnim/2}ms`;
+
+            booleanEdit(false, true);
             
             let condition = ttpTemp > 0 ? 0 : ttpTemp < ml ? ml : ttpTemp;
-            let limiter = (returnTo) => {
+
+            var limiter = (returnTo) => {
 
                 tt.style.transform = `translateX(${returnTo}px)`;
                 ttp = returnTo; ttpTemp = returnTo;
 
             }
-
             limiter(condition);
             setTimeout((() => {
 
@@ -820,9 +814,9 @@ async function DSS_start(sliderClass, settings){
                 else if ((moving) < 0 && -1 * (moving) + ml >= 23) tt.style.transform = `translateX(${ml - (logAnimGraphic(Math.abs((-1 * ml) + (moving)), z))}px)`;
                 else tt.style.transform = `translateX(${moving}px)`;
 
-            }
+                ttpTemp = new WebKitCSSMatrix(window.getComputedStyle(tt).transform).m41;
 
-            ttpTemp = new WebKitCSSMatrix(window.getComputedStyle(tt).transform).m41;
+            }
 
         }, 1/144 * 1000)
 
@@ -891,12 +885,19 @@ async function DSS_start(sliderClass, settings){
                 targetSlide = parseInt(obj.getAttribute("indexItem"));
 
                 changeActiveSlide(currentSlide, targetSlide);
-                target(targetSlide, mainItems[0].clientWidth).then(() => {slideTrackPosUpdate();});
+                target(targetSlide, mainItems[0].clientWidth).then(() => {
+                    stp = Math.round(new WebKitCSSMatrix(getComputedStyle(track).transform).m41);
+
+                    console.log(stp)
+                });
                 indicationAnim(dotsBar, thumbnails, currentSlide);
 
                 indexItem = currentSlide = targetSlide;
 
-                setTimeout(() => {isDelayed = false}, timeAnim);
+                setTimeout(() => {
+                    isDelayed = false;
+                    stp = Math.round(new WebKitCSSMatrix(getComputedStyle(track).transform).m41);
+                }, timeAnim);
 
             }
             
