@@ -67,7 +67,7 @@ body {
 }
 
 .slider2-thumb-container {
-  width: 400px;
+  width: 600px;
 }
 
 .slider-thumb, .slider2-thumb {
@@ -112,7 +112,7 @@ body {
   margin: 0px 5px;
   border-radius: 10px;
   height: 75px;
-  width: 156.25px;
+  width: 187.5px;
 }
 
 .sliderMargin1 {
@@ -155,7 +155,7 @@ body {
 }
 
 .slider2-container {
-  width: 400px;
+  width: 600px;
 }
 
 .slider-track, .slider2-track {
@@ -180,7 +180,7 @@ body {
 }
 
 .slider2-track > div {
-  width: 500px;
+  width: 600px;
 }
 
 .slide {
