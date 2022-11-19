@@ -14,7 +14,7 @@ async function DSS_start(sliderClass, settings){
         dotsEffect: "dot-default",
         endlessSlider:  {
             toggle: true,
-            autoMargin: false,
+            autoMargin: true,
         },
         transition: "ease-in-out",
         presentationMode: {
@@ -350,8 +350,9 @@ async function DSS_start(sliderClass, settings){
 
         margin = autoMargin ? widht1 < widht2 ? Math.abs(widht2 - widht1) / 2 : 0 : 0;
 
-        if(infSlider) _obj.style.marginLeft = `${margin}px`;
-        if(autoMargin && widht1 < widht2) { for (let i of _obj.childNodes) i.style.marginRight = `${margin * 2}px`; }
+        if(autoMargin && widht1 < widht2){ 
+            for (let i of _obj.childNodes) i.style.marginLeft = i.style.marginRight = `${margin}px`;
+        }
 
     }
 
@@ -390,7 +391,7 @@ async function DSS_start(sliderClass, settings){
         classIndent(items, track);
         elemBlocks(mainSlides, allSlides, cw);
 
-        return _ = { track: track, items: items, sw: sw, cw: cw};
+        return _ = { track: track, items: items, sw: sw, cw: cw, ms : mainSlides};
 
     }
 
@@ -409,7 +410,11 @@ async function DSS_start(sliderClass, settings){
     // ========== //
 
     var localCountES = countES > (cw/sw) ? countES : countES,
-        position = infSlider ? -(((2*margin) + sw) * (countES + 0.5) - (0.5 * cw)) : autoMargin ? (cw - sw)/2 : 0,
+        position = (autoMargin && infSlider) ? (sw > cw ? -sw + (cw - sw)/2 : -cw) : 
+                   (autoMargin && !infSlider) || (!autoMargin && !infSlider) ? (sw > cw ? (cw - sw)/2 : 0): 
+                   (!autoMargin && infSlider) ? (sw > cw ? -sw + (cw - sw)/2 : 
+                   (sw < cw ? (-sw * localCountES) + (cw - sw)/2 :
+                   ((-cw * localCountES) - (cw - sw)/2))) : null,
         indexItem = 0,  mainItems = Array.from(items),
         stp = position;
 
@@ -446,11 +451,6 @@ async function DSS_start(sliderClass, settings){
 
     } 
 
-    // Проверка настроек слайдера //
-
-    if (!settings.arrows && !settings.autoPlaySlider) alert("Please turn on either autoplay or arrows");
-    else { if (delayAP < timeAnim) alert("Please change the value of autoPlayDelay so that it is greater than speedAnimation"); }
-
     // Функция скроллинга слайдера по стрелкам //
 
     function arrowScrollSlide(target, APtarget){
@@ -458,7 +458,7 @@ async function DSS_start(sliderClass, settings){
         prepareToChangeSlide(mainItems, target).then(() => { 
 
             isDelayed = false;
-            setInter(mainItems, APtarget);
+            if (settings.autoPlaySlider)setInter(mainItems, APtarget);
 
         });
 
@@ -481,7 +481,6 @@ async function DSS_start(sliderClass, settings){
                 setTimeout(() => { 
 
                     if(!isDelayed) resolve();
-                    else reject(); 
 
                 }, timeAnim);
 
@@ -509,13 +508,34 @@ async function DSS_start(sliderClass, settings){
 
     }
 
+    function moveSlide(target){
+        let half = (cw - sw)/2;
+        track.style.transform = 
+            `translateX(${  (autoMargin && infSlider) ? 
+                                (sw > cw ? 
+                                    ((-sw + half) * target) - (half * (target - 1)) :
+                                    -cw * target):
+                            (autoMargin && !infSlider) ? 
+                                (sw > cw ? 
+                                    ((-sw + half) * target) - (half * (target - 1)): 
+                                    -cw * target): 
+                            (!autoMargin && !infSlider) ? 
+                                (sw > cw ? 
+                                    ((cw - sw)/2) * target : 
+                                    -sw * target) :
+                            (sw < cw ? 
+                                ((-sw * target) + (cw - sw)/2):
+                                ((-sw + half) * target) - (half * (target - 1)))}px)`;
+
+    }
+
     // Функция, анимирующая смену слайда, ставящая пределы смен слайдов при необходимости //
 
     function scrollingSlide(items, target){
 
         return new Promise((resolve, reject) => {
 
-            track.style.transition = `${timeAnim}ms ${settings.transition}`;
+            track.style.transition = `${(timeAnim - 20)}ms ${settings.transition}`;
 
             indexItem += target;
             currentSlide = indexItem;
@@ -524,13 +544,7 @@ async function DSS_start(sliderClass, settings){
                 firstCondition = (target == 1 && indexTarget == countSlides + localCountES && infSlider),
                 secondCondition = (target == -1 && indexTarget == localCountES - 1 && infSlider);
 
-            track.style.transform = `translateX(${ 
-                infSlider? -(((2*margin) + sw) * (indexTarget + 0.5) - (0.5 * cw)) :
-                autoMargin && sw > cw && !infSlider? indexTarget < 1 ? ((cw - sw)/2) : 
-                -(((2*margin) + sw) * (indexTarget + 0.5) - (0.5 * cw)) : 
-                autoMargin && sw < cw && !infSlider? indexTarget < 1 ? ((cw - sw)/2) : 
-                -cw * indexTarget + ((cw - sw)/2) : -sw * indexTarget}px)`;
-
+            moveSlide(indexTarget);
 
             setTimeout((() => {
 
@@ -541,17 +555,12 @@ async function DSS_start(sliderClass, settings){
                 currentSlide = firstCondition ? indexTarget - localCountES : secondCondition ? indexTarget - localCountES : currentSlide;
 
                 if (firstCondition || secondCondition){
-                    track.style.transform = `translateX(${ 
-                        infSlider? -(((2*margin) + sw) * (indexTarget + 0.5) - (0.5 * cw)) :
-                        autoMargin && sw > cw && !infSlider? indexTarget < 1 ? ((cw - sw)/2) : 
-                        -(((2*margin) + sw) * (indexTarget + 0.5) - (0.5 * cw)) : 
-                        autoMargin && sw < cw && !infSlider? indexTarget < 1 ? ((cw - sw)/2) : 
-                        -cw * indexTarget + ((cw - sw)/2) : -sw * indexTarget}px)`;
+                    moveSlide(indexTarget);
                 }
 
                 resolve();
             
-            }), timeAnim + 20);
+            }), timeAnim);
 
             let _ = (cond, limit, index) => {
                 if (cond) items[limit].classList.add("active");
@@ -574,7 +583,7 @@ async function DSS_start(sliderClass, settings){
             object[slider.querySelector(sliderClass + "-track div.slide.active").getAttribute("indexitem")].classList.add(_class);
         }
 
-        if(settings.dots)  _(dots, settings.dotsEffect, index);
+        if(settings.dots) _(dots, settings.dotsEffect, index);
 
         if(PMtoggle){
 
@@ -604,14 +613,9 @@ async function DSS_start(sliderClass, settings){
 
             let targetIndex = !infSlider ? targetSlide : targetSlide + localCountES;
 
-            track.style.transition = timeAnim + "ms " + settings.transition;
+            track.style.transition = `${(timeAnim - 20)}ms ${settings.transition}`;
 
-            track.style.transform = `translateX(${ 
-                infSlider? -(((2*margin) + sw) * (targetIndex + 0.5) - (0.5 * cw)) :
-                autoMargin && sw > cw && !infSlider? targetIndex < 1 ? ((cw - sw)/2) : 
-                -(((2*margin) + sw) * (targetIndex + 0.5) - (0.5 * cw)) : 
-                autoMargin && sw < cw && !infSlider? targetIndex < 1 ? ((cw - sw)/2) : 
-                -cw * targetIndex + ((cw - sw)/2) : -sw * targetIndex}px)`;
+            moveSlide(targetIndex);
 
             setTimeout((() => { 
 
@@ -620,7 +624,7 @@ async function DSS_start(sliderClass, settings){
                 setInter(mainItems, APtarget);
                 resolve();
 
-            }), timeAnim + 20);
+            }), timeAnim);
 
         });
 
@@ -639,10 +643,31 @@ async function DSS_start(sliderClass, settings){
 
         let sc = track.parentElement, sp = 0, scw = sc.clientWidth, moving, move,
             sw = track.firstChild.clientWidth,
-            condition = infSlider ? countSlides : countSlides - 1,
-            ml = autoMargin && sw > cw ? sw * condition + (sw - cw): sw * condition, 
+            lastSlide = infSlider ? countSlides : countSlides - 1,
+            firstSlide = infSlider ? 1 : 0,
+            checkSlide = infSlider ? lastSlide : lastSlide,
+            half = (cw - sw)/2,
+
+            mle =   ((autoMargin && infSlider) || (autoMargin && !infSlider)) ? 
+                        (sw > cw ? ((-sw + half) * lastSlide) - (half * (lastSlide - 1)) : -cw * lastSlide):
+                    (!autoMargin && !infSlider) ? (sw > cw ? half * lastSlide : -sw * lastSlide):
+                    (sw < cw ? ((-sw * lastSlide) + half) : ((-sw + half) * lastSlide) - (half * (lastSlide - 1))),
+
+            mls =   ((autoMargin && infSlider) || (autoMargin && !infSlider)) ? 
+                        (sw > cw ? ((-sw + half) * firstSlide) - (half * (firstSlide - 1)) : -cw * firstSlide):
+                    (!autoMargin && !infSlider) ? (sw > cw ? half * firstSlide : -sw * firstSlide):
+                    (sw < cw ? ((-sw * firstSlide) + half) : ((-sw + half) * firstSlide) - (half * (firstSlide - 1))),
+
+            mlsc =  ((autoMargin && infSlider) || (autoMargin && !infSlider)) ? 
+                        (sw > cw ? ((-sw + half) * checkSlide) - (half * (checkSlide - 1)) : -cw * checkSlide):
+                    (!autoMargin && !infSlider) ? (sw > cw ? half * checkSlide : -sw * checkSlide):
+                    (sw < cw ? ((-sw * checkSlide) + half) : ((-sw + half) * checkSlide) - (half * (checkSlide - 1))),
+
             sl = cw * 0.5;
 
+        mle += mls == 0 ? -cw*5/17 : mls*8/17;
+        mls -= mls == 0 ? -cw*5/17 : mls*8/17;                
+        
         track.style.transform = `translateX(${position}px)`;
 
         let booleanEdit = (t, d) => {
@@ -714,16 +739,9 @@ async function DSS_start(sliderClass, settings){
                     track.style.transform = `translateX(${moving}px)`; slide(); 
                 }
                 else {
-                    if (moving > 23){
-                        track.style.transform = `translateX(${logAnimGraphic(moving, z)}px)`;
-                    }
-                    else if (moving < -1*ml - 23) {
-                        console.log(ml, "its works", moving)
-                        track.style.transform = `translateX(${-1 * ml - (logAnimGraphic(Math.abs((ml) + (moving)), z))}px)`;
-                    }
-                    else{ 
-                        track.style.transform = `translateX(${moving}px)`; slide(); 
-                    }
+                    if (moving > mls) overscrollAnim();
+                    else if (moving < mle) overscrollAnim();
+                    else { track.style.transform = `translateX(${moving}px)`; slide(); }
                 }
             }
             
@@ -887,11 +905,9 @@ async function DSS_start(sliderClass, settings){
                 changeActiveSlide(currentSlide, targetSlide);
                 target(targetSlide, mainItems[0].clientWidth).then(() => {
                     stp = Math.round(new WebKitCSSMatrix(getComputedStyle(track).transform).m41);
-
-                    console.log(stp)
                 });
                 indicationAnim(dotsBar, thumbnails, currentSlide);
-
+                console.log("нихуя не работает3")
                 indexItem = currentSlide = targetSlide;
 
                 setTimeout(() => {
@@ -906,9 +922,9 @@ async function DSS_start(sliderClass, settings){
         for (var i = 0; i < dotsBar.length; i++) {
 
             switch(toggle) {
-                case true:  dotsBar[i].addEventListener("click", function(){ return actionDots(this) });
+                case true:  dotsBar[i].addEventListener("click", function(){ return actionDots(this); });
                             break;
-                case false: dotsBar[i].removeEventListener("click", function(){ return actionDots(this) });
+                case false: dotsBar[i].removeEventListener("click", function(){ return actionDots(this); });
                             break;
             }
 
