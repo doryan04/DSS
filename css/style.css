@@ -59,7 +59,7 @@ body {
   position: relative;
   margin-top: 10px;
   display: flex;
-  height: 75px;
+  height: 93.75px;
 }
 
 .slider-thumb-container {
@@ -67,7 +67,7 @@ body {
 }
 
 .slider2-thumb-container {
-  width: 600px;
+  width: 800px;
 }
 
 .slider-thumb, .slider2-thumb {
@@ -93,7 +93,7 @@ body {
   background-color: #7c7c7c;
   margin: 0px 5px;
   border-radius: 10px;
-  height: 75px;
+  height: 93.75px;
   width: 187.5px;
 }
 
@@ -111,8 +111,8 @@ body {
   background-color: #7c7c7c;
   margin: 0px 5px;
   border-radius: 10px;
-  height: 75px;
-  width: 187.5px;
+  height: 93.75px;
+  width: 93.75px;
 }
 
 .sliderMargin1 {
@@ -129,7 +129,7 @@ body {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  height: 240px;
+  height: 300px;
   width: 100%;
 }
 
@@ -146,7 +146,7 @@ body {
   position: relative;
   margin: 0;
   padding: 0;
-  height: 240px;
+  height: 300px;
   overflow: hidden;
 }
 
@@ -155,7 +155,7 @@ body {
 }
 
 .slider2-container {
-  width: 600px;
+  width: 800px;
 }
 
 .slider-track, .slider2-track {
@@ -168,7 +168,7 @@ body {
 }
 
 .slider-track > div, .slider2-track > div {
-  height: 240px;
+  height: 300px;
   position: relative;
   display: flex;
   align-items: center;
@@ -180,7 +180,7 @@ body {
 }
 
 .slider2-track > div {
-  width: 600px;
+  width: 300px;
 }
 
 .slide {
