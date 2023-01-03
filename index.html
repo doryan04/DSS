@@ -1,4 +1,4 @@
-<html>
+<html lang="">
     <head>
         <link rel="stylesheet" type="text/css" href="css/style.css">
         <link rel="stylesheet" type="text/css" href="css/arrow_scss.css">
@@ -39,7 +39,7 @@
             </div>
         </div>
 
-        <div class="slider2 sliderMargin1">
+        <div class="slider sliderMargin1">
             <div>1</div>
             <div class="gold">2</div>
             <div class="blueviolet">3</div>
@@ -47,59 +47,50 @@
             <div style="background-color:thistle ;">5</div>
         </div>
 
-        <div class="slider" style="margin-top:100px; margin-bottom: 200px;">
-            <div><img src="/pic/1.jpg">Example 1</div>
-            <div style="color:red;"><img src="/pic/2.jpg"> Example 2 </div>
-            <div style="color:gold; font-weight: 1000;"><img src="/pic/3.jpg"> Example 3 </div>
-            <div style="color:white; font-weight: 1000; background: black;"><img src="/pic/4.jpg"> 
-                <div style="background-color: black; padding: 10px; border-radius: 10px;"> Example 4 </div> 
-            </div>
-        </div>
 
     </body>
     <script>
 
-        DSS_start(".slider2", settings = {
-                
-                autoPlaySlider: false,
-                autoPlayDelay: 1000,
-                autoPlayDirrection: "left",
-                arrows: true,
-                dots: true,
-                dotsEffect: "dot-pull",
-                endlessSlider:{
-                    toggle: false, 
-                    autoMargin: false,
-                },
-                transition: "ease-in-out",
-                presentationMode: {
-                    toggle: true,
-                    slidesClassName: "slide2-thumb",
-                },
-                speedAnimation: 400,
-                swipeScroll: true,
-
-        });
-
         DSS_start(".slider", settings = {
-                
-                autoPlaySlider: false,
-                autoPlayDelay: 1000,
-                autoPlayDirrection: "right",
-                arrows: true,
-                dots: true,
-                dotsEffect: "dot-pull",
-                endlessSlider:{
-                    toggle: true, 
-                    autoMargin: true,
-                },
-                transition: "ease-in-out",
-                presentationMode: {
-                    toggle: true,
-                    slidesClassName: "slide-thumb",
-                },
-                speedAnimation: 400,
-                swipeScroll: true, 
+
+            // Слайд-шоу
+
+            autoPlaySlider:         true,
+            autoPlayDelay:          1000,
+            autoPlayDirrection:     "right",
+
+            // Стрелки
+
+            arrows:                 true,
+            prewArrow:              "a_left",
+            nextArrow:              "a_right",
+
+            // Точки навигации
+
+            bullets:                true,
+            bulletsEffect:          "bullet-pull",
+
+            // Бесконечный слайдер
+
+            endlessSlider:          true,
+
+            // Автоматическая настройка внешних отступов
+
+            autoSetterMargins:      false,
+
+            // Режим презентации
+
+            presentationMode:       true,
+            thumbSlidesClassName:   "slide-thumb",
+
+            // Анимации
+
+            speedAnimation:         500,
+            transition:             "ease",
+
+            // Свайпы
+
+            swipeScroll:            true,
 
         });
 
