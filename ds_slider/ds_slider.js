@@ -1,50 +1,76 @@
+'use strict'
+
 async function DSS_start(sliderClass, settings){
 
     // ===================== //
     // Стандартные настройки //
     // ===================== // 
     
-    var defaultSettings = {
+    let currentSettings = {
 
-        autoPlaySlider: true,
-        autoPlayDelay: 5000,
-        autoPlayDirrection: "right",
-        arrows: true,
-        dots: true,
-        dotsEffect: "dot-default",
-        endlessSlider:  {
-            toggle: true,
-            autoMargin: true,
-        },
-        transition: "ease-in-out",
-        presentationMode: {
-            toggle: true,
-            slidesClassName: "slide-thumb",
-        },
-        speedAnimation: 400,
-        swipeScroll: false,
+        // Слайд-шоу
+
+        autoPlaySlider:         false,
+        autoPlayDelay:          1000,
+        autoPlayDirrection:     "left",
+
+        // Стрелки
+
+        arrows:                 false,
+        prewArrow:              "a_left",
+        nextArrow:              "a_right",
+
+        // Точки навигации
+
+        bullets:                false,
+        bulletsEffect:          "bullet-pull",
+
+        // Бесконечный слайдер
+
+        endlessSlider:          true,
+
+        // Автоматическая настройка внешних отступов
+
+        autoSetterMargins:      false,
+
+        // Режим презентации
+
+        presentationMode:       true,
+        thumbSlidesClassName:   "slide-thumb",
+
+        // Анимации
+
+        speedAnimation:         400,
+        transition:             "ease-in-out",
+
+        // Свайпы
+
+        swipeScroll:            false,
 
     }
 
-    var className = sliderClass.slice(1, sliderClass.length),
+    let className = sliderClass.slice(1, sliderClass.length),
         slider = document.querySelector(sliderClass),
-        dotsBarContainer, stp, ttpTemp, margin;
+        bulletsBarContainer, ttpTemp, margin;
+
 
     // Проверка на наличие всех параметров слайдера, где в противном случае применяется стандартные параметры //
     
-    if (settings === undefined) settingsSlider = defaultSettings; 
+    if (settings === undefined) settings = currentSettings;
     else{
-        for (var defaultParameter in defaultSettings){
-            if (settings[defaultParameter] == (undefined || null)) settings[defaultParameter] = defaultSettings[defaultParameter];
+        for (let defaultParameter in currentSettings){
+            if(settings[defaultParameter] !== undefined) currentSettings[defaultParameter] = settings[defaultParameter];
         }
     }
 
-    var timeAnim = settings.speedAnimation,
-        delayAP = settings.autoPlayDelay,
-        infSlider = settings.endlessSlider.toggle,
-        autoMargin = settings.endlessSlider.autoMargin,
-        PMtoggle = settings.presentationMode.toggle,
-        PMslidesClassName = settings.presentationMode.slidesClassName,
+    let timeAnim = currentSettings.speedAnimation,
+        delayAP = currentSettings.autoPlayDelay,
+        infSlider = currentSettings.endlessSlider,
+        autoMargin = currentSettings.autoSetterMargins,
+        PMtoggle = currentSettings.presentationMode,
+        PMslidesClassName = currentSettings.thumbSlidesClassName,
+        leftArrow = currentSettings.prewArrow,
+        rightArrow = currentSettings.nextArrow,
         countES;
 
     // =========================== //
@@ -55,7 +81,7 @@ async function DSS_start(sliderClass, settings){
 
     function slideBuild(){
 
-        var div = document.createElement("div"),
+        let div = document.createElement("div"),
             slides = document.querySelectorAll(sliderClass + " > div"),
             countDivs = slides.length;
 
@@ -63,20 +89,20 @@ async function DSS_start(sliderClass, settings){
 
         for (let slide of slides){
 
-            let _ = slide.childNodes, 
+            let _ = slide.childNodes,
                 div = document.createElement("div"),
-                checkIMG = false; index = 0;
+                checkIMG = false, index = 0;
                 
             div.classList.add("_objects");
 
             for (let j of _) { 
-                if (j.nodeName == "IMG") checkIMG = true; 
+                if (j.nodeName === "IMG") checkIMG = true;
             }
 
             if(checkIMG) { 
-                while(_.length != 1) _[index].nodeName == "IMG" ? index++ : div.append(_[index]);
+                while(_.length !== 1) _[index].nodeName === "IMG" ? index++ : div.append(_[index]);
             } else { 
-                while(_.length != 0) div.append(_[index]); 
+                while(_.length !== 0) div.append(_[index]);
             }
 
             slide.append(div);
@@ -90,25 +116,22 @@ async function DSS_start(sliderClass, settings){
 
         slider.append(div);
 
-    };
+    }
 
     // Функция присвайвания ID слайдам //
 
     function classIndent(items, track){
 
         for (let j = 0; j < items.length; j++){
-            
             if(infSlider) { items[j].classList.add("slide"); items[j].setAttribute("indexItem", j - countES); }
             else { items[j].classList.add("slide"); items[j].setAttribute("indexItem", j); }
-        
         }
         
-        switch(infSlider){
-            case true:  items[countES].classList.add("active");
-                        track.style.transform = `translateX(-${(parseInt(track.querySelector("div").clientWidth) * (countES - 1))}px)`;
-                        break;
-            case false: track.firstChild.classList.add("active");
-                        break;
+        if(infSlider) {
+            items[countES].classList.add("active");
+            track.style.transform = `translate3d(-${(track.querySelector("div").clientWidth * (countES - 1))}px, 0px, 0px)`;
+        } else {
+            track.firstChild.classList.add("active");
         }
         
     }
@@ -117,11 +140,11 @@ async function DSS_start(sliderClass, settings){
 
     function buildButtons(container){
 
-        for (let _ of ['a_left', 'a_right']) {
+        for (let _ of [leftArrow, rightArrow]) {
 
             let el = document.createElement("button");
             el.classList.add("a-bar"); el.id = _;
-            _ == "a_left" ? container.prepend(el) : container.append(el);
+            _ === leftArrow ? container.prepend(el) : container.append(el);
 
         }
 
@@ -129,25 +152,25 @@ async function DSS_start(sliderClass, settings){
 
     // Функция построения дотс-бара //
 
-    function buildDotsBar(container, dotsBar, items){
+    function buildBulletsBar(container, bulletsBar, items){
 
-        dotsBar.classList = "dots-bar"; container.append(dotsBar);
+        bulletsBar.classList = "bullets-bar";
+        container.append(bulletsBar);
 
-        dotsBarContainer = slider.querySelector(sliderClass + " .dots-bar");
+        bulletsBarContainer = slider.querySelector(sliderClass + " .bullets-bar");
 
-        let countItems = infSlider == true ? items.length - (2 * countES) : items.length;
+        let countItems = infSlider === true ? items.length - (2 * countES) : items.length;
 
         for (let i = 0; i < countItems; i++){  
     
-            let dot = document.createElement("div");
-        
-            dot.classList = "dot"; dot.setAttribute("indexItem", i);
-            dot.style.transition = timeAnim + "ms " + settings.transition;
+            let bullet = document.createElement("div");
 
-            dotsBarContainer.append(dot);
+            bullet.classList = "bullet";
+            bullet.setAttribute("indexItem", i);
+            bullet.style.transition = `${timeAnim}ms ${(settings.transition)}`;
+            bulletsBarContainer.append(bullet);
     
         }
-
 
     }
 
@@ -167,8 +190,6 @@ async function DSS_start(sliderClass, settings){
             _.className = classes[elem];
             classes[elem] = _;
 
-            delete _;
-
         }
 
         for (let _ of arrayMS) {
@@ -187,28 +208,27 @@ async function DSS_start(sliderClass, settings){
             countDivs = thumbnailDiv.length;
 
         for (let i = 0; i < countDivs; i++) thumbnailDiv[i].classList.add(PMslidesClassName);
-        
-        var allT = slider.querySelectorAll(sliderClass + " ." + PMslidesClassName),
+
+        let allT = slider.querySelectorAll(sliderClass + " ." + PMslidesClassName),
             allS = slider.querySelectorAll(sliderClass + " .slide"),
             MSFSset = new Set();
 
         for (let i = 0; i < countDivs; i++){
 
-            var k = parseFloat(getComputedStyle(allT[i], true).height)/parseFloat(getComputedStyle(allS[i], true).height) - 0.05;
+            let k = parseFloat(getComputedStyle(allT[i], true).height)/parseFloat(getComputedStyle(allS[i], true).height) - 0.05,
                 sizeText = parseFloat(window.getComputedStyle(allT[i], null).getPropertyValue('font-size'));
 
-            if (allT[i].style.fontSize) allT[i].style.fontSize = null;  // Если в атрибуте есть свойство, имеющее значение font-size,
-                                                                        // то он убирает для корректной работы
+            if (allT[i].style.fontSize) allT[i].style.fontSize = null;  // Если в атрибуте есть свойство, имеющее значение font-size, то он убирает для корректной работы
 
             MSFSset.add((sizeText * k) * 0.8); // Из px в pt
 
             allT[i].classList.add(`fontThumb-${Math.round((sizeText * k) * 0.8)}pt`); // Добавляем класс к эскизу
-            
+
         }
 
         if (document.querySelectorAll("head > style").length === 0){ // Если нет атрибута style в теле head, то добавляем
-            document.querySelector("head").append(document.createElement("style"));
-        } 
+           document.querySelector("head").append(document.createElement("style"));
+        }
 
         for (let size of MSFSset) props.append(`.fontThumb-${Math.round(size)}pt{\nfont-size: ${Math.ceil(size)}pt;\n}\n`);
 
@@ -221,14 +241,14 @@ async function DSS_start(sliderClass, settings){
                         \nbackground-color: white;
                         \nborder-radius: inherit;
                         \n}\n`;
-                
+
         props.append(imgThumb);
 
         let thumbContainer = slider.querySelector(sliderClass + "-thumb-container");
-        
-        for (let tSlide of Array.from(allT)){ 
+
+        for (let tSlide of Array.from(allT)){
             for (let content of Array.from(tSlide.childNodes)){
-                if(content.nodeName == "IMG") content.classList.add("img-slide");
+                if(content.nodeName === "IMG") content.classList.add("img-slide");
             }
         }
 
@@ -251,23 +271,15 @@ async function DSS_start(sliderClass, settings){
     function imgFix(array){
         for (let slide of array){
             for (let element of slide.childNodes){ 
-                if(element.nodeName == "IMG") element.classList.add("img-slide"); 
+                if(element.nodeName === "IMG") element.classList.add("img-slide");
             }
         }
     }
 
     // Разделение галереи и предпросмотра эскизов на блоки //
 
-    var imageProp = `.img-slide{
-                    \nwidth: inherit;
-                    \nheight: inherit;
-                    \npointer-events: none;
-                    \nborder-radius: inherit;
-                    \nposition: absolute;
-                    \n}\n
-                    ._objects{
-                    \nz-index:2;
-                    \n}\n`,
+    let imageProp = `.img-slide{\nwidth: inherit;\nheight: inherit;\npointer-events: none;\nborder-radius: inherit;
+                    \nposition: absolute;\n}\n._objects{\nz-index:2;\n}\n`,
     SSProperties = document.querySelectorAll("head > style")[0]; // Все стили тута
     SSProperties.append(imageProp);
 
@@ -284,7 +296,7 @@ async function DSS_start(sliderClass, settings){
 
     }
 
-    var secondBlockCreate = (array) =>{ mainItems = infSlider ? array.slice(countES, array - countES) : array;}
+    let secondBlockCreate = (array) => mainItems = infSlider ? array.slice(countES, array.length - countES) : array;
 
     function elemBlocks(array1, array2, width){
 
@@ -292,11 +304,7 @@ async function DSS_start(sliderClass, settings){
         firstBlockCreate();  // Создаём первый блок //
         secondBlockCreate(array2); // Создаём второй блок //
 
-        switch(PMtoggle){ // Постройка трека с эскизами //
-            case true:  buildPM(SSProperties, array1, width); 
-                        break;
-            case false: return 3;
-        }
+        if(PMtoggle) buildPM(SSProperties, array1, width);
 
     }
 
@@ -314,94 +322,76 @@ async function DSS_start(sliderClass, settings){
     // Настройка, отвечающая за безграничный скролл слайдера //
 
     function endlessSlider(track, items){
-        switch(infSlider){ 
-            case true:  for (let i = 1; i <= countES; i++) track.prepend(items[items.length - i].cloneNode(true)); 
-                        for (let j = 1; j <= countES; j++) track.append(items[j + (countES - 1)].cloneNode(true));
-                        break;
-            case false: break;
-        }
-    }
-
-    // Применение настроек стрелочек //
-
-    var arrows = () => {
-        switch(settings.arrows){ 
-            case true: buildButtons(slider); break;
-            case false: return 1;
-        }
+        for (let i = 1; i <= countES; i++) track.prepend(items[items.length - i].cloneNode(true));
+        for (let j = 1; j <= countES; j++) track.append(items[j + (countES - 1)].cloneNode(true));
     }
 
     // Подготовка индикации слайдера //
 
-    function dots(array){
+    function bullets(array){
 
-        let dotsBar = document.createElement("div");
+        let bulletsBar = document.createElement("div");
 
-        switch(settings.dots){
-            case true:  buildDotsBar(slider, dotsBar, array);
-                        dotsBarContainer.firstChild.classList.add(settings.dotsEffect);
-                        return dotsBarContainer;
-            case false: return 2;
-        }
+        buildBulletsBar(slider, bulletsBar, array);
+        bulletsBarContainer.firstChild.classList.add(currentSettings.bulletsEffect);
+        return bulletsBarContainer;
 
     }
 
-    function marginsBuild(widht1, widht2, _obj){
+    // Подготовка отступов //
 
-        margin = autoMargin ? widht1 < widht2 ? Math.abs(widht2 - widht1) / 2 : 0 : 0;
+    function marginsBuild(width1, width2, _obj){
 
-        if(autoMargin && widht1 < widht2){ 
+        margin = autoMargin ? width1 < width2 ? Math.abs(width2 - width1) / 2 : 0 : 0;
+
+        if(autoMargin && width1 < width2){ 
             for (let i of _obj.childNodes) i.style.marginLeft = i.style.marginRight = `${margin}px`;
         }
 
     }
 
-    // ================== //
-    // Постройка карусели //
-    // ================== //
+    // Построение карусели //
 
     function buildCarousel(){
 
         slideBuild();
 
-        var track = slider.querySelector(sliderClass + "-track"),
-            items = track.childNodes, cw, sw, koef;
+        let track = slider.querySelector(sliderClass + "-track"),
+            items = track.childNodes, cw, sw;
 
         sliderContainerBuild(track);
 
         cw = slider.querySelector(sliderClass + "-container").clientWidth; // width container
         sw = track.firstChild.clientWidth; // width slide
 
-        if((!infSlider && !autoMargin) && sw > cw) autoMargin = true;
+        if ((!infSlider && !autoMargin) && sw > cw) autoMargin = true;
 
-        marginsBuild(sw, cw, track);
+        if (autoMargin) marginsBuild(sw, cw, track);
 
         countES = infSlider && !autoMargin ? Math.floor(cw / sw) + 1: 
                  !infSlider && !autoMargin ? 1 : 1; // ES - extra slides
 
-        endlessSlider(track, items);
+        if (infSlider) endlessSlider(track, items);
 
         if (!infSlider && !autoMargin && sw < cw) track.style.marginLeft = `${(cw - sw)/2}`;
 
-        var allSlides = Array.from(items),
+        let allSlides = Array.from(items),
             mainSlides = infSlider ? allSlides.slice(countES, allSlides.length - countES) : allSlides;
 
-        arrows();
-        dots(items);
+        if (currentSettings.arrows) buildButtons(slider);
+        if (currentSettings.bullets) bullets(items);
         classIndent(items, track);
         elemBlocks(mainSlides, allSlides, cw);
 
-        return _ = { track: track, items: items, sw: sw, cw: cw, ms : mainSlides};
+        return _ = { track: track, items: items, sw: sw, cw: cw};
 
     }
 
-    var _ = buildCarousel(),
-        track = _.track,
+    var _ = buildCarousel();
+    const track = _.track,
         items = _.items,
         sw = _.sw,
         cw = _.cw;
-
-    // Вызов функции и объявление переменной, отвечающей за трек слайдера //
 
     const z = 9.5112702529; // константа для подгонки логарифмического графика к её касательной
 
@@ -409,189 +399,124 @@ async function DSS_start(sliderClass, settings){
     // Переменные //
     // ========== //
 
-    var localCountES = countES > (cw/sw) ? countES : countES,
-        position = (autoMargin && infSlider) ? (sw > cw ? -sw + (cw - sw)/2 : -cw) : 
+    let position = (autoMargin && infSlider) ? (sw > cw ? -sw + (cw - sw)/2 : -cw) : 
                    (autoMargin && !infSlider) || (!autoMargin && !infSlider) ? (sw > cw ? (cw - sw)/2 : 0): 
                    (!autoMargin && infSlider) ? (sw > cw ? -sw + (cw - sw)/2 : 
-                   (sw < cw ? (-sw * localCountES) + (cw - sw)/2 :
-                   ((-cw * localCountES) - (cw - sw)/2))) : null,
-        indexItem = 0,  mainItems = Array.from(items),
-        stp = position;
+                   (sw < cw ? (-sw * countES) + (cw - sw)/2 : ((-cw * countES) - (cw - sw)/2))) : null,
+        stp = position, ttp = 0;
 
-    if (settings.dots) var dots = Array.from(dotsBarContainer.childNodes);
+    var mainItems = Array.from(items);
+
+    if (currentSettings.bullets) var allBullets = Array.from(bulletsBarContainer.childNodes);
     if (PMtoggle) var thumbnails = slider.querySelectorAll(sliderClass + " ." + PMslidesClassName);
 
-    let isDelayed = false,
-        targetSlide,
-        currentSlide = parseInt(track.querySelector(".slide.active").getAttribute("indexItem"));
+    let isDelayed = false, indexCurrent = infSlider ? countES : 0,
+        indexTarget = infSlider ? countES : 0, firstCondition, secondCondition;
 
-    if (infSlider) mainItems = mainItems.slice(countES, (mainItems).length - countES);
+    var countSlides = mainItems.length,
+        APtarget = currentSettings.autoPlayDirrection === "left" ? -1 : 1;
 
+    let ws = window.innerWidth;
+
+    // ================================================== //
+    // Вспомогательные методы и функции для смены слайдов //
+    // ================================================== //
+
+    // Функция на проверку возможности прокрутки слайдера //
+
+    function checkingScroll(callback, direction){
+
+        if(infSlider) callback(direction);
+        else {
+            if ((indexTarget > 0 && direction === -1) || (indexTarget < countSlides - 1 && direction === 1)) callback(direction);
+        }
+
+    }
+
+    // Функция для рассчёта позиции в пикселях //
+
+    function calcPos(index) {
+
+        let half = (cw - sw)/2;
+        return  (autoMargin && (infSlider || !infSlider)) ? (sw > cw ? ((-sw + half) * index) - (half * (index - 1)) : -cw * index) :
+                (!autoMargin && !infSlider) ? (sw > cw ? half * index : -sw * index) :
+                (sw < cw ? ((-sw * index) + half) : ((-sw + half) * index) - (half * (index - 1)));
+
+    }
+
+    // Метод для контроля свойством transition //
+
+    Object.prototype.toggleAnimation = function(toggle, speed) {
+        this.style.transition = toggle ? `${(speed)}ms ${settings.transition}` : "";
+    }
+
+    // Метод анимации трека слайдера //
+
+    Object.prototype.setPosition = function (target, cond1, cond2) {
+
+        let _target = target
+
+        this.style.transform = "translate3d(" + calcPos(_target) + "px, 0px, 0px)";
+
+        if(cond1 || cond2){
+
+            _target = cond1 ? countES : cond2 ? countSlides - (countES + 1): target;
+
+            setTimeout(() => {
+
+                this.toggleAnimation(false, timeAnim);
+                this.style.transform = "translate3d(" + calcPos(_target) + "px, 0px, 0px)";
+
+            }, timeAnim)
+
+        }
+
+        stp = calcPos(_target);
+
+    }
 
     // ============================================ //
     // Функции, отвечающая за навигацию по слайдеру //
     // ============================================ //
 
-    // Функции автопрокрутки //
+    function scroll(target){
 
-    var autoplay = 0;
+        if(isDelayed) return;
 
-    var countSlides = mainItems.length,
-        APtarget = settings.autoPlayDirrection == "left" ? -1 : 1;
+        isDelayed = true;
 
-    function setInter(slides, mainItems, target){
-        
-        if (settings.autoPlaySlider) autoplay = setInterval(()=>{intervalFunc(slides, mainItems, target)}, delayAP);
+        controlAutoPlay(false);
+        track.toggleAnimation(true, timeAnim);
 
-    }
+        indexTarget += target;
+        firstCondition = (target === 1 && indexTarget === countSlides - countES && infSlider);
+        secondCondition = (target === -1 && indexTarget === countES - 1 && infSlider);
 
-    function intervalFunc(slides, mainItems, target){
+        track.setPosition(indexTarget, firstCondition, secondCondition);
+        changeActiveSlide(indexTarget, indexCurrent, firstCondition, secondCondition);
 
-        if(!isDelayed) prepareToChangeSlide(slides, mainItems, target).then(() => { isDelayed = false; })
+        setTimeout(() => {
 
-    } 
-
-    // Функция скроллинга слайдера по стрелкам //
-
-    function arrowScrollSlide(target, APtarget){
-
-        prepareToChangeSlide(mainItems, target).then(() => { 
-
+            controlAutoPlay(true);
+            track.toggleAnimation(false, timeAnim);
             isDelayed = false;
-            if (settings.autoPlaySlider)setInter(mainItems, APtarget);
 
-        });
-
-    }
-
-    // Функция подготовки к смене слайда //
-
-    function prepareToChangeSlide(items, target){
-
-        return new Promise((resolve, reject) => {
-
-            let firstCondition = (indexItem + target < countSlides && indexItem + target >= 0) && !infSlider,
-                secondConfition = infSlider;
-
-            if (firstCondition || secondConfition){ 
-
-                isDelayed = true;
-
-                changeSlide(items, target); 
-                setTimeout(() => { 
-
-                    if(!isDelayed) resolve();
-
-                }, timeAnim);
-
-            }
-
-        });
+        }, timeAnim);
 
     }
 
-    // Функция смены слайда //
+    // ===================== //
+    // Функция автопрокрутки //
+    // ===================== //
 
-    function changeSlide(items, target){
+    let autoplay = 0,
+        paused = true;
 
-        let i = slider.querySelector(sliderClass + "-track div.slide.active").getAttribute("indexitem"); // Индекс активного слайда для корректной работы индикации)
-        
-        items[indexItem].classList.remove("active");
+    function controlAutoPlay(toggle){
 
-        scrollingSlide(items, target).then(() => { 
-
-            isDelayed = false;
-            stp = Math.round(new WebKitCSSMatrix(getComputedStyle(track).transform).m41);
-
-        });
-        indicationAnim(dots, thumbnails, i);
-
-    }
-
-    function moveSlide(target){
-        let half = (cw - sw)/2;
-        track.style.transform = 
-            `translateX(${  (autoMargin && infSlider) ? 
-                                (sw > cw ? 
-                                    ((-sw + half) * target) - (half * (target - 1)) :
-                                    -cw * target):
-                            (autoMargin && !infSlider) ? 
-                                (sw > cw ? 
-                                    ((-sw + half) * target) - (half * (target - 1)): 
-                                    -cw * target): 
-                            (!autoMargin && !infSlider) ? 
-                                (sw > cw ? 
-                                    ((cw - sw)/2) * target : 
-                                    -sw * target) :
-                            (sw < cw ? 
-                                ((-sw * target) + (cw - sw)/2):
-                                ((-sw + half) * target) - (half * (target - 1)))}px)`;
-
-    }
-
-    // Функция, анимирующая смену слайда, ставящая пределы смен слайдов при необходимости //
-
-    function scrollingSlide(items, target){
-
-        return new Promise((resolve, reject) => {
-
-            track.style.transition = `${(timeAnim - 20)}ms ${settings.transition}`;
-
-            indexItem += target;
-            currentSlide = indexItem;
-            
-            let indexTarget = infSlider ? indexItem + localCountES : indexItem,
-                firstCondition = (target == 1 && indexTarget == countSlides + localCountES && infSlider),
-                secondCondition = (target == -1 && indexTarget == localCountES - 1 && infSlider);
-
-            moveSlide(indexTarget);
-
-            setTimeout((() => {
-
-                track.style.transition = null;
-                    
-                indexItem = firstCondition ? 0 : secondCondition ? countSlides - 1 : indexItem; 
-                indexTarget = firstCondition ? localCountES : secondCondition ? countSlides + (localCountES - 1) : indexTarget; 
-                currentSlide = firstCondition ? indexTarget - localCountES : secondCondition ? indexTarget - localCountES : currentSlide;
-
-                if (firstCondition || secondCondition){
-                    moveSlide(indexTarget);
-                }
-
-                resolve();
-            
-            }), timeAnim);
-
-            let _ = (cond, limit, index) => {
-                if (cond) items[limit].classList.add("active");
-                else items[index].classList.add("active");
-            }
-
-            if (target == 1) _(firstCondition, 0, indexItem);
-            else _(secondCondition, countSlides - 1, indexItem);
-
-        })
-
-    }
-
-    // Анимация индикации слайдера //
-
-    function indicationAnim(dots, thumbnails, index){
-
-        let _ = (object, _class, i) => {
-            object[i].classList.remove(_class);
-            object[slider.querySelector(sliderClass + "-track div.slide.active").getAttribute("indexitem")].classList.add(_class);
-        }
-
-        if(settings.dots) _(dots, settings.dotsEffect, index);
-
-        if(PMtoggle){
-
-            let TTlenght = slider.querySelector(sliderClass + "-thumb").childNodes.length, // TT - Thumb track
-                condition = (PMtoggle && TTlenght >= 3); 
-            
-            if (condition) _(thumbnails, 'thumb-active', index); 
-
+        if(currentSettings.autoPlaySlider){
+            if (toggle) autoplay = setInterval(() => checkingScroll(scroll, APtarget), delayAP);
+            else if (!toggle) clearInterval(autoplay)
         }
 
     }
@@ -600,44 +525,79 @@ async function DSS_start(sliderClass, settings){
     // Навигация по точкам //
     // =================== //
 
-    var ws = window.innerWidth;
-    let dotsBar = dotsBarContainer.childNodes;
-
     // Функция переключение слайдов для точек навигации //
 
     function target(targetSlide){
 
-        return new Promise((resolve, reject) => {
+        controlAutoPlay(false);
 
-            clearInterval(autoplay);
+        let targetIndex = !infSlider ? targetSlide : targetSlide + (countES - 1);
 
-            let targetIndex = !infSlider ? targetSlide : targetSlide + localCountES;
+        track.toggleAnimation(true, timeAnim);
+        track.setPosition(targetIndex);
 
-            track.style.transition = `${(timeAnim - 20)}ms ${settings.transition}`;
+        setTimeout(() => {
 
-            moveSlide(targetIndex);
+            track.toggleAnimation(false, timeAnim);
+            controlAutoPlay(true);
 
-            setTimeout((() => { 
-
-                track.style.transition = null; 
-
-                setInter(mainItems, APtarget);
-                resolve();
-
-            }), timeAnim);
-
-        });
+        }, timeAnim);
 
     }
 
-    // Переключение активного слайда //
+    // ===================================== //
+    // Функции переключения активного слайда //
+    // ===================================== //
 
-    function changeActiveSlide(current, target) { for (let i of arguments) mainItems[i].classList.toggle("active"); }
+    // Фунция смены классов //
 
-    // Скроллинг слайдов //
+    function animElements(index, className){
+
+        let _index = infSlider ? index - countES: index;
+
+        if(className === mainItems) className[index].classList.toggle("active");
+        else if (className === allBullets) className[_index].classList.toggle(currentSettings.bulletsEffect);
+        else if (className === thumbnails) className[_index].classList.toggle("thumb-active");
+
+    }
+
+    // Фунция смены активного слайда //
+
+    function changeActiveSlide(target, current, cond1, cond2) {
+
+        indexTarget = cond1 ? countES : cond2 ? countSlides - (countES + 1) : target;
+
+        let args = [indexTarget, indexCurrent];
+
+        for (let i of args) {
+
+            animElements(i, mainItems)
+            if(currentSettings.bullets) animElements(i, allBullets)
+            if(PMtoggle) animElements(i, thumbnails)
+
+        }
+
+        indexCurrent = indexTarget;
+
+    }
+
+    // ===================================== //
+    // Скроллинг слайдов посредством свайпов //
+    // ===================================== //
 
     let isTouchedPM = false, isDelayedPM = false, // Булеаны для режима презентации
         isTouched = false; // Булеан для свайпов
+
+    // Функция определения лимитов позиции //
+
+    let limits = (l, half) => {
+
+        return ((autoMargin && infSlider) || (autoMargin && !infSlider)) ? 
+                (sw > cw ? ((-sw + half) * l) - (half * (l - 1)) : -cw * l):
+                (!autoMargin && !infSlider) ? (sw > cw ? half * l : -sw * l):
+                (sw < cw ? ((-sw * l) + half) : ((-sw + half) * l) - (half * (l - 1))); 
+
+    }
 
     function swipeSlide(){
 
@@ -645,34 +605,19 @@ async function DSS_start(sliderClass, settings){
             sw = track.firstChild.clientWidth,
             lastSlide = infSlider ? countSlides : countSlides - 1,
             firstSlide = infSlider ? 1 : 0,
-            checkSlide = infSlider ? lastSlide : lastSlide,
-            half = (cw - sw)/2,
+            half = (cw - sw)/2, sl = cw * 0.3,
+            mle = limits(lastSlide, half), // move limit on start pos
+            mls = limits(firstSlide, half); // move limit on end pos
 
-            mle =   ((autoMargin && infSlider) || (autoMargin && !infSlider)) ? 
-                        (sw > cw ? ((-sw + half) * lastSlide) - (half * (lastSlide - 1)) : -cw * lastSlide):
-                    (!autoMargin && !infSlider) ? (sw > cw ? half * lastSlide : -sw * lastSlide):
-                    (sw < cw ? ((-sw * lastSlide) + half) : ((-sw + half) * lastSlide) - (half * (lastSlide - 1))),
-
-            mls =   ((autoMargin && infSlider) || (autoMargin && !infSlider)) ? 
-                        (sw > cw ? ((-sw + half) * firstSlide) - (half * (firstSlide - 1)) : -cw * firstSlide):
-                    (!autoMargin && !infSlider) ? (sw > cw ? half * firstSlide : -sw * firstSlide):
-                    (sw < cw ? ((-sw * firstSlide) + half) : ((-sw + half) * firstSlide) - (half * (firstSlide - 1))),
-
-            mlsc =  ((autoMargin && infSlider) || (autoMargin && !infSlider)) ? 
-                        (sw > cw ? ((-sw + half) * checkSlide) - (half * (checkSlide - 1)) : -cw * checkSlide):
-                    (!autoMargin && !infSlider) ? (sw > cw ? half * checkSlide : -sw * checkSlide):
-                    (sw < cw ? ((-sw * checkSlide) + half) : ((-sw + half) * checkSlide) - (half * (checkSlide - 1))),
-
-            sl = cw * 0.5;
-
-        mle += mls == 0 ? -cw*5/17 : mls*8/17;
-        mls -= mls == 0 ? -cw*5/17 : mls*8/17;                
+        mle += mls === 0 ? -cw * (5 / 17) : mls * (8 / 17);
+        mls -= mls === 0 ? -cw * (5 / 17) : mls * (8 / 17);
         
-        track.style.transform = `translateX(${position}px)`;
+        track.style.transform = `translate3d(${position}px, 0px, 0px)`;
 
         let booleanEdit = (t, d) => {
 
-            isTouched = t; isDelayed = d;
+            isTouched = t;
+            isDelayed = d;
 
         }
 
@@ -680,25 +625,23 @@ async function DSS_start(sliderClass, settings){
 
             booleanEdit(false, true);
 
-            track.style.transition = "ease-out" + ` ${timeAnim/2}ms`;
-            track.style.transform = `translateX(${stp}px)`;
+            track.toggleAnimation(true, timeAnim/2);
+            track.style.transform = `translate3d(${stp}px, 0px, 0px)`;
 
             setTimeout((() => {
-                
-                track.style.transition = "none";
+
+                track.toggleAnimation(false, timeAnim/2);
 
                 isDelayed = false;
 
-                setInter(mainItems, APtarget);
-
-                stp = Math.round(new WebKitCSSMatrix(getComputedStyle(track).transform).m41);
+                controlAutoPlay(true);
 
             }), timeAnim/2);
             
         }
-        var onDown = (event) => {
+        let onDown = (event) => {
 
-            clearInterval(autoplay);
+            controlAutoPlay(false);
 
             if (!isDelayed){
 
@@ -708,52 +651,40 @@ async function DSS_start(sliderClass, settings){
             }
 
         };
-        var slide = () => {
+        let slide = () => {
 
             if (move < -sl || move > sl){
 
-                booleanEdit(false, true);
+                booleanEdit(false, isDelayed);
 
-                var target = move < -sl ? 1 : -1;
+                let target = move < -sl ? 1 : -1;
 
-                prepareToChangeSlide(mainItems, target).then(() => { 
+                checkingScroll(scroll, target)
 
-                    isDelayed = false; 
-
-                    setInter(mainItems, APtarget);
-
-                    stp = Math.round(new WebKitCSSMatrix(getComputedStyle(track).transform).m41);
-
-                });
+                setTimeout(() => controlAutoPlay(true), timeAnim);
 
             }
 
         }
-        var onMove = throttle((event) => {
+        let onMove = throttle((event) => {
 
             moving = stp + ((event.pageX - ((ws - scw)/2)) - sp);
             move = (event.pageX - ((ws - scw)/2)) - sp;
 
             if(isTouched && !isDelayed){
-                if(infSlider){ 
-                    track.style.transform = `translateX(${moving}px)`; slide(); 
+                if(infSlider){
+                    track.style.transform = `translate3d(${moving}px, 0px, 0px)`; slide();
                 }
                 else {
-                    if (moving > mls) overscrollAnim();
-                    else if (moving < mle) overscrollAnim();
-                    else { track.style.transform = `translateX(${moving}px)`; slide(); }
+                    if (moving > mls || moving < mle) overscrollAnim();
+                    else { track.style.transform = `translate3d(${moving}px, 0px, 0px)`; slide(); }
                 }
             }
             
-        }, 1/144 * 1000);
-        var onUp = () => {
+        }, 1/400 * 1000);
+        let onUp = () => {
 
-            if (isTouched){
-
-                overscrollAnim();
-                isTouched = false;
-
-            }
+            if (isTouched) overscrollAnim();
 
         };
 
@@ -761,7 +692,9 @@ async function DSS_start(sliderClass, settings){
 
     }
 
+    // ================= //
     // Режим презентации //
+    // ================= //
 
     function presentationMode(){
         
@@ -772,43 +705,46 @@ async function DSS_start(sliderClass, settings){
             ts = tt.firstChild, ws = window.innerWidth,
             tsm = 2 * parseFloat(getComputedStyle(ts, true).marginLeft),
             tsw = parseFloat(getComputedStyle(ts, true).width),
-            tcw = tt.parentElement.clientWidth, sp = 0, ttp = 0, mpx = 0,
+            tcw = tt.parentElement.clientWidth, sp = 0, mpx = 0,
             ml = -((tsm + tsw) * (tt.childNodes).length) > -tcw ? 0 : 
                  -((tsm + tsw) * (tt.childNodes).length) + tcw;
 
-        tt.style.transform = `translateX(0px)`
+        tt.style.transform = `translate3d(0px, 0px, 0px)`
 
         ttpTemp = new WebKitCSSMatrix(window.getComputedStyle(tt).transform).m41;
 
         let booleanEdit = (t, d) => {
-            isTouchedPM = t; isDelayedPM = d;
+
+            isTouchedPM = t;
+            isDelayedPM = d;
+
         }
 
         function overscrollAnim(){
 
-            tt.style.transition = "ease-out" + ` ${timeAnim/2}ms`;
+            tt.toggleAnimation(true, timeAnim/2);
 
             booleanEdit(false, true);
             
             let condition = ttpTemp > 0 ? 0 : ttpTemp < ml ? ml : ttpTemp;
 
-            var limiter = (returnTo) => {
+            let limiter = (returnTo) => {
 
-                tt.style.transform = `translateX(${returnTo}px)`;
+                tt.style.transform = `translate3d(${returnTo}px, 0px, 0px)`;
                 ttp = returnTo; ttpTemp = returnTo;
 
             }
             limiter(condition);
             setTimeout((() => {
 
-                tt.style.transition = "none";
+                tt.toggleAnimation(false, timeAnim/2);
                 booleanEdit(isTouchedPM, false);
 
             }), timeAnim/2);
 
         }
         
-        var pd = (event) => {
+        let pd = (event) => {
 
             ttpTemp = new WebKitCSSMatrix(window.getComputedStyle(tt).transform).m41;
 
@@ -818,7 +754,7 @@ async function DSS_start(sliderClass, settings){
 
         }
 
-        var pm = throttle((event) => {
+        let pm = throttle((event) => {
 
             event.preventDefault();
 
@@ -828,17 +764,21 @@ async function DSS_start(sliderClass, settings){
 
                 let moving = ttp + (mpx - sp);
 
-                if (logAnimGraphic(moving, z) >= 23) tt.style.transform = `translateX(${logAnimGraphic(moving, z)}px)`;
-                else if ((moving) < 0 && -1 * (moving) + ml >= 23) tt.style.transform = `translateX(${ml - (logAnimGraphic(Math.abs((-1 * ml) + (moving)), z))}px)`;
-                else tt.style.transform = `translateX(${moving}px)`;
+                if (logAnimGraphic(moving, z) >= 23) {
+                    tt.style.transform = `translate3d(${logAnimGraphic(moving, z)}px, 0px, 0px)`;
+                } else if ((moving) < 0 && -1 * (moving) + ml >= 23) {
+                    tt.style.transform = `translate3d(${ml - (logAnimGraphic(Math.abs((-1 * ml) + (moving)), z))}px, 0px, 0px)`;
+                } else {
+                    tt.style.transform = `translate3d(${moving}px, 0px, 0px)`;
+                }
 
                 ttpTemp = new WebKitCSSMatrix(window.getComputedStyle(tt).transform).m41;
 
             }
 
-        }, 1/144 * 1000)
+        }, 1/400 * 1000)
 
-        var pu = () => { 
+        let pu = () => {
 
             if (ttpTemp >= 0 || ttpTemp < -1*ml) overscrollAnim(ttpTemp);
 
@@ -860,79 +800,62 @@ async function DSS_start(sliderClass, settings){
     let PMerror = "Please, add slides for correctly working Presentation Mode \nCode error: "
 
     try{
-
         if (PMtoggle && slider.querySelector(sliderClass + "-thumb").childNodes.length >= 3) var argsPM = presentationMode();
+    } catch(e) {
+        alert(PMerror + e);
+    }
 
-    } catch(e) { alert(PMerror + e); }
-
-    var argsS = swipeSlide();
+    let argsS = swipeSlide();
 
     // Эвенты для стрелок //
 
-    function arrowsEvents(sliderClass, callback, APtarget, toggle){
+    function arrowsEvents(sliderClass, callback){
 
-        for (let arrow of sliderClass){
-            
-            arrow.onclick = !toggle ? null : throttle(function(){ 
+        for (let arrow of sliderClass) {
 
-                let target = this.id == 'a_left' ? -1 : 1;
+            arrow.addEventListener("click", function () {
 
-                if(!isDelayed) {
+                let target = this.id === leftArrow ? -1 : 1;
 
-                    callback(target, APtarget);
-                    clearInterval(autoplay);
+                checkingScroll(callback, target)
 
-                }
-
-            } , timeAnim);
+            })
 
         }
-        
+
     }
 
     // Эвенты для точек навигации //
 
-    function dotsEventsCreate(toggle){
+    function bulletsEventsCreate(toggle){
 
-        function actionDots(obj) {
+        let bulletsBar = currentSettings.bullets ? bulletsBarContainer.childNodes : null;
 
-            if (!isDelayed){
-                
-                isDelayed = true;
+        function actionBullets(obj) {
 
-                targetSlide = parseInt(obj.getAttribute("indexItem"));
+            if(isDelayed) return;
 
-                changeActiveSlide(currentSlide, targetSlide);
-                target(targetSlide, mainItems[0].clientWidth).then(() => {
-                    stp = Math.round(new WebKitCSSMatrix(getComputedStyle(track).transform).m41);
-                });
-                indicationAnim(dotsBar, thumbnails, currentSlide);
-                console.log("нихуя не работает3")
-                indexItem = currentSlide = targetSlide;
+            isDelayed = true;
 
-                setTimeout(() => {
-                    isDelayed = false;
-                    stp = Math.round(new WebKitCSSMatrix(getComputedStyle(track).transform).m41);
-                }, timeAnim);
+            let targetIndex = parseInt(obj.getAttribute("indexItem")),
+                targetSlide = infSlider ? targetIndex + countES : targetIndex;
 
-            }
-            
+            changeActiveSlide(targetSlide, indexCurrent);
+            target(targetSlide, mainItems[0].clientWidth);
+
+            setTimeout(() => isDelayed = false, timeAnim);
+
         }
 
-        for (var i = 0; i < dotsBar.length; i++) {
+        if(toggle){
 
-            switch(toggle) {
-                case true:  dotsBar[i].addEventListener("click", function(){ return actionDots(this); });
-                            break;
-                case false: dotsBar[i].removeEventListener("click", function(){ return actionDots(this); });
-                            break;
-            }
+            for (let i = 0; i < bulletsBar.length; i++) bulletsBar[i].addEventListener("click", function(){ return actionBullets(this); });
 
         }
 
     }
 
-    // Универсальная функция для создания эвентов для свайпов //
+    // Универсальная функция, предназначение которого создавать эвенты для свайпов //
 
     function pointerEvents(object1, object2, onDown, onMove, onUp, callback1, callback2, typeObj, toggle){
 
@@ -949,7 +872,7 @@ async function DSS_start(sliderClass, settings){
         object1.onpointerenter = !toggle ? null :  () => afterEnter(object2, toggle);
         object1.onpointerleave = !toggle ? null : () => {
 
-            condition = typeObj == 'pm' ? isTouchedPM && !isDelayedPM : isTouched && !isDelayed;
+            condition = typeObj === 'pm' ? isTouchedPM && !isDelayedPM : isTouched && !isDelayed;
 
             if(condition){
 
@@ -970,65 +893,29 @@ async function DSS_start(sliderClass, settings){
 
         let _argsPM = [], _argsS = [];
 
-        for (let allArgs of ["argsPM", "argsS"]) { 
-            if (allArgs === "argsPM"){ for (let parsedArgs of argsPM) _argsPM.push(parsedArgs); }
+        for (let allArgs of ["argsPM", "argsS"]) {
+            if (allArgs === "argsPM" && PMtoggle){ for (let parsedArgs of argsPM) _argsPM.push(parsedArgs); }
             else{ for (let parsedArgs of argsS) _argsS.push(parsedArgs); }
         }
         for (let args of [_argsPM, _argsS]) args.push(toggle);
 
-        window.onresize = !toggle ? null : debounce(() => { ws = window.innerWidth; }, 1/30 * 1000);
+        window.onresize = !toggle ? null : debounce(() => ws = window.innerWidth, 1/60 * 1000);
 
-        dotsEventsCreate(toggle);
-        if (settings.arrows){
+        if (currentSettings.bullets) bulletsEventsCreate(toggle);
+        if (currentSettings.arrows) arrowsEvents(slider.querySelectorAll(sliderClass + " .a-bar"), scroll);
 
-            let arrows = slider.querySelectorAll(sliderClass + " .a-bar");
-            arrowsEvents(arrows, arrowScrollSlide, APtarget, toggle);
+        controlAutoPlay(toggle);
 
-        }
-        if (settings.autoPlaySlider){ 
-            if (toggle) setInter(mainItems, APtarget);
-            else clearInterval(autoplay);
-        }
-        if (PMtoggle) { pointerEvents.apply(this, _argsPM); }
-        if (settings.swipeScroll) { pointerEvents.apply(this, _argsS); }
-
-        delete _argsPM, _argsS;
+        if (PMtoggle) pointerEvents.apply(this, _argsPM);
+        if (currentSettings.swipeScroll) pointerEvents.apply(this, _argsS);
 
     }
 
-    // Эвенты для проверки видимости вкладки //
+    eventsToggle(true);
 
-    function eventsController(){
+    // Контроль эвентов //
 
-        var status;
-
-        function afterload(){
-            if (document.visibilityState === "hidden") {
-                eventsToggle(false); status = false;
-            } else {
-                eventsToggle(true); status = true;
-            }
-        }
-
-        window.addEventListener('load', () => afterload())
-        window.removeEventListener('load', () => afterload());
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === "hidden") eventsToggle(false);
-            else eventsToggle(true);
-        });
-        window.addEventListener('focus', () => { 
-            if (!status) {
-                eventsToggle(true); 
-                status = true;
-            }
-        });
-        window.addEventListener('blur', () => { 
-            if (!status) eventsToggle(false);
-        });
-
-    }
-
-    eventsController();
+    // <==[coming soon...]==> //
 
 }
 
