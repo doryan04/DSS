@@ -47,42 +47,48 @@ To avoid the problem described above, do as indicated in the code below:
     </body>
     <script>
     
-        DSS_start(".YourSliderName_1",
-            
-            yourSettings1 = {
+        DSS_start(".YourSliderName"_1,
+        
+            exampleSettings = {
 
-                autoPlaySlider: true,
-                autoPlayDelay: 5000,
-                autoPlayDirrection: "right",
-                arrows: true,
-                dots: true,
-                dotsEffect: "dot-pull",
-                endlessSlider: true,
-                transition: "ease-in-out",
-                presentationMode: true,
-                speedAnimation: 500,
-
+                autoPlaySlider:         false,
+                arrows:                 true,
+                prewArrow:              "a_left",
+                nextArrow:              "a_right",
+                bullets:                true,
+                bulletsEffect:          "bullet-pull",
+                endlessSlider:          true,
+                autoSetterMargins:      false,
+                presentationMode:       true,
+                thumbSlidesClassName:   "slide-thumb",
+                speedAnimation:         400,
+                transition:             "ease-in-out",
+                swipeScroll:            false,
+                
             }
-
+        
         );
 
-        DSS_start(".YourSliderName_2",
-            
-            yourSettings2 = {
+        DSS_start(".YourSliderNam_2",
+        
+            exampleSettings = {
 
-                autoPlaySlider: true,
-                autoPlayDelay: 1000,
-                autoPlayDirrection: "left",
-                arrows: true,
-                dots: true,
-                dotsEffect: "dot-pull",
-                endlessSlider: true,
-                transition: "ease-in-out",
-                presentationMode: true,
-                speedAnimation: 350,
-
+                autoPlaySlider:         true,
+                autoPlayDelay:          1000,
+                autoPlayDirrection:     "right",
+                arrows:                 false,
+                bullets:                false,
+                bulletsEffect:          "bullet-pull",
+                endlessSlider:          false,
+                autoSetterMargins:      false,
+                presentationMode:       true,
+                thumbSlidesClassName:   "slide-thumb",
+                speedAnimation:         400,
+                transition:             "ease-in-out",
+                swipeScroll:            true,
+                
             }
-
+        
         );
 
     </script>
@@ -125,29 +131,34 @@ as shown in the code:
 ```
 and only then after ```</body>``` tag insert the ```<script>``` tag, where you call the function to run the slider, like in the example above.
 
-3. Configure the slider in the CSS file:
+3. Configure the slider in the SASS files:
 
 ```
-:root{
-    --width: 640px;     //default width
-    --height: 400px;    //default height
-    --dots-size: 15px;  //default size a dots
-}
+$width-container: 800px     //default width of main visible slider part 
+$width: 1600px              //default width
+$height: 300px              //default height
+$dots-size: 15px            //default size a dots
 ```
+
 4. Configure the slider to your liking:
 ```
 settings = {
 
-    autoPlaySlider: true,        // AutoPlay toggle
-    autoPlayDelay: 1000,         // AutoPlay delay
-    autoPlayDirrection: "left",  // AutoPlay dirrection
-    arrows: true,                // arrows toggle
-    dots: true,                  // dots, which are responsible for the indication of the active slide
-    dotsEffect: "dot-default",   // appearance of dots
-    endlessSlider: true,         // endless slider toggle
-    transition: "ease-in-out",   // animation type for the slider scrolling
-    presentationMode: true,      // carousel with thumbtrack under gallery
-    speedAnimation: 350,         // speed of scrolling animation
+    autoPlaySlider: true,                   // Auto play toggle
+    autoPlayDelay: 1000,                    // Auto play delay
+    autoPlayDirrection: "left",             // Auto play dirrection
+    arrows: true,                           // Arrows toggle
+    prewArrow:              "a_left",       // Class name for left arrow
+    nextArrow:              "a_right",      // Class name for right arrow
+    bullets:                true,           // Bullets (dots), which are responsible for the indication of the active slide
+    bulletsEffect:          "bullet-pull",  // Appearance of bullets (dots)
+    endlessSlider:          true,           // Endless slider toggle (infinity slider)
+    autoSetterMargins:      false,          // Auto setter margins for slides
+    presentationMode:       true,           // Slider with thumbtrack under gallery
+    thumbSlidesClassName:   "slide-thumb",  // Class name for thumbnails
+    speedAnimation:         500,            // Speed of scrolling animation
+    transition:             "ease",         // Animation type for the slider scrolling
+    swipeScroll:            true,           // Scrolling with swipes (working on PC and smartphones)
 
 }
 ```
@@ -160,17 +171,22 @@ Then enter all the settings into the slider function, as shown in the example be
         
             exampleSettings = {
 
-                autoPlaySlider: true,
-                autoPlayDelay: 1000,
-                autoPlayDirrection: "left",
-                arrows: true,
-                dots: true,
-                dotsEffect: "dot-default",
-                endlessSlider: true,
-                transition: "ease-in-out",
-                presentationMode: true,
-                speedAnimation: 350,
-
+                autoPlaySlider:         false,
+                autoPlayDelay:          1000,
+                autoPlayDirrection:     "left",
+                arrows:                 false,
+                prewArrow:              "a_left",
+                nextArrow:              "a_right",
+                bullets:                false,
+                bulletsEffect:          "bullet-pull",
+                endlessSlider:          true,
+                autoSetterMargins:      false,
+                presentationMode:       true,
+                thumbSlidesClassName:   "slide-thumb",
+                speedAnimation:         400,
+                transition:             "ease-in-out",
+                swipeScroll:            false,
+                
             }
         
         );
@@ -186,7 +202,8 @@ Then enter all the settings into the slider function, as shown in the example be
 ## What on stady "work in progress"?
 
 - [X] Dots navigation
-- [ ] Swipes on smartphones
+- [X] Swipes on smartphones
+- [ ] Events controller
 
 ## Did you find the bug? Make sure to [leave an issue](https://github.com/doryan04/DSS/issues/new) in case of any problems.
 

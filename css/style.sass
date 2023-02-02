@@ -2,11 +2,9 @@
 /* Настройка галереи */
 /* ================= */
 
-
-$width: 480px
-$height: 240px
-$width-thumb: $width * 5/16
-$height-thumb: $height * 5/16
+$width-container: 800px
+$width: 1600px
+$height: 300px
 $dots-size: 15px
 
 @mixin defaultProp()
@@ -18,14 +16,12 @@ html,
 body
     margin: 0
     padding: 0
-    background-color: #383838
+    background-color: #303d5a
     flex-direction: column
     @include defaultProp()
 
-
 .logo
-    top: 0%
-    position:absolute
+    top: 0
     width: 720px
     height: 248px
     background-image: url(/png/logo.png)
@@ -63,42 +59,47 @@ body
 /* Режим презентации */
 /* ================= */
 
-.slider-thumb-container, .slider2-thumb-container
+.slider-thumb-container
     overflow: hidden
     position: relative
     margin-top: 10px
     display: flex
-    width: $width
-    height: $height-thumb
+    height: calc($height * 5/16)
 
+.slider-thumb-container
+    width: $width-container
 
-.slider-thumb, .slider2-thumb
+.slider-thumb
     position: absolute
     display: flex
     width: max-content
     height: inherit
 
 
-.slide-thumb
+@mixin thumbnail()
     font-size: inherit
     padding: 0
+    user-select: none
     @include defaultProp()
     color: #FFFFFF
-    margin: 0px 5px
+    background-color: #7c7c7c
+    margin: 0 5px
     border-radius: 10px
-    width: $width-thumb
-    height: $height-thumb
+    width: calc($width * 5/16)
+    height: calc($height * 5/16)
 
+.slide-thumb 
+    @include thumbnail()
 
 .sliderMargin1
-    margin: 8vh 0 0 0
+    margin: 8vh 0
 
 
 /* ================= */
 /* Основная карусель */
 /* ================= */
 
-.slider,.slider2
+.slider
     font-family: 'Arial', sans-serif
     font-size: 30pt
     @include defaultProp()
@@ -106,37 +107,39 @@ body
     height: $height
     width: 100%
 
-
-.slider-block,.slider2-block
+.slider-block
     @include defaultProp()
     width: 100%
 
-
-.slider-container,.slider2-container
+.slider-container
     border-radius: 15px
     display: flex
     position: relative
     margin: 0
     padding: 0
-    width: $width
     height: $height
+    width: $width-container
     overflow: hidden
 
-
-.slider-track,.slider2-track
+.slider-track
     border-radius: inherit
     display: flex
     flex-direction: row
     width: max-content
 
 
-.slider-track > div,.slider2-track > div
-    width: $width
+.slider-track > div
     height: $height
     position: relative
     @include defaultProp()
 
+.slider-track > div
+    width: $width
+
+//slide
+
 .slide
+    width: $width
     user-select: none
 
 
@@ -144,41 +147,41 @@ body
 /* Индикатор */
 /* ========= */
 
-.dots-bar
+.bullets-bar
     align-self: flex-end
     justify-self: center
     display: flex
     position: absolute
-    padding: 0px 5px 5px 5px
+    padding: 0 5px 5px 5px
     margin-bottom: 5px
     min-width: $dots-size
     min-height: $dots-size
 
 
-.dot
+.bullet
     filter: drop-shadow(0.5px 0.5px 1px black)
     background-color: white
     border-radius: $dots-size
     height: $dots-size
-    margin: 0px 5px 5px 5px
+    margin: 0 5px 5px 5px
     opacity: 60%
     width: $dots-size
 
 
-.dot:hover
+.bullet:hover
     opacity: 80%
     cursor: pointer
 
 
-.dot-pull
+.bullet-pull
     width: $dots-size * 3
     opacity: 100%
 
 
-.dot-default
+.bullet-default
     opacity: 100%
 
 
-.dot-scaling
+.bullet-scaling
     transform: scale(1.1)
     opacity: 100%
