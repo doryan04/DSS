@@ -863,9 +863,9 @@ async function DSS_start(sliderClass, settings){
 
         function afterEnter(object2, toggle){
 
-            object2.onpointerdown = !toggle ? null : (event) => onDown(event) 
-            object2.onpointermove = !toggle ? null : (event) => onMove(event) 
-            object2.onpointerup = !toggle ? null : () => onUp() 
+            object2.onpointerdown = !toggle ? null : (event) => onDown(event)
+            object2.onpointermove = !toggle ? null : (event) => onMove(event)
+            object2.onpointerup = !toggle ? null : () => onUp()
 
         }
 
@@ -911,11 +911,20 @@ async function DSS_start(sliderClass, settings){
 
     }
 
-    eventsToggle(true);
-
     // Контроль эвентов //
 
-    // <==[coming soon...]==> //
+    function controlEvents(){
+        window.addEventListener('load', () => {
+            if (document.visibilityState === "hidden") eventsToggle(false)
+            else eventsToggle(true)
+        })
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === "hidden") eventsToggle(false)
+            else eventsToggle(true)
+        })
+    }
+
+    controlEvents();
 
 }
 
