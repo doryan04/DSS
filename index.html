@@ -1,11 +1,15 @@
+<!DOCTYPE html>
 <html lang="">
     <head>
+
         <link rel="stylesheet" type="text/css" href="css/style.css">
         <link rel="stylesheet" type="text/css" href="css/arrow_scss.css">
-        <title>DSS</title>
-        <script src="ds_slider/ds_slider.js"></script>
-        <style>
 
+        <title>DSS</title>
+
+        <script src="ds_slider/ds_slider.js"></script>
+
+        <style>
             .slide{ /*  default color scheme  */
                 background-color: #7c7c7c; /* don't touch this */
                 color: white;
@@ -28,7 +32,6 @@
         </style>
     </head>
     <body class="presentation">
-        
         <div class="logo"></div>
         <div class="text">
             <div id="light">
@@ -38,7 +41,6 @@
                 simple slider
             </div>
         </div>
-
         <div class="slider sliderMargin1">
             <div>1</div>
             <div class="gold">2</div>
@@ -46,53 +48,47 @@
             <div class="lightsalmon">4</div>
             <div style="background-color:thistle ;">5</div>
         </div>
-
-
     </body>
-    <script>
+    <script> new DSS(".slider", settings = {
 
-        DSS_start(".slider", settings = {
+        // Слайд-шоу
 
-            // Слайд-шоу
+        autoPlaySlider:         true,
+        autoPlayDelay:          1000,
+        autoPlayDirrection:     "right",
 
-            autoPlaySlider:         true,
-            autoPlayDelay:          1000,
-            autoPlayDirrection:     "right",
+        // Стрелки
 
-            // Стрелки
+        arrows:                 true,
+        prewArrow:              "a_left",
+        nextArrow:              "a_right",
 
-            arrows:                 true,
-            prewArrow:              "a_left",
-            nextArrow:              "a_right",
+        // Точки навигации
 
-            // Точки навигации
+        bullets:                true,
+        bulletsEffect:          "bullet-pull",
 
-            bullets:                true,
-            bulletsEffect:          "bullet-pull",
+        // Бесконечный слайдер
 
-            // Бесконечный слайдер
+        endlessSlider:          true,
 
-            endlessSlider:          true,
+        // Автоматическая настройка внешних отступов
 
-            // Автоматическая настройка внешних отступов
+        autoSetterMargins:      false,
 
-            autoSetterMargins:      false,
+        // Режим презентации
 
-            // Режим презентации
+        presentationMode:       true,
+        thumbSlidesClassName:   "slide-thumb",
 
-            presentationMode:       true,
-            thumbSlidesClassName:   "slide-thumb",
+        // Анимации
 
-            // Анимации
+        speedAnimation:         500,
+        transition:             "ease",
 
-            speedAnimation:         500,
-            transition:             "ease",
+        // Свайпы
 
-            // Свайпы
+        swipeScroll:            true,
 
-            swipeScroll:            true,
-
-        });
-
-    </script>
+    }); </script>
 </html>
