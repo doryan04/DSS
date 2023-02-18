@@ -19,7 +19,7 @@
                 color: black;
             }
             .blueviolet{
-                font-size: 28pt; 
+                font-size: 28pt;
                 background-color: blueviolet;
             }
             .lightsalmon{
@@ -27,6 +27,16 @@
                 background-color:lightsalmon; 
                 color: black; 
                 border: 5px;
+            }
+            .rectangle{
+                width: 500px;
+                height: 150px;
+                background-color: #60A7E3;
+                color: white;
+                display: flex;
+                border-radius: 20px;
+                justify-content: center;
+                align-items: center;
             }
 
         </style>
@@ -42,53 +52,20 @@
             </div>
         </div>
         <div class="slider sliderMargin1">
-            <div>1</div>
+            <div>
+                <div class="rectangle">1</div>
+            </div>
             <div class="gold">2</div>
             <div class="blueviolet">3</div>
             <div class="lightsalmon">4</div>
             <div style="background-color:thistle ;">5</div>
         </div>
     </body>
-    <script> new DSS(".slider", settings = {
+    <script>
+        let gallery = new DSS(".slider", settings = {
+            autoPlaySlider: false,
+            arrows: false,
+        });
 
-        // Слайд-шоу
-
-        autoPlaySlider:         true,
-        autoPlayDelay:          1000,
-        autoPlayDirrection:     "right",
-
-        // Стрелки
-
-        arrows:                 true,
-        prewArrow:              "a_left",
-        nextArrow:              "a_right",
-
-        // Точки навигации
-
-        bullets:                true,
-        bulletsEffect:          "bullet-pull",
-
-        // Бесконечный слайдер
-
-        endlessSlider:          true,
-
-        // Автоматическая настройка внешних отступов
-
-        autoSetterMargins:      false,
-
-        // Режим презентации
-
-        presentationMode:       true,
-        thumbSlidesClassName:   "slide-thumb",
-
-        // Анимации
-
-        speedAnimation:         500,
-        transition:             "ease",
-
-        // Свайпы
-
-        swipeScroll:            true,
-
-    }); </script>
+    </script>
 </html>
