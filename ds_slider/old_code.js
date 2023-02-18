@@ -1,7 +1,3 @@
-const track = DSS.datas.track,
-    items = DSS.datas.items,
-    sw = DSS.datas.sw,
-    cw = DSS.datas.cw;
 
 const z = 9.5112702529; // константа для подгонки логарифмического графика к её касательной
 
@@ -10,8 +6,8 @@ const z = 9.5112702529; // константа для подгонки логар
 // ========== //
 
 let position = (autoMargin && infSlider) ? (sw > cw ? -sw + (cw - sw)/2 : -cw) :
-        (autoMargin && !infSlider) || (!autoMargin && !infSlider) ? (sw > cw ? (cw - sw)/2 : 0):
-            (!autoMargin && infSlider) ? (sw > cw ? -sw + (cw - sw)/2 :
+               (autoMargin && !infSlider) || (!autoMargin && !infSlider) ? (sw > cw ? (cw - sw)/2 : 0):
+               (!autoMargin && infSlider) ? (sw > cw ? -sw + (cw - sw)/2 :
                 (sw < cw ? (-sw * countES) + (cw - sw)/2 : ((-cw * countES) - (cw - sw)/2))) : null,
     stp = position, ttp = 0;
 
@@ -27,93 +23,6 @@ var countSlides = mainItems.length,
     APtarget = currentSettings.autoPlayDirrection === "left" ? -1 : 1;
 
 let ws = window.innerWidth;
-
-// ================================================== //
-// Вспомогательные методы и функции для смены слайдов //
-// ================================================== //
-
-// Функция на проверку возможности прокрутки слайдера //
-
-function checkingScroll(callback, direction){
-
-    if(infSlider) callback(direction);
-    else {
-        if ((indexTarget > 0 && direction === -1) || (indexTarget < countSlides - 1 && direction === 1)) callback(direction);
-    }
-
-}
-
-// Функция для рассчёта позиции в пикселях //
-
-function calcPos(index) {
-
-    let half = (cw - sw)/2;
-    return  (autoMargin && (infSlider || !infSlider)) ? (sw > cw ? ((-sw + half) * index) - (half * (index - 1)) : -cw * index) :
-        (!autoMargin && !infSlider) ? (sw > cw ? half * index : -sw * index) :
-            (sw < cw ? ((-sw * index) + half) : ((-sw + half) * index) - (half * (index - 1)));
-
-}
-
-// Метод для контроля свойством transition //
-
-Object.prototype.toggleAnimation = function(toggle, speed) {
-    this.style.transition = toggle ? `${(speed)}ms ${settings.transition}` : "";
-}
-
-// Метод анимации трека слайдера //
-
-Object.prototype.setPosition = function (target, cond1, cond2) {
-
-    let _target = target
-
-    this.style.transform = "translate3d(" + calcPos(_target) + "px, 0px, 0px)";
-
-    if(cond1 || cond2){
-
-        _target = cond1 ? countES : cond2 ? countSlides - (countES + 1): target;
-
-        setTimeout(() => {
-
-            this.toggleAnimation(false, timeAnim);
-            this.style.transform = "translate3d(" + calcPos(_target) + "px, 0px, 0px)";
-
-        }, timeAnim)
-
-    }
-
-    stp = calcPos(_target);
-
-}
-
-// ============================================ //
-// Функции, отвечающая за навигацию по слайдеру //
-// ============================================ //
-
-function scroll(target){
-
-    if(isDelayed) return;
-
-    isDelayed = true;
-
-    controlAutoPlay(false);
-    track.toggleAnimation(true, timeAnim);
-
-    indexTarget += target;
-    firstCondition = (target === 1 && indexTarget === countSlides - countES && infSlider);
-    secondCondition = (target === -1 && indexTarget === countES - 1 && infSlider);
-
-    track.setPosition(indexTarget, firstCondition, secondCondition);
-    changeActiveSlide(indexTarget, indexCurrent, firstCondition, secondCondition);
-
-    setTimeout(() => {
-
-        controlAutoPlay(true);
-        track.toggleAnimation(false, timeAnim);
-        isDelayed = false;
-
-    }, timeAnim);
-
-}
 
 // ===================== //
 // Функция автопрокрутки //
@@ -131,29 +40,6 @@ function controlAutoPlay(toggle){
 
 }
 
-// =================== //
-// Навигация по точкам //
-// =================== //
-
-// Функция переключение слайдов для точек навигации //
-
-function target(targetSlide){
-
-    controlAutoPlay(false);
-
-    let targetIndex = !infSlider ? targetSlide : targetSlide + (countES - 1);
-
-    track.toggleAnimation(true, timeAnim);
-    track.setPosition(targetIndex);
-
-    setTimeout(() => {
-
-        track.toggleAnimation(false, timeAnim);
-        controlAutoPlay(true);
-
-    }, timeAnim);
-
-}
 
 // ===================================== //
 // Функции переключения активного слайда //
@@ -168,26 +54,6 @@ function animElements(index, className){
     if(className === mainItems) className[index].classList.toggle("active");
     else if (className === allBullets) className[_index].classList.toggle(currentSettings.bulletsEffect);
     else if (className === thumbnails) className[_index].classList.toggle("thumb-active");
-
-}
-
-// Фунция смены активного слайда //
-
-function changeActiveSlide(target, current, cond1, cond2) {
-
-    indexTarget = cond1 ? countES : cond2 ? countSlides - (countES + 1) : target;
-
-    let args = [indexTarget, indexCurrent];
-
-    for (let i of args) {
-
-        animElements(i, mainItems)
-        if(currentSettings.bullets) animElements(i, allBullets)
-        if(PMtoggle) animElements(i, thumbnails)
-
-    }
-
-    indexCurrent = indexTarget;
 
 }
 
@@ -417,54 +283,6 @@ try{
 
 let argsS = swipeSlide();
 
-// Эвенты для стрелок //
-
-function arrowsEvents(sliderClass, callback){
-
-    for (let arrow of sliderClass) {
-
-        arrow.addEventListener("click", function () {
-
-            let target = this.id === leftArrow ? -1 : 1;
-
-            checkingScroll(callback, target)
-
-        })
-
-    }
-
-}
-
-// Эвенты для точек навигации //
-
-function bulletsEventsCreate(toggle){
-
-    let bulletsBar = currentSettings.bullets ? bulletsBarContainer.childNodes : null;
-
-    function actionBullets(obj) {
-
-        if(isDelayed) return;
-
-        isDelayed = true;
-
-        let targetIndex = parseInt(obj.getAttribute("indexItem")),
-            targetSlide = infSlider ? targetIndex + countES : targetIndex;
-
-        changeActiveSlide(targetSlide, indexCurrent);
-        target(targetSlide, mainItems[0].clientWidth);
-
-        setTimeout(() => isDelayed = false, timeAnim);
-
-    }
-
-    if(toggle){
-
-        for (let i = 0; i < bulletsBar.length; i++) bulletsBar[i].addEventListener("click", function(){ return actionBullets(this); });
-
-    }
-
-}
-
 // Универсальная функция, предназначение которого создавать эвенты для свайпов //
 
 function pointerEvents(object1, object2, onDown, onMove, onUp, callback1, callback2, typeObj, toggle){
@@ -494,117 +312,5 @@ function pointerEvents(object1, object2, onDown, onMove, onUp, callback1, callba
         }
 
     }
-
-}
-
-// Создание эвентов //
-
-function eventsToggle(toggle){
-
-    let _argsPM = [], _argsS = [];
-
-    for (let allArgs of ["argsPM", "argsS"]) {
-        if (allArgs === "argsPM" && PMtoggle){ for (let parsedArgs of argsPM) _argsPM.push(parsedArgs); }
-        else{ for (let parsedArgs of argsS) _argsS.push(parsedArgs); }
-    }
-    for (let args of [_argsPM, _argsS]) args.push(toggle);
-
-    window.onresize = !toggle ? null : debounce(() => ws = window.innerWidth, 1/60 * 1000);
-
-    if (currentSettings.bullets) bulletsEventsCreate(toggle);
-    if (currentSettings.arrows) arrowsEvents(slider.querySelectorAll(sliderClass + " .a-bar"), scroll);
-
-    controlAutoPlay(toggle);
-
-    if (PMtoggle) pointerEvents.apply(this, _argsPM);
-    if (currentSettings.swipeScroll) pointerEvents.apply(this, _argsS);
-
-}
-
-// Контроль эвентов //
-
-function controlEvents(){
-    window.addEventListener('load', () => {
-        if (document.visibilityState === "hidden") eventsToggle(false)
-        else eventsToggle(true)
-    })
-    document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === "hidden") eventsToggle(false)
-        else eventsToggle(true)
-    })
-}
-
-controlEvents();
-
-
-// ======================= //
-// Вспомогательные функции //
-// ======================= //
-
-function logBase(x, y){
-
-    return Math.log(y) / Math.log(x);
-
-}
-
-function logAnimGraphic(x, constant){
-
-    return Math.round((10*((logBase(2, x - constant) ** 3)))** 0.5);
-
-}
-
-function throttle(func, delay) {
-
-    let isThrottled = false,
-        savedArgs,
-        savedThis;
-
-    return function wrapper() {
-
-        if (isThrottled) {
-
-            savedArgs = arguments;
-            savedThis = this;
-
-            return;
-
-        }
-
-        func.apply(this, arguments);
-
-        isThrottled = true;
-
-        setTimeout((function() {
-
-            isThrottled = false;
-
-            if (savedArgs) {
-
-                wrapper.apply(savedThis, savedArgs);
-                savedArgs = savedThis = null;
-
-            }
-
-        }), delay);
-
-    }
-
-}
-
-function debounce(func, delay) {
-
-    let isDebounced = false;
-
-    return function() {
-
-        if (isDebounced) return;
-
-        func.apply(this, arguments);
-
-        isDebounced = true;
-
-        setTimeout(() => isDebounced = false, delay);
-
-    };
 
 }
