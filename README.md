@@ -4,6 +4,8 @@
 
 Slider on native javascript and contains nothing extra.
 
+# THIS IS AN EXPERIMENTAL VERSION, I RECOMMEND WAITING FOR A STABLE VERSION
+
 ## This is a very simple to use slider.
 
 # How to use?
@@ -19,7 +21,6 @@ Slider on native javascript and contains nothing extra.
 </div>
 ```
 ### WARNING
-
 
 In case of using two or more sliders, please don't use the same name for all the sliders on the site or you will end up with a semi-non-working slider
 
@@ -47,7 +48,7 @@ To avoid the problem described above, do as indicated in the code below:
     </body>
     <script>
     
-        DSS_start(".YourSliderName"_1,
+        let slider1 = new DSS(".YourSliderName"_1,
         
             exampleSettings = {
 
@@ -69,7 +70,7 @@ To avoid the problem described above, do as indicated in the code below:
         
         );
 
-        DSS_start(".YourSliderNam_2",
+        let slider2 = new DSS(".YourSliderName_2",
         
             exampleSettings = {
 
@@ -98,7 +99,7 @@ You can not configure the slider, but just call the function where you passed th
 
 ```
 ...
-        DSS_start(".YourSliderName");
+        let slider = new DSS(".YourSliderName");
     </script>
 </html>
 ```
@@ -125,7 +126,7 @@ as shown in the code:
         </div>
     </body>
     <script>
-        DSS_start(".YourSliderName");
+        let slider = new DSS(".YourSliderName");
     </script>
 </html>
 ```
@@ -144,10 +145,10 @@ $dots-size: 15px            //default size a dots
 ```
 settings = {
 
-    autoPlaySlider: true,                   // Auto play toggle
-    autoPlayDelay: 1000,                    // Auto play delay
-    autoPlayDirrection: "left",             // Auto play dirrection
-    arrows: true,                           // Arrows toggle
+    autoPlaySlider:         true,           // Auto play toggle
+    autoPlayDelay:          1000,           // Auto play delay
+    autoPlayDirrection:     "left",         // Auto play dirrection
+    arrows:                 true,           // Arrows toggle
     prewArrow:              "a_left",       // Class name for left arrow
     nextArrow:              "a_right",      // Class name for right arrow
     bullets:                true,           // Bullets (dots), which are responsible for the indication of the active slide
@@ -167,7 +168,7 @@ Then enter all the settings into the slider function, as shown in the example be
         ...
     </body>
     <script>
-        DSS_start(".YourSliderName",
+        let slider = new DSS(".YourSliderName",
         
             exampleSettings = {
 
@@ -203,7 +204,8 @@ Then enter all the settings into the slider function, as shown in the example be
 
 - [X] Dots navigation
 - [X] Swipes on smartphones
-- [ ] Events controller
+- [X] Events controller
+- [ ] Slider based on OOP
 
 ## Did you find the bug? Make sure to [leave an issue](https://github.com/doryan04/DSS/issues/new) in case of any problems.
 
