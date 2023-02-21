@@ -168,7 +168,7 @@ Then enter all the settings into the slider function, as shown in the example be
         ...
     </body>
     <script>
-        let slider = new DSS(".YourSliderName",
+        let slider = new DSS(".YourSliderName", 
         
             exampleSettings = {
 
@@ -202,10 +202,9 @@ Then enter all the settings into the slider function, as shown in the example be
 
 ## What on stady "work in progress"?
 
-- [X] Dots navigation
-- [X] Swipes on smartphones
-- [X] Events controller
 - [ ] Slider based on OOP
+- [ ] Methods for control events from secondary JS file
+- [ ] Adaptive slider
 
 ## Did you find the bug? Make sure to [leave an issue](https://github.com/doryan04/DSS/issues/new) in case of any problems.
 
