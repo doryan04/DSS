@@ -17,6 +17,7 @@ class DSS{
         trackClass: null,
         thumbClass: null,
         trackXPos: 0,
+        thumbTrackXPos: 0,
     }
 
     #current_settings = {
@@ -38,7 +39,10 @@ class DSS{
     };
 
     infSlider; autoPlaySlider; APdirrection; autoMargin; timeAnim; delayAP; PMtoggle; PMslidesClassName;
-    leftArrow; rightArrow; transitionType; bulletEffects; bulletsToggle; arrowToggle; swipeToggle
+    leftArrow; rightArrow; transitionType; bulletEffects; bulletsToggle; arrowToggle; swipeToggle;
+
+    #thumbTrackIsDelayed = false
+
     margin = 0; indexTarget; firstCondition; secondCondition; stp;
     // ttpTemp; ws; argsPM; argsS;
     #isDelayed = false; #autoplay = null; #paused = 0;
@@ -93,8 +97,6 @@ class DSS{
         _.controlEvents();
         _.stp = _.#slider_data.trackXPos;
 
-        console.log(_.#current_settings)
-
         //ttp = 0;
 
     }
@@ -106,12 +108,14 @@ class DSS{
         else{
             for (let defaultParameter in this.#current_settings) {
                 for (let customParameter in params){
-                    if(customParameter === defaultParameter) this.#current_settings[customParameter] = params[customParameter];
+                    if(customParameter === defaultParameter) {
+                        this.#current_settings[customParameter] = params[customParameter];
+                        continue;
+                    }
                 }
             }
         }
     }
-
 
     /**
      * Методы построения слайдера
@@ -227,7 +231,7 @@ class DSS{
         let classes = {
             thumbBlock: `${this.#slider_data.sliderName}-thumb-block`,
             thumbConts: `${this.#slider_data.sliderName}-thumb-container`,
-            slideThumb: `${this.#slider_data.sliderName}-thumb`,
+            slideThumb: `${this.#slider_data.sliderName}-thumb-track`,
         }
 
         for (const block in classes) {
@@ -248,7 +252,7 @@ class DSS{
 
         // Создаём стили эскизов для масштабирование шрифта/картинок //
 
-        let thumbnailDiv = this.#slider_data.sliderClass.querySelectorAll(`.${this.#slider_data.sliderName}-thumb > div`),
+        let thumbnailDiv = this.#slider_data.sliderClass.querySelectorAll(`.${this.#slider_data.sliderName}-thumb-track > div`),
             countDivs = thumbnailDiv.length;
 
         for (let i = 0; i < countDivs; i++) thumbnailDiv[i].classList.add(this.PMslidesClassName);
@@ -442,18 +446,62 @@ class DSS{
         _.firstCondition = (target === 1 && _.indexTarget === countSlides - countES && _.infSlider);
         _.secondCondition = (target === -1 && _.indexTarget === countES - 1 && _.infSlider);
 
-        _.toggleAnimation(true);
+        _.toggleAnimation(true, _.#slider_data.trackClass);
         _.setPosition(_.indexTarget, _.firstCondition, _.secondCondition);
         _.changeActiveSlide(_.indexTarget, _.#slider_data.activeSlideID, _.firstCondition, _.secondCondition);
 
         setTimeout(function (){
 
-            _.toggleAnimation(false);
+            _.toggleAnimation(false, _.#slider_data.trackClass);
             _.#isDelayed = false;
 
         }, _.timeAnim);
 
 
+    }
+
+    swipeScroll(toggle){
+
+        let _ = this, mainTrack = _.#slider_data.trackClass, ratherX0 = -(window.innerWidth / 2),
+                startDragX = 0, currentX = 0, clicked = false;
+
+        let onDown = (event) => {
+
+            if(_.#isDelayed) return 0;
+
+            startDragX = ratherX0 + event.pageX;
+            clicked = true;
+
+        };
+
+        let onMove = throttle((event) => {
+
+            if(!clicked || _.#isDelayed) return 0;
+
+            currentX = ratherX0 + event.pageX;
+            mainTrack.style.transform = `translate3d(${_.#slider_data.trackXPos + (currentX - startDragX)}px, 0px, 0px)`;
+
+            if (startDragX - currentX > 150 || startDragX - currentX < -150){
+
+                clicked = false;
+                this.checkingScroll(this.scroll, startDragX - currentX > 150 ? 1 : -1);
+                this.overscrollAnim(mainTrack, _.#slider_data.trackXPos, "main");
+
+            }
+
+
+        }, 1/60);
+
+        let onUp = () => {
+
+            if(!clicked) return 0;
+
+            clicked = false;
+            this.overscrollAnim(mainTrack, _.#slider_data.trackXPos, "main")
+
+        };
+
+        this.swipesEvents(mainTrack.parentNode, mainTrack, onDown, onMove, onUp, toggle);
     }
 
     setPosition(target, cond1, cond2) {
@@ -470,7 +518,7 @@ class DSS{
 
             setTimeout(function (){
 
-                _.toggleAnimation(false);
+                _.toggleAnimation(false, track);
                 _.indexTarget = _target;
                 _.#slider_data.trackXPos = _.calcPos(_target);
                 track.style.transform = "translate3d(" + _.#slider_data.trackXPos + "px, 0px, 0px)";
@@ -481,10 +529,29 @@ class DSS{
 
     }
 
-    // Метод для расчёта позиции //
+    // Методы для управления анимациями //
 
-    toggleAnimation(toggle){
-        this.#slider_data.trackClass.style.transition = toggle ? `transform ${this.timeAnim}ms ${this.#current_settings.transition}` : null;
+    toggleAnimation(toggle, obj){
+        obj.style.transition = toggle ? `transform ${this.timeAnim}ms ${this.#current_settings.transition}` : null;
+    }
+
+    overscrollAnim(obj, x, type){
+
+        if(type === "main") this.#isDelayed = true;
+        else this.#thumbTrackIsDelayed = true;
+
+        this.#slider_data.thumbTrackXPos = x;
+        this.toggleAnimation(true, obj);
+
+        obj.style.transform = `translate3d(${x}px, 0px, 0px)`;
+
+        setTimeout(()=>{
+            this.toggleAnimation(false, obj);
+            if(type === "main") this.#isDelayed = false;
+            else this.#thumbTrackIsDelayed = false;
+        }, this.timeAnim);
+
+
     }
 
     // Метод для расчёта позиции //
@@ -523,7 +590,7 @@ class DSS{
 
     }
 
-    // Фунция смены активного слайда //
+    // Методы смены активного слайда //
 
     changeActiveSlide(target, current, cond1, cond2) {
 
@@ -562,6 +629,53 @@ class DSS{
 
     }
 
+    // Режим презентации//
+
+    presentationMode(toggle){
+
+        let _ = this, thumbTrack = _.#slider_data.thumbClass.firstChild,
+            ratherX0 = -(window.innerWidth / 2), startDragX = 0, currentX = 0, clicked = false,
+            a = -thumbTrack.clientWidth + _.#slider_data.thumbClass.clientWidth;
+
+        let onDown = (event) => {
+
+            if(_.#thumbTrackIsDelayed) return 0;
+
+            startDragX = ratherX0 + event.pageX;
+            clicked = true;
+
+        };
+
+        let onMove = throttle((event) => {
+
+            if(!clicked || _.#thumbTrackIsDelayed) return 0;
+
+            currentX = ratherX0 + event.pageX;
+            thumbTrack.style.transform = `translate3d(${_.#slider_data.thumbTrackXPos + (currentX - startDragX)}px, 0px, 0px)`;
+
+            if (_.#slider_data.thumbTrackXPos + (currentX - startDragX) >= 150 || _.#slider_data.thumbTrackXPos + (currentX - startDragX) <= a - 150){
+                onUp();
+            }
+
+        }, 1/60);
+
+        let onUp = () => {
+
+            if(!clicked) return 0;
+
+            clicked = false;
+            _.#slider_data.thumbTrackXPos = _.#slider_data.thumbTrackXPos + (currentX - startDragX);
+
+            if(_.#slider_data.thumbTrackXPos > 0 || _.#slider_data.thumbTrackXPos < a) {
+                this.overscrollAnim(thumbTrack, (_.#slider_data.thumbTrackXPos > 0 ? 0 : a) );
+            }
+
+        };
+
+        this.swipesEvents(_.#slider_data.thumbClass, thumbTrack, onDown, onMove, onUp, toggle);
+
+    }
+
     /** Методы, отвечающие за создание эвентов */
 
     // Эвенты для стрелок //
@@ -569,14 +683,10 @@ class DSS{
     arrowsEvents = (sliderClass, callback) => {
 
         for (let arrow of sliderClass) {
-
             arrow.onclick = () => {
-
                 let target = arrow.id === this.leftArrow ? -1 : 1;
                 this.checkingScroll(callback, target)
-
             }
-
         }
 
     }
@@ -607,30 +717,45 @@ class DSS{
 
     }
 
+    // Эвенты для свайпов //
+
+    swipesEvents(wrapper, obj, callback1, callback2, callback3, toggle){
+
+        function afterEnter(obj, toggle){
+
+            obj.onpointerdown = !toggle ? null : (event) => callback1(event)
+            obj.onpointermove = !toggle ? null : (event) => callback2(event)
+            obj.onpointerup = !toggle ? null : () => callback3()
+
+        }
+
+        wrapper.onpointerenter = !toggle ? null :  () => afterEnter(obj, toggle);
+        wrapper.onpointerleave = !toggle ? null : () => callback3()
+
+    }
+
     // Создание эвентов //
 
     eventsToggle(toggle){
 
-        // let _argsPM = [], _argsS = [];
-        //
-        // for (let allArgs of ["argsPM", "argsS"]) {
-        //     if (allArgs === "argsPM" && this.PMtoggle){ for (let parsedArgs of argsPM) _argsPM.push(parsedArgs); }
-        //     else{ for (let parsedArgs of argsS) _argsS.push(parsedArgs); }
-        // }
-        // for (let args of [_argsPM, _argsS]) args.push(toggle);
+        let _ = this;
 
-        // window.onresize = !toggle ? null : debounce(() => this.ws = window.innerWidth, 1/60 * 1000);
+        // Адаптивность, ещё пока в разработке //
+        //cw, sw, countExtraSlides = _.#slider_data.countExtraSlides
+
+        // window.onresize = !toggle ? null : debounce(() => {
+        //
+        // }, 1/30 * 1000);
 
         if (this.bulletsToggle) this.bulletsEventsCreate(toggle);
-
         if (this.arrowToggle) {
             this.arrowsEvents(this.#slider_data.sliderClass.querySelectorAll(`.${this.#slider_data.sliderName} .a-bar`), this.scroll);
         }
 
         this.controlAutoPlay(toggle);
 
-        // if (this.PMtoggle) this.pointerEvents.apply(this, _argsPM);
-        // if (this.swipeToggle) this.pointerEvents.apply(this, _argsS);
+        if (this.PMtoggle) this.presentationMode(toggle);
+        if (this.swipeToggle) this.swipeScroll(toggle);
 
     }
 
