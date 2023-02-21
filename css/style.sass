@@ -69,7 +69,7 @@ body
 .slider-thumb-container
     width: $width-container
 
-.slider-thumb
+.slider-thumb-track
     position: absolute
     display: flex
     width: max-content
@@ -94,6 +94,16 @@ body
 
 .sliderMargin1
     margin: 8vh 0
+
+.thumb-active::before
+    position: absolute
+    content: ""
+    opacity: 0.3
+    width: inherit
+    height: inherit
+    background-color: white
+    border-radius: inherit
+    z-index: 3
 
 
 /* ================= */
@@ -186,3 +196,10 @@ body
 .bullet-scaling
     transform: scale(1.1)
     opacity: 100%
+
+@media screen and (max-width: 900px)
+    .slider-thumb-container
+        width: 500px
+    .slider-container
+        width: 500px
+
