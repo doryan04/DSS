@@ -44,8 +44,7 @@ class DSS{
     #thumbTrackIsDelayed = false
 
     margin = 0; indexTarget; firstCondition; secondCondition; stp;
-    // ttpTemp; ws; argsPM; argsS;
-    #isDelayed = false; #autoplay = null; #paused = 0;
+    #isDelayed = false; #autoplay = null;
 
     constructor(name, settings = this.#current_settings) {
 
@@ -76,28 +75,15 @@ class DSS{
 
         _.indexTarget = this.infSlider ? this.#slider_data.countExtraSlides : 0;
 
-        let countExtraSlides = _.#slider_data.countExtraSlides,
-            sw = _.#slider_data.slideWidth, cw = _.#slider_data.containerWidth;
-
         // try{
         //     if (this.PMtoggle && this.#slider_data.sliderClass.querySelector(`${this.#slider_data.sliderName}-thumb`).childNodes.length >= 3) this.argsPM = presentationMode();
         // } catch(e) {
         //     alert(e);
         // }
 
-        //this.argsS = swipeSlide();
-
-        _.#slider_data.trackXPos = (_.autoMargin && _.infSlider) ? (sw > cw ? -(sw) + (cw - sw)/2 : -(cw)) :
-                                   (_.autoMargin && !_.infSlider) || (!_.autoMargin && !_.infSlider) ? (sw > cw ? (cw - sw)/2 : 0):
-                                   (!_.autoMargin && _.infSlider) ? (sw > cw ? -(sw) + (cw - sw)/2 :
-                                   (sw < cw ? (-(sw) * countExtraSlides) + (cw - sw)/2 : ((-(cw) * countExtraSlides) - (cw - sw)/2))) : null;
-
-        (_.#slider_data.trackClass).style.transform = `translate3d(${_.#slider_data.trackXPos}px, 0px, 0px)`;
-
+        _.setTranslate3d(0);
         _.controlEvents();
         _.stp = _.#slider_data.trackXPos;
-
-        //ttp = 0;
 
     }
 
@@ -460,12 +446,37 @@ class DSS{
 
     }
 
-    swipeScroll(toggle){
+    setPosition(target, cond1, cond2) {
 
-        let _ = this, mainTrack = _.#slider_data.trackClass, ratherX0 = -(window.innerWidth / 2),
-                startDragX = 0, currentX = 0, clicked = false;
+        let _ = this, _target = target, track = _.#slider_data.trackClass,
+            countES = _.#slider_data.countExtraSlides, countSlides = _.#slider_data.countAllSlides;
 
-        let onDown = (event) => {
+        _.setTranslate3d(_target)
+
+        if(cond1 || cond2){
+
+            _target = cond1 ? countES : cond2 ? countSlides - (countES + 1): target;
+
+            setTimeout(function (){
+
+                _.toggleAnimation(false, track);
+                _.indexTarget = _target;
+                _.setTranslate3d(_target)
+
+            }, _.timeAnim)
+
+        }
+
+    }
+
+    // Свайпы основного слайдера //
+
+    #swipeScroll(toggle){
+
+        var _ = this, mainTrack = _.#slider_data.trackClass, ratherX0 = -(window.innerWidth / 2), clicked = false,
+            startDragX, currentX;
+
+        var onDown = (event) => {
 
             if(_.#isDelayed) return 0;
 
@@ -474,7 +485,7 @@ class DSS{
 
         };
 
-        let onMove = throttle((event) => {
+        var onMove = throttle((event) => {
 
             if(!clicked || _.#isDelayed) return 0;
 
@@ -489,10 +500,9 @@ class DSS{
 
             }
 
-
         }, 1/60);
 
-        let onUp = () => {
+        var onUp = () => {
 
             if(!clicked) return 0;
 
@@ -502,56 +512,6 @@ class DSS{
         };
 
         this.swipesEvents(mainTrack.parentNode, mainTrack, onDown, onMove, onUp, toggle);
-    }
-
-    setPosition(target, cond1, cond2) {
-
-        let _ = this, _target = target, track = _.#slider_data.trackClass,
-            countES = _.#slider_data.countExtraSlides, countSlides = _.#slider_data.countAllSlides;
-
-        _.#slider_data.trackXPos = _.calcPos(_target);
-        track.style.transform = "translate3d(" + _.#slider_data.trackXPos + "px, 0px, 0px)";
-
-        if(cond1 || cond2){
-
-            _target = cond1 ? countES : cond2 ? countSlides - (countES + 1): target;
-
-            setTimeout(function (){
-
-                _.toggleAnimation(false, track);
-                _.indexTarget = _target;
-                _.#slider_data.trackXPos = _.calcPos(_target);
-                track.style.transform = "translate3d(" + _.#slider_data.trackXPos + "px, 0px, 0px)";
-
-            }, _.timeAnim)
-
-        }
-
-    }
-
-    // Методы для управления анимациями //
-
-    toggleAnimation(toggle, obj){
-        obj.style.transition = toggle ? `transform ${this.timeAnim}ms ${this.#current_settings.transition}` : null;
-    }
-
-    overscrollAnim(obj, x, type){
-
-        if(type === "main") this.#isDelayed = true;
-        else this.#thumbTrackIsDelayed = true;
-
-        this.#slider_data.thumbTrackXPos = x;
-        this.toggleAnimation(true, obj);
-
-        obj.style.transform = `translate3d(${x}px, 0px, 0px)`;
-
-        setTimeout(()=>{
-            this.toggleAnimation(false, obj);
-            if(type === "main") this.#isDelayed = false;
-            else this.#thumbTrackIsDelayed = false;
-        }, this.timeAnim);
-
-
     }
 
     // Метод для расчёта позиции //
@@ -565,6 +525,45 @@ class DSS{
         return  (this.autoMargin && (this.infSlider || !this.infSlider)) ? (sw > cw ? ((-sw + half) * index) - (half * (index - 1)) : -cw * index) :
                 (!this.autoMargin && !this.infSlider) ? (sw > cw ? half * index : -sw * index) :
                 (sw < cw ? ((-sw * index) + half) : ((-sw + half) * index) - (half * (index - 1)));
+
+    }
+
+    // Метод для изменения свойства translate3d //
+
+    setTranslate3d(target){
+
+        let _ = this, track = _.#slider_data.trackClass
+
+        _.#slider_data.trackXPos = _.calcPos(target);
+        track.style.transform = "translate3d(" + _.#slider_data.trackXPos + "px, 0px, 0px)";
+
+    }
+
+    // Методы для управления анимациями //
+
+    toggleAnimation(toggle, obj){
+        obj.style.transition = toggle ? `transform ${this.timeAnim}ms ${this.#current_settings.transition}` : null;
+    }
+
+    overscrollAnim(obj, x, type){
+
+        if(type === "main") {
+            this.#isDelayed = true;
+            this.#slider_data.trackXPos = x;
+        } else {
+            this.#thumbTrackIsDelayed = true;
+            this.#slider_data.thumbTrackXPos = x;
+        }
+
+        this.toggleAnimation(true, obj);
+
+        obj.style.transform = `translate3d(${x}px, 0px, 0px)`;
+
+        setTimeout(()=>{
+            this.toggleAnimation(false, obj);
+            if(type === "main") this.#isDelayed = false;
+            else this.#thumbTrackIsDelayed = false;
+        }, this.timeAnim);
 
     }
 
@@ -631,10 +630,10 @@ class DSS{
 
     // Режим презентации//
 
-    presentationMode(toggle){
+    #presentationMode(toggle){
 
         let _ = this, thumbTrack = _.#slider_data.thumbClass.firstChild,
-            ratherX0 = -(window.innerWidth / 2), startDragX = 0, currentX = 0, clicked = false,
+            ratherX0 = -(window.innerWidth / 2), startDragX, currentX, clicked = false,
             a = -thumbTrack.clientWidth + _.#slider_data.thumbClass.clientWidth;
 
         let onDown = (event) => {
@@ -741,11 +740,12 @@ class DSS{
         let _ = this;
 
         // Адаптивность, ещё пока в разработке //
-        //cw, sw, countExtraSlides = _.#slider_data.countExtraSlides
 
-        // window.onresize = !toggle ? null : debounce(() => {
-        //
-        // }, 1/30 * 1000);
+        let cw, sw, countExtraSlides = _.#slider_data.countExtraSlides
+
+        window.onresize = !toggle ? null : debounce(() => {
+
+        }, 1/30 * 1000);
 
         if (this.bulletsToggle) this.bulletsEventsCreate(toggle);
         if (this.arrowToggle) {
@@ -754,8 +754,8 @@ class DSS{
 
         this.controlAutoPlay(toggle);
 
-        if (this.PMtoggle) this.presentationMode(toggle);
-        if (this.swipeToggle) this.swipeScroll(toggle);
+        if (this.PMtoggle) this.#presentationMode(toggle);
+        if (this.swipeToggle) this.#swipeScroll(toggle);
 
     }
 
@@ -778,17 +778,17 @@ class DSS{
 // Вспомогательные функции //
 // ======================= //
 
-function logBase(x, y){
-
-    return Math.log(y) / Math.log(x);
-
-}
-
-function logAnimGraphic(x, constant){
-
-    return Math.round((10*((logBase(2, x - constant) ** 3)))** 0.5);
-
-}
+// function logBase(x, y){
+//
+//     return Math.log(y) / Math.log(x);
+//
+// }
+//
+// function logAnimGraphic(x, constant){
+//
+//     return Math.round((10*((logBase(2, x - constant) ** 3)))** 0.5);
+//
+// }
 
 function throttle(func, delay) {
 
