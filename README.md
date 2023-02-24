@@ -172,19 +172,19 @@ Then enter all the settings into the slider function, as shown in the example be
         
             exampleSettings = {
 
-                autoPlaySlider:         false,
-                autoPlayDelay:          1000,
+                autoPlaySlider:         true,
+                autoPlayDelay:          1500,
                 autoPlayDirrection:     "left",
-                arrows:                 false,
+                autoSetterMargins:      false,
+                arrows:                 true,
                 prewArrow:              "a_left",
                 nextArrow:              "a_right",
-                bullets:                false,
+                bullets:                true,
                 bulletsEffect:          "bullet-pull",
                 endlessSlider:          true,
-                autoSetterMargins:      false,
                 presentationMode:       true,
                 thumbSlidesClassName:   "slide-thumb",
-                speedAnimation:         400,
+                speedAnimation:         500,
                 transition:             "ease-in-out",
                 swipeScroll:            false,
                 
