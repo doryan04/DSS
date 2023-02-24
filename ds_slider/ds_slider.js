@@ -40,6 +40,7 @@ class DSS{
 
     infSlider; autoPlaySlider; APdirrection; autoMargin; timeAnim; delayAP; PMtoggle; PMslidesClassName;
     leftArrow; rightArrow; transitionType; bulletEffects; bulletsToggle; arrowToggle; swipeToggle;
+    windowWidth; thumbWidth;
 
     #thumbTrackIsDelayed = false
 
@@ -67,6 +68,7 @@ class DSS{
         _.bulletsToggle = _.#current_settings.bullets
         _.arrowToggle = _.#current_settings.arrows
         _.swipeToggle = _.#current_settings.swipeScroll
+        _.windowWidth = window.innerWidth / 2;
 
         _.#slider_data.sliderName = name.slice(1, name.length);
         _.#slider_data.sliderClass = document.querySelector(name);
@@ -94,10 +96,7 @@ class DSS{
         else{
             for (let defaultParameter in this.#current_settings) {
                 for (let customParameter in params){
-                    if(customParameter === defaultParameter) {
-                        this.#current_settings[customParameter] = params[customParameter];
-                        continue;
-                    }
+                    if(customParameter === defaultParameter) this.#current_settings[customParameter] = params[customParameter];
                 }
             }
         }
@@ -247,7 +246,7 @@ class DSS{
         this.#slider_data.sliderClass.append(classes.thumbBlock);
         (classes.thumbBlock).append(this.#slider_data.thumbClass);
 
-        var allThumbs = this.#slider_data.sliderClass.querySelectorAll(`.${this.#slider_data.sliderName} .${this.PMslidesClassName}`);
+        let allThumbs = this.#slider_data.sliderClass.querySelectorAll(`.${this.#slider_data.sliderName} .${this.PMslidesClassName}`);
 
         for(let i of allThumbs) {
             for(let j = 0; j < i.childNodes.length; j++){
@@ -296,7 +295,7 @@ class DSS{
     }
 
     secondBlockCreate(array, elems){
-        elems = this.infSlider ? array.slice(this.#slider_data.countExtraSlides, array.length - this.#slider_data.countExtraSlides) : array;
+        arguments[1] = this.infSlider ? array.slice(this.#slider_data.countExtraSlides, array.length - this.#slider_data.countExtraSlides) : array;
     }
 
     elemBlocks(array1, array2, width, elems){
@@ -334,8 +333,8 @@ class DSS{
 
         this.margin = this.autoMargin ? width1 < width2 ? Math.abs(width2 - width1) / 2 : 0 : 0;
 
-        if(this.autoMargin && width1 < width2){
-            for (let i of _obj.childNodes) i.style.marginLeft = i.style.marginRight = `${this.margin}px`;
+        if(this.autoMargin){
+            for (let i of _obj.childNodes) i.style.margin = `0px ${this.margin}px`;
         }
 
     }
@@ -473,10 +472,10 @@ class DSS{
 
     #swipeScroll(toggle){
 
-        var _ = this, mainTrack = _.#slider_data.trackClass, ratherX0 = -(window.innerWidth / 2), clicked = false,
+        let _ = this, mainTrack = _.#slider_data.trackClass, ratherX0 = -(window.innerWidth / 2), clicked = false,
             startDragX, currentX;
 
-        var onDown = (event) => {
+        let onDown = (event) => {
 
             if(_.#isDelayed) return 0;
 
@@ -485,7 +484,7 @@ class DSS{
 
         };
 
-        var onMove = throttle((event) => {
+        let onMove = throttle((event) => {
 
             if(!clicked || _.#isDelayed) return 0;
 
@@ -502,7 +501,7 @@ class DSS{
 
         }, 1/60);
 
-        var onUp = () => {
+        let onUp = () => {
 
             if(!clicked) return 0;
 
@@ -522,9 +521,9 @@ class DSS{
             cw = this.#slider_data.containerWidth,
             half = (cw - sw)/2;
 
-        return  (this.autoMargin && (this.infSlider || !this.infSlider)) ? (sw > cw ? ((-sw + half) * index) - (half * (index - 1)) : -cw * index) :
+        return  (this.autoMargin && (this.infSlider || !this.infSlider)) ? (sw > cw ? ((-1 * sw + half) * index) - (half * (index - 1)) : -1 * cw * index) :
                 (!this.autoMargin && !this.infSlider) ? (sw > cw ? half * index : -sw * index) :
-                (sw < cw ? ((-sw * index) + half) : ((-sw + half) * index) - (half * (index - 1)));
+                (sw < cw ? ((-1 * sw * index) + half) : ((-1 * sw + half) * index) - (half * (index - 1)));
 
     }
 
@@ -532,7 +531,7 @@ class DSS{
 
     setTranslate3d(target){
 
-        let _ = this, track = _.#slider_data.trackClass
+        let _ = this, track = _.#slider_data.trackClass;
 
         _.#slider_data.trackXPos = _.calcPos(target);
         track.style.transform = "translate3d(" + _.#slider_data.trackXPos + "px, 0px, 0px)";
@@ -633,14 +632,13 @@ class DSS{
     #presentationMode(toggle){
 
         let _ = this, thumbTrack = _.#slider_data.thumbClass.firstChild,
-            ratherX0 = -(window.innerWidth / 2), startDragX, currentX, clicked = false,
-            a = -thumbTrack.clientWidth + _.#slider_data.thumbClass.clientWidth;
+            startDragX, currentX, clicked = false;
 
         let onDown = (event) => {
 
             if(_.#thumbTrackIsDelayed) return 0;
 
-            startDragX = ratherX0 + event.pageX;
+            startDragX = -_.windowWidth + event.pageX;
             clicked = true;
 
         };
@@ -649,10 +647,10 @@ class DSS{
 
             if(!clicked || _.#thumbTrackIsDelayed) return 0;
 
-            currentX = ratherX0 + event.pageX;
+            currentX = -_.windowWidth + event.pageX;
             thumbTrack.style.transform = `translate3d(${_.#slider_data.thumbTrackXPos + (currentX - startDragX)}px, 0px, 0px)`;
 
-            if (_.#slider_data.thumbTrackXPos + (currentX - startDragX) >= 150 || _.#slider_data.thumbTrackXPos + (currentX - startDragX) <= a - 150){
+            if (_.#slider_data.thumbTrackXPos + (currentX - startDragX) >= 150 || _.#slider_data.thumbTrackXPos + (currentX - startDragX) <= _.thumbWidth - 150){
                 onUp();
             }
 
@@ -665,8 +663,8 @@ class DSS{
             clicked = false;
             _.#slider_data.thumbTrackXPos = _.#slider_data.thumbTrackXPos + (currentX - startDragX);
 
-            if(_.#slider_data.thumbTrackXPos > 0 || _.#slider_data.thumbTrackXPos < a) {
-                this.overscrollAnim(thumbTrack, (_.#slider_data.thumbTrackXPos > 0 ? 0 : a) );
+            if(_.#slider_data.thumbTrackXPos > 0 || _.#slider_data.thumbTrackXPos < _.thumbWidth) {
+                this.overscrollAnim(thumbTrack, (_.#slider_data.thumbTrackXPos > 0 ? 0 : _.thumbWidth) );
             }
 
         };
@@ -694,10 +692,10 @@ class DSS{
 
     bulletsEventsCreate(toggle) {
 
-        let _ = this,  bulletsBar = this.bulletsToggle ? this.#slider_data.bulletsBar.childNodes : null;
+        let _ = this, bulletsBar = _.bulletsToggle ? _.#slider_data.bulletsBar.childNodes : null;
 
         if(toggle){
-            for (let bullet of bulletsBar) bullet.onclick = () => this.actionBullets(bullet)
+            for (let bullet of bulletsBar) bullet.onclick = () => _.actionBullets(bullet)
         }
 
     }
@@ -735,27 +733,41 @@ class DSS{
 
     // Создание эвентов //
 
+    // Адаптивность, ещё пока в разработке //
+
+    adaptive(){
+
+        let _ = this, sliderData = _.#slider_data,
+            windowWidth = window.innerWidth, thumbClass = _.#slider_data.thumbClass
+
+        _.windowWidth = windowWidth / 2;
+        _.thumbWidth = -thumbClass.firstChild.clientWidth + thumbClass.clientWidth;
+        sliderData.slideWidth = sliderData.trackClass.firstChild.clientWidth;
+        sliderData.containerWidth = sliderData.sliderClass.querySelector(`.${sliderData.sliderName}-container`).clientWidth;
+
+        _.marginsBuild(sliderData.slideWidth, sliderData.containerWidth, sliderData.trackClass)
+
+        _.setTranslate3d(sliderData.activeSlideID);
+
+    }
+
     eventsToggle(toggle){
 
         let _ = this;
 
         // Адаптивность, ещё пока в разработке //
 
-        let cw, sw, countExtraSlides = _.#slider_data.countExtraSlides
+        window.onresize = !toggle ? null : debounce(() => _.adaptive(), 1/50 * 1000);
 
-        window.onresize = !toggle ? null : debounce(() => {
-
-        }, 1/30 * 1000);
-
-        if (this.bulletsToggle) this.bulletsEventsCreate(toggle);
-        if (this.arrowToggle) {
-            this.arrowsEvents(this.#slider_data.sliderClass.querySelectorAll(`.${this.#slider_data.sliderName} .a-bar`), this.scroll);
+        if (_.bulletsToggle) _.bulletsEventsCreate(toggle);
+        if (_.arrowToggle) {
+            _.arrowsEvents(_.#slider_data.sliderClass.querySelectorAll(`.${_.#slider_data.sliderName} .a-bar`), _.scroll);
         }
 
-        this.controlAutoPlay(toggle);
+        _.controlAutoPlay(toggle);
 
-        if (this.PMtoggle) this.#presentationMode(toggle);
-        if (this.swipeToggle) this.#swipeScroll(toggle);
+        if (_.PMtoggle) _.#presentationMode(toggle);
+        if (_.swipeToggle) _.#swipeScroll(toggle);
 
     }
 
@@ -765,10 +777,12 @@ class DSS{
         window.addEventListener('load', () => {
             if (document.visibilityState === "hidden") this.eventsToggle(false)
             else this.eventsToggle(true)
+            this.adaptive()
         })
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === "hidden") this.eventsToggle(false)
             else this.eventsToggle(true)
+            this.adaptive()
         })
     }
 
