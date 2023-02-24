@@ -7,8 +7,6 @@
 
         <title>DSS</title>
 
-        <script src="ds_slider/ds_slider.js"></script>
-
         <style>
             .slide{ /*  default color scheme  */
                 background-color: #7c7c7c; /* don't touch this */
@@ -27,16 +25,6 @@
                 background-color:lightsalmon; 
                 color: black; 
                 border: 5px;
-            }
-            .rectangle{
-                width: 500px;
-                height: 150px;
-                background-color: #60A7E3;
-                color: white;
-                display: flex;
-                border-radius: 20px;
-                justify-content: center;
-                align-items: center;
             }
 
         </style>
@@ -61,10 +49,15 @@
             <div style="background-color:thistle ;">5</div>
         </div>
     </body>
+    <script src="ds_slider/ds_slider.js"></script>
     <script>
+
         let gallery = new DSS(".slider", settings = {
+            autoSetterMargins: true,
             autoPlaySlider: false,
-            arrows: false,
+            endlessSlider: false,
+            arrows: true,
+            swipeScroll: true,
         });
 
     </script>
