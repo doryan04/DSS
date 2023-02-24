@@ -203,7 +203,10 @@ Then enter all the settings into the slider function, as shown in the example be
 
 - [X] Dots navigation
 - [X] Swipes on smartphones
-- [ ] Events controller
+- [X] Events controller
+- [X] Slider based on OOP (done, check experimental branch)
+- [ ] Methods for control events from secondary JS file
+- [ ] Adaptive slider (semi-done)
 
 ## Did you find the bug? Make sure to [leave an issue](https://github.com/doryan04/DSS/issues/new) in case of any problems.
 
