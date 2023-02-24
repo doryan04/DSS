@@ -124,7 +124,6 @@ body
 
 .slider-container
     align-items: center
-    border-radius: 15px
     display: flex
     position: relative
     margin: 0
@@ -140,6 +139,7 @@ body
     width: max-content
 
 .slider-track > div
+    overflow: hidden
     position: relative
     @include defaultProp()
 
@@ -217,7 +217,7 @@ body
 
 @media screen and (max-width: 900px)
 
-    $width: 400px
+    $width: 50px
     $height: 200px
 
     .rectangle

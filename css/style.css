@@ -127,7 +127,6 @@ body {
 
 .slider-container {
   align-items: center;
-  border-radius: 15px;
   display: flex;
   position: relative;
   margin: 0;
@@ -145,6 +144,7 @@ body {
 }
 
 .slider-track > div {
+  overflow: hidden;
   position: relative;
   display: flex;
   align-items: center;
@@ -231,13 +231,13 @@ body {
     background-color: #7c7c7c;
     margin: 0 5px;
     border-radius: 10px;
-    width: 125px;
+    width: 15.625px;
     height: 62.5px;
     overflow: clip;
   }
   .slider-track > div {
     user-select: none;
-    width: 400px;
+    width: 50px;
     height: 200px;
   }
   .slider-thumb-container {
