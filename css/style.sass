@@ -3,7 +3,7 @@
 /* ================= */
 
 $width-container: 800px
-$width: 1600px
+$width: 750px
 $height: 300px
 $dots-size: 15px
 
@@ -76,7 +76,7 @@ body
     height: inherit
 
 
-@mixin thumbnail()
+@mixin thumbnail($w, $h)
     font-size: inherit
     padding: 0
     user-select: none
@@ -85,12 +85,12 @@ body
     background-color: #7c7c7c
     margin: 0 5px
     border-radius: 10px
-    width: calc($width * 5/16)
-    height: calc($height * 5/16)
+    width: calc($w * 5/16)
+    height: calc($h * 5/16)
     overflow: clip
 
 .slide-thumb 
-    @include thumbnail()
+    @include thumbnail($width, $height)
 
 .sliderMargin1
     margin: 8vh 0
@@ -123,6 +123,7 @@ body
     width: 100%
 
 .slider-container
+    align-items: center
     border-radius: 15px
     display: flex
     position: relative
@@ -138,20 +139,21 @@ body
     flex-direction: row
     width: max-content
 
-
 .slider-track > div
-    height: $height
     position: relative
     @include defaultProp()
 
-.slider-track > div
-    width: $width
 
 //slide
 
-.slide
-    width: $width
+@mixin mainSlide($w, $h)
     user-select: none
+    width: $w
+    height: $h
+
+.slider-track > div
+    @include mainSlide($width, $height)
+
 
 
 /* ========= */
@@ -197,9 +199,41 @@ body
     transform: scale(1.1)
     opacity: 100%
 
+
+.rectangle
+    width: 500px
+    height: 150px
+    background-color: #60A7E3
+    color: white
+    display: flex
+    border-radius: 20px
+    justify-content: center
+    align-items: center
+
+
+@media screen and (max-width: 1200px)
+    .text
+        font-size: 12pt
+
 @media screen and (max-width: 900px)
+
+    $width: 400px
+    $height: 200px
+
+    .rectangle
+        width: 200px
+
+    .slide-thumb
+        @include thumbnail($width, $height)
+
+    .slider-track > div
+        @include mainSlide($width, $height)
+
     .slider-thumb-container
         width: 500px
+
     .slider-container
         width: 500px
+    .text
+        font-size: 9pt
 
