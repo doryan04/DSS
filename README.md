@@ -210,4 +210,6 @@ Then enter all the settings into the slider function, as shown in the example be
 
 ## Did you find the bug? Make sure to [leave an issue](https://github.com/doryan04/DSS/issues/new) in case of any problems.
 
+## If you want help to the project, please, test experimental branch and report any bugs to [issue](https://github.com/doryan04/DSS/issues/new)
+
 ### Check out @tfk004 on Telegram. https://t.me/doryanProjects
