@@ -15,8 +15,9 @@ class DSS{
         sliderName: null,
         sliderClass: null,
         trackClass: null,
-        thumbClass: null,
         trackXPos: 0,
+        thumbClass: null,
+        thumbTrackWidth: 0,
         thumbTrackXPos: 0,
     }
 
@@ -44,7 +45,7 @@ class DSS{
 
     #thumbTrackIsDelayed = false
 
-    margin = 0; indexTarget; firstCondition; secondCondition; stp;
+    margin = 0; indexTarget; firstCondition; secondCondition;
     #isDelayed = false; #autoplay = null;
 
     constructor(name, settings = this.#current_settings) {
@@ -83,9 +84,8 @@ class DSS{
         //     alert(e);
         // }
 
-        _.setTranslate3d(0);
+        _.setPosition(0);
         _.controlEvents();
-        _.stp = _.#slider_data.trackXPos;
 
     }
 
@@ -256,12 +256,25 @@ class DSS{
 
         let tt = this.#slider_data.thumbClass.firstChild, // thumb track
             mt = parseInt(getComputedStyle(tt.firstChild, true).marginLeft), // left and right margin thumb
-            ttw = Math.ceil(((tt.firstChild.clientWidth) + (2 * mt)) * Array.from(tt.childNodes).length); // thumb track width
+            ttw = this.#slider_data.thumbTrackWidth = Math.ceil(((tt.firstChild.clientWidth) + (2 * mt)) * Array.from(tt.childNodes).length); // thumb track width
 
-        if (ttw <= width) tt.parentElement.style.justifyContent = "center";
+        this.thumbTrackSetProps(tt, ttw, width)
 
         tt.firstChild.classList.remove("active");
         tt.firstChild.classList.add('thumb-active');
+
+    }
+
+    thumbTrackSetProps(obj, w1, w2){
+
+        if (w1 <= w2) {
+            obj.style.justifyContent = "center";
+            this.#slider_data.thumbClass.firstChild.style.transform = `translate3d(0px, 0px, 0px)`;
+        }
+        else {
+            obj.style.justifyContent = null;
+            this.#slider_data.thumbClass.firstChild.style.transform = `translate3d(${this.#slider_data.thumbTrackXPos}px, 0px, 0px)`;
+        }
 
     }
 
@@ -368,7 +381,7 @@ class DSS{
                                       !_.infSlider && !_.autoMargin ? 1 : 1; // ES - extra slides
 
         if (_.infSlider) _.endlessSlider(track, items);
-        if (!_.infSlider && !_.autoMargin && sw < cw) track.style.marginLeft = `${(cw - sw)/2}`;
+        if (!_.infSlider && !_.autoMargin && sw < cw) track.style.marginLeft = `${(cw - sw)/2}px`;
 
         let allSlides = Array.from(items),
             mainSlides = this.infSlider ? allSlides.slice(_sliderData.countExtraSlides, allSlides.length - _sliderData.countExtraSlides) : allSlides;
@@ -632,7 +645,7 @@ class DSS{
     #presentationMode(toggle){
 
         let _ = this, thumbTrack = _.#slider_data.thumbClass.firstChild,
-            startDragX, currentX, clicked = false;
+            startDragX, currentX, clicked = false, sliderData = _.#slider_data, forceMove = 0;
 
         let onDown = (event) => {
 
@@ -648,11 +661,15 @@ class DSS{
             if(!clicked || _.#thumbTrackIsDelayed) return 0;
 
             currentX = -_.windowWidth + event.pageX;
-            thumbTrack.style.transform = `translate3d(${_.#slider_data.thumbTrackXPos + (currentX - startDragX)}px, 0px, 0px)`;
+            thumbTrack.style.transform = `translate3d(${sliderData.thumbTrackXPos + (currentX - startDragX)}px, 0px, 0px)`;
+            forceMove = sliderData.thumbTrackXPos + (currentX - startDragX);
 
-            if (_.#slider_data.thumbTrackXPos + (currentX - startDragX) >= 150 || _.#slider_data.thumbTrackXPos + (currentX - startDragX) <= _.thumbWidth - 150){
+            if((sliderData.thumbTrackWidth < sliderData.containerWidth) && (forceMove >= 150 || forceMove <= - 150)){
+                onUp();
+            } else if ((sliderData.thumbTrackWidth > sliderData.containerWidth) && (forceMove >= 150 || forceMove <= _.thumbWidth - 150)){
                 onUp();
             }
+
 
         }, 1/60);
 
@@ -661,10 +678,12 @@ class DSS{
             if(!clicked) return 0;
 
             clicked = false;
-            _.#slider_data.thumbTrackXPos = _.#slider_data.thumbTrackXPos + (currentX - startDragX);
+            sliderData.thumbTrackXPos = sliderData.thumbTrackXPos + (currentX - startDragX);
 
-            if(_.#slider_data.thumbTrackXPos > 0 || _.#slider_data.thumbTrackXPos < _.thumbWidth) {
-                this.overscrollAnim(thumbTrack, (_.#slider_data.thumbTrackXPos > 0 ? 0 : _.thumbWidth) );
+            if((sliderData.thumbTrackWidth > sliderData.containerWidth) && (sliderData.thumbTrackXPos > 0 || sliderData.thumbTrackXPos < _.thumbWidth)) {
+                _.overscrollAnim(thumbTrack, (_.#slider_data.thumbTrackXPos > 0 ? 0 : _.thumbWidth) );
+            } else if ((sliderData.thumbTrackWidth < sliderData.containerWidth) && (sliderData.thumbTrackXPos > 0 || sliderData.thumbTrackXPos < 0)){
+                _.overscrollAnim(thumbTrack, 0);
             }
 
         };
@@ -740,14 +759,16 @@ class DSS{
         let _ = this, sliderData = _.#slider_data,
             windowWidth = window.innerWidth, thumbClass = _.#slider_data.thumbClass
 
+        sliderData.thumbTrackWidth = thumbClass.firstChild.clientWidth;
+
         _.windowWidth = windowWidth / 2;
-        _.thumbWidth = -thumbClass.firstChild.clientWidth + thumbClass.clientWidth;
+        _.thumbWidth = -sliderData.thumbTrackWidth + thumbClass.clientWidth;
         sliderData.slideWidth = sliderData.trackClass.firstChild.clientWidth;
         sliderData.containerWidth = sliderData.sliderClass.querySelector(`.${sliderData.sliderName}-container`).clientWidth;
 
         _.marginsBuild(sliderData.slideWidth, sliderData.containerWidth, sliderData.trackClass)
-
         _.setTranslate3d(sliderData.activeSlideID);
+        _.thumbTrackSetProps(sliderData.thumbClass, sliderData.thumbTrackWidth, sliderData.containerWidth)
 
     }
 
