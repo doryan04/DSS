@@ -352,6 +352,12 @@ class DSS{
 
     }
 
+    mainTrackPosCorrection(slideWidth, containWidth, obj){
+        if (!this.infSlider && !this.autoMargin && slideWidth < containWidth) {
+            obj.style.marginLeft = `${(containWidth - slideWidth)/2}px`;
+        }
+    }
+
     // Построение карусели //
 
     buildCarousel(){
@@ -381,7 +387,8 @@ class DSS{
                                       !_.infSlider && !_.autoMargin ? 1 : 1; // ES - extra slides
 
         if (_.infSlider) _.endlessSlider(track, items);
-        if (!_.infSlider && !_.autoMargin && sw < cw) track.style.marginLeft = `${(cw - sw)/2}px`;
+
+        _.mainTrackPosCorrection(sw, cw, track)
 
         let allSlides = Array.from(items),
             mainSlides = this.infSlider ? allSlides.slice(_sliderData.countExtraSlides, allSlides.length - _sliderData.countExtraSlides) : allSlides;
@@ -393,7 +400,6 @@ class DSS{
 
         _.classIndent(items);
         _.elemBlocks(mainSlides, allSlides, cw, _sliderData.mainSlides);
-
 
     }
 
@@ -530,8 +536,7 @@ class DSS{
 
     calcPos(index) {
 
-        let sw = this.#slider_data.slideWidth,
-            cw = this.#slider_data.containerWidth,
+        let sw = this.#slider_data.slideWidth, cw = this.#slider_data.containerWidth,
             half = (cw - sw)/2;
 
         return  (this.autoMargin && (this.infSlider || !this.infSlider)) ? (sw > cw ? ((-1 * sw + half) * index) - (half * (index - 1)) : -1 * cw * index) :
@@ -664,12 +669,10 @@ class DSS{
             thumbTrack.style.transform = `translate3d(${sliderData.thumbTrackXPos + (currentX - startDragX)}px, 0px, 0px)`;
             forceMove = sliderData.thumbTrackXPos + (currentX - startDragX);
 
-            if((sliderData.thumbTrackWidth < sliderData.containerWidth) && (forceMove >= 150 || forceMove <= - 150)){
-                onUp();
-            } else if ((sliderData.thumbTrackWidth > sliderData.containerWidth) && (forceMove >= 150 || forceMove <= _.thumbWidth - 150)){
+            if ((sliderData.thumbTrackWidth < sliderData.containerWidth) && (forceMove >= _.thumbWidth / 5 || forceMove <= - _.thumbWidth / 5) ||
+                (sliderData.thumbTrackWidth > sliderData.containerWidth) && (forceMove >= 150 || forceMove <= _.thumbWidth - 150)){
                 onUp();
             }
-
 
         }, 1/60);
 
@@ -752,7 +755,7 @@ class DSS{
 
     // Создание эвентов //
 
-    // Адаптивность, ещё пока в разработке //
+    // Адаптивность, вроде работает идеально, но всё ещё требует тестирования //
 
     adaptive(){
 
@@ -766,8 +769,9 @@ class DSS{
         sliderData.slideWidth = sliderData.trackClass.firstChild.clientWidth;
         sliderData.containerWidth = sliderData.sliderClass.querySelector(`.${sliderData.sliderName}-container`).clientWidth;
 
-        _.marginsBuild(sliderData.slideWidth, sliderData.containerWidth, sliderData.trackClass)
         _.setTranslate3d(sliderData.activeSlideID);
+        _.marginsBuild(sliderData.slideWidth, sliderData.containerWidth, sliderData.trackClass)
+        _.mainTrackPosCorrection(sliderData.slideWidth, sliderData.containerWidth, sliderData.trackClass)
         _.thumbTrackSetProps(sliderData.thumbClass, sliderData.thumbTrackWidth, sliderData.containerWidth)
 
     }
@@ -812,18 +816,6 @@ class DSS{
 // ======================= //
 // Вспомогательные функции //
 // ======================= //
-
-// function logBase(x, y){
-//
-//     return Math.log(y) / Math.log(x);
-//
-// }
-//
-// function logAnimGraphic(x, constant){
-//
-//     return Math.round((10*((logBase(2, x - constant) ** 3)))** 0.5);
-//
-// }
 
 function throttle(func, delay) {
 
